@@ -19,14 +19,12 @@ import java.util.Properties;
  * <p>
  * A simple servlet 3 as client that sends several messages to a queue or a topic.
  * </p>
- *
- * <p>
+ * <p/>
+ * <p/>
  * The servlet is registered and mapped to /SimpleMessageProducer using the {@linkplain javax.servlet.annotation.WebServlet
- * @HttpServlet}.
- * </p>
  *
  * @author Fabien
- *
+ * @HttpServlet}. </p>
  */
 @WebServlet("/JcaMessageProducer")
 public class JcaMessageProducer extends HttpServlet {
@@ -56,7 +54,7 @@ public class JcaMessageProducer extends HttpServlet {
 
         Properties properties = System.getProperties();
         for (Map.Entry entry : properties.entrySet()) {
-            if(((String)entry.getKey()).startsWith("com.webmethods"))
+            if (((String) entry.getKey()).startsWith("com.webmethods"))
                 log.info(String.format("%s = %s", (String) entry.getKey(), (String) entry.getValue()));
         }
 
@@ -71,7 +69,7 @@ public class JcaMessageProducer extends HttpServlet {
                 destinationName = req.getParameter("queue");
             }
 
-            if(null == destinationName || "".equals(destinationName)){
+            if (null == destinationName || "".equals(destinationName)) {
                 out.write("<p>Destination name not specified...can't do much.</p>");
                 return;
             }
@@ -84,9 +82,9 @@ public class JcaMessageProducer extends HttpServlet {
                 msgCount = DEFAULT_MSG_COUNT;
             }
 
-            if(log.isDebugEnabled())
-                log.debug(String.format("Sending %d messages to %s [%s] using managed connection factory [%s]",msgCount, (isQueue)?"queue":"topic", destinationName, connectionFactory.getClass().getName()));
-            out.write(String.format("<p>Sending %d messages to <em>%s [%s]</em>, <br />using managed connection factory [<em>%s</em>]</p>",msgCount, (isQueue)?"queue":"topic", destinationName, (null != connectionFactory)?connectionFactory.getClass().getName():"null"));
+            if (log.isDebugEnabled())
+                log.debug(String.format("Sending %d messages to %s [%s] using managed connection factory [%s]", msgCount, (isQueue) ? "queue" : "topic", destinationName, connectionFactory.getClass().getName()));
+            out.write(String.format("<p>Sending %d messages to <em>%s [%s]</em>, <br />using managed connection factory [<em>%s</em>]</p>", msgCount, (isQueue) ? "queue" : "topic", destinationName, (null != connectionFactory) ? connectionFactory.getClass().getName() : "null"));
 
             for (int i = 0; i < msgCount; i++) {
                 String message = "This is message " + (i + 1);
@@ -101,7 +99,7 @@ public class JcaMessageProducer extends HttpServlet {
             out.write("</br>");
             out.write("<p><i>Go your the JBoss Application Server console or Server log to see the error stack trace</i></p>");
         } finally {
-            if(out != null) {
+            if (out != null) {
                 out.close();
             }
         }
@@ -113,9 +111,8 @@ public class JcaMessageProducer extends HttpServlet {
     private void sendMessage(String textToSend, String destinationName, boolean isQueue) throws JMSException {
         Connection connection = null;
 
-        try
-        {
-            if(null == connectionFactory)
+        try {
+            if (null == connectionFactory)
                 throw new JMSException("connection factory is null...can't do anything.");
 
             connection = connectionFactory.createConnection();
@@ -123,7 +120,7 @@ public class JcaMessageProducer extends HttpServlet {
 
             //here we avoid a JNDI lookup...
             Destination destination;
-            if(isQueue)
+            if (isQueue)
                 destination = session.createQueue(destinationName);
             else
                 destination = session.createTopic(destinationName);
@@ -131,19 +128,17 @@ public class JcaMessageProducer extends HttpServlet {
             MessageProducer messageProducer = session.createProducer(destination);
             TextMessage message = session.createTextMessage();
 
-            log.info(String.format("Sending new message to %s %s : %s ", (isQueue)?"queue":"topic", destinationName, textToSend));
+            log.info(String.format("Sending new message to %s %s : %s ", (isQueue) ? "queue" : "topic", destinationName, textToSend));
 
             message.setText(textToSend);
             messageProducer.send(message); // Send Message
 
             log.info(String.format("Messages Sent"));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error("error while sending message", e);
             throw new JMSException("Couldn't send to queue");
         } finally {
-            if(null != connection)
+            if (null != connection)
                 connection.close();
         }
     }

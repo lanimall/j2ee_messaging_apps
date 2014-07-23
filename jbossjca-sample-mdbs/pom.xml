@@ -10,20 +10,20 @@
 	OF ANY KIND, either express or implied. See the License for the specific 
 	language governing permissions and limitations under the License. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.lanimall.messaging.samples</groupId>
-	<artifactId>jbossjca-sample-mdbs</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
-	<packaging>war</packaging>
-	<name>Simple JMS producer/consumer app using JCA and MDBs</name>
+    <groupId>com.lanimall.messaging.samples</groupId>
+    <artifactId>jbossjca-sample-mdbs</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>Simple JMS producer/consumer app using JCA and MDBs</name>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- other plugin versions -->
-		<version.compiler.plugin>2.3.1</version.compiler.plugin>
-		<version.war.plugin>2.3</version.war.plugin>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- other plugin versions -->
+        <version.compiler.plugin>2.3.1</version.compiler.plugin>
+        <version.war.plugin>2.3</version.war.plugin>
         <!-- JBoss dependency versions -->
 
         <version.org.jboss.as.plugins.maven.plugin>7.3.Final</version.org.jboss.as.plugins.maven.plugin>
@@ -37,10 +37,10 @@
 
         <version.org.jboss.as>7.1.0.Final</version.org.jboss.as>
         <!-- maven-compiler-plugin -->
-		<maven.compiler.target>1.6</maven.compiler.target>
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<slf4j.version>1.6.1</slf4j.version>
-	</properties>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <slf4j.version>1.6.1</slf4j.version>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -61,27 +61,27 @@
         </dependencies>
     </dependencyManagement>
 
-	<dependencies>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>javax.jms</groupId>
-			<artifactId>jms-api</artifactId>
-			<version>1.1-rev-1</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms-api</artifactId>
+            <version>1.1-rev-1</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- SLF4J -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
+        <!-- SLF4J -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -126,26 +126,28 @@
         </dependency>
     </dependencies>
 
-	<build>
-		<finalName>jbossjca-sample-mdbs</finalName>
+    <build>
+        <finalName>jbossjca-sample-mdbs</finalName>
         <plugins>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>${version.war.plugin}</version>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-					<webResources>
-						<resource>
-							<directory>/Users/FabienSanglier/MyDev/MyPOCs/IRS/Broker-ResourceAdapter/BrokerSimpleWebApp/ThirdPartyLibs</directory>
-							<targetPath>WEB-INF/lib</targetPath>
-							<includes>
-								<include>*.jar</include>
-							</includes>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${version.war.plugin}</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                    <webResources>
+                        <resource>
+                            <directory>
+                                /Users/FabienSanglier/MyDev/MyPOCs/IRS/Broker-ResourceAdapter/BrokerSimpleWebApp/ThirdPartyLibs
+                            </directory>
+                            <targetPath>WEB-INF/lib</targetPath>
+                            <includes>
+                                <include>*.jar</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
 
             <!-- JBoss AS plugin to deploy war -->
             <plugin>
@@ -154,16 +156,16 @@
                 <version>${version.org.jboss.as.plugins.maven.plugin}</version>
             </plugin>
 
-			<!-- Compiler plugin enforces Java 1.6 compatibility and activates annotation 
-				processors -->
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${version.compiler.plugin}</version>
-				<configuration>
-					<source>${maven.compiler.source}</source>
-					<target>${maven.compiler.target}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+            <!-- Compiler plugin enforces Java 1.6 compatibility and activates annotation
+                processors -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${version.compiler.plugin}</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
