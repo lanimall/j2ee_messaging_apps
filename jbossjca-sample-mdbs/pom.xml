@@ -138,7 +138,7 @@
                     <webResources>
                         <resource>
                             <directory>
-                                /Users/FabienSanglier/MyDev/MyPOCs/IRS/Broker-ResourceAdapter/BrokerSimpleWebApp/ThirdPartyLibs
+                                libs/
                             </directory>
                             <targetPath>WEB-INF/lib</targetPath>
                             <includes>
