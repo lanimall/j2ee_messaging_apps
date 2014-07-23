@@ -1,0 +1,21 @@
+#change for your setup
+set $broker="mybroker"
+
+#change for your setup
+set $server="wmvm:6849"
+
+# create the Broker
+connect to broker $broker server $server
+
+# initialize the  Broker for JMS
+initialize broker
+
+# bind the administered objects into JNDI
+bind queue simplequeue with QueueName=simplequeue sharedState=true sharedStateOrdering=none
+bind qcf "InboundQueueConnectionFactory" with brokerHost=$server brokerName=$broker group=SimpleQueueConnectionGroup useXA=false sslEncrypted=true clientID=simplequeueclient application=mdb-listener
+bind qcf "OutboundQueueConnectionFactory" with brokerHost=$server brokerName=$broker group=SimpleQueueConnectionGroup useXA=false sslEncrypted=true application=msg-pooled-producer
+
+create group SimpleQueueConnectionGroup
+
+# create the topic and client group on the Broker
+create queue for simplequeue using InboundQueueConnectionFactory

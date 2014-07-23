@@ -1,4 +1,4 @@
-package com.softwareag.messaging;
+package com.softwareag.messaging.utils;
 
 import org.jboss.security.vault.SecurityVaultException;
 import org.jboss.security.vault.SecurityVaultUtil;
