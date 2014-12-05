@@ -6,37 +6,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
-import javax.ejb.Startup;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 /**
  * Created by FabienSanglier on 7/22/14.
  */
+
 @Singleton
-@Startup
+//@Startup
 public class StartupSysPropsInitializerBean {
     private static Logger log = LoggerFactory.getLogger(StartupSysPropsInitializerBean.class);
 
     private static final String PROP_RESOURCE = "wmjms.properties";
     private static final String PROPS_PREFIX = "com.webmethods.jms";
 
+    public StartupSysPropsInitializerBean() { }
+
     @PostConstruct
-    private void startup(){
+    private void setSysPropertiesFromFile(){
         Properties properties = new Properties();
         try {
-            log.info(String.format("Loading %s into system properties...", PROP_RESOURCE));
+            log.info(String.format("Loading classpath property file %s into system properties...", PROP_RESOURCE));
 
             //this file should be loaded in classpath
             InputStream st = this.getClass().getClassLoader().getResourceAsStream(PROP_RESOURCE);
             if(null != st)
                 properties.load(st);
+            else
+                log.warn(String.format("Property file %s not found in classpath", PROP_RESOURCE));
         } catch (IOException e) {
             log.error("Error reading properties.", e);
         }
@@ -58,29 +59,6 @@ public class StartupSysPropsInitializerBean {
                     log.debug(String.format("%s = %s", propKey, propValue));
                     System.setProperty(propKey, propValue);
                 }
-            }
-        }
-    }
-
-    @PreDestroy
-    private void shutdown(){
-        //clearing the properties related to com.webmethods.jms
-        log.info(String.format("Clearing %s from system properties...", PROPS_PREFIX));
-
-        Properties properties = System.getProperties();
-        List<String> propsToclear = new ArrayList<String>();
-        if(properties.size() > 0) {
-            for (Map.Entry entry : properties.entrySet()) {
-                if(entry.getKey().toString().startsWith(PROPS_PREFIX)){
-                    propsToclear.add((String)entry.getKey());
-                }
-            }
-        }
-
-        if(propsToclear.size() > 0){
-            for (String propKey : propsToclear) {
-                log.debug(String.format("Clearing property %s", propKey));
-                System.clearProperty(propKey);
             }
         }
     }

@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * <p>
@@ -51,12 +49,6 @@ public class JcaMessageProducer extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         out.write("<h1>Example demonstrates the use of <strong>JMS 1.1</strong> coupled with custom Resource Adapter</h1>");
-
-        Properties properties = System.getProperties();
-        for (Map.Entry entry : properties.entrySet()) {
-            if (((String) entry.getKey()).startsWith("com.webmethods"))
-                log.info(String.format("%s = %s", (String) entry.getKey(), (String) entry.getValue()));
-        }
 
         try {
             String destinationName = "";

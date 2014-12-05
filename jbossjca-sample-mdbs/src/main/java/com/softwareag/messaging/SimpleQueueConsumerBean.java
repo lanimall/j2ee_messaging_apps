@@ -10,8 +10,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * <p>
@@ -30,8 +28,8 @@ import java.util.Properties;
         @ActivationConfigProperty(propertyName = "maxWaitTime", propertyValue = "10"),
         @ActivationConfigProperty(propertyName = "redeliveryAttempts", propertyValue = "10"),
         @ActivationConfigProperty(propertyName = "redeliveryInterval", propertyValue = "1"),
-        @ActivationConfigProperty(propertyName = "reconnectAttempts", propertyValue = "-1"),
-        @ActivationConfigProperty(propertyName = "reconnectInterval", propertyValue = "5")
+        @ActivationConfigProperty(propertyName = "reconnectAttempts", propertyValue = "10"),
+        @ActivationConfigProperty(propertyName = "reconnectInterval", propertyValue = "30")
 })
 
 @TransactionManagement(value=TransactionManagementType.BEAN)
@@ -48,12 +46,6 @@ public class SimpleQueueConsumerBean implements MessageListener, MessageDrivenBe
 	public SimpleQueueConsumerBean() {
 		super();
 		log.info("SimpleQueueConsumerBean: instantiated");
-
-        Properties properties = System.getProperties();
-        for (Map.Entry entry : properties.entrySet()) {
-            if(((String)entry.getKey()).startsWith("com.webmethods"))
-                log.info(String.format("%s = %s", (String) entry.getKey(), (String) entry.getValue()));
-        }
 	}
 
 	public void ejbRemove() throws EJBException {

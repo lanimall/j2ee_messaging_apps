@@ -3,7 +3,12 @@
 <!-- sample config extract for JBOSS EAP 6.x / JBOSS AS 7 with my updates related to JCA Messaging setup -->
 <server xmlns="urn:jboss:domain:1.4">
 
-    <!-- ... -->
+    <system-properties>
+        <property name="com.webmethods.jms.clientIDSharing" value="true"/>
+        <property name="com.webmethods.jms.keepAliveInterval" value="15"/>
+        <property name="com.webmethods.jms.keepAliveAttempts" value="10"/>
+        <property name="com.webmethods.jms.log.level" value="ERROR"/>
+    </system-properties>
 
     <vault>
         <vault-option name="KEYSTORE_URL" value="/secure/jbossvault.keystore"/>
@@ -17,6 +22,20 @@
     <!-- ... -->
 
     <profile>
+        <subsystem xmlns="urn:jboss:domain:logging:1.2">
+
+            <!-- ... -->
+
+            <logger category="org.jboss.resource.adapter">
+                <level name="TRACE"/>
+            </logger>
+            <logger category="com.sun.genericjmsra">
+                <level name="TRACE"/>
+            </logger>
+
+            <!-- ... -->
+
+        </subsystem>
 
         <!-- ... -->
 
@@ -37,7 +56,7 @@
             <!-- ... -->
 
             <mdb>
-                <resource-adapter-ref resource-adapter-name="um-jmsra-95_1.7.rar"/>
+                <resource-adapter-ref resource-adapter-name="webm-jmsra.rar"/>
                 <bean-instance-pool-ref pool-name="mdb-strict-max-pool"/>
             </mdb>
             <pools>
@@ -57,6 +76,8 @@
 
         <subsystem xmlns="urn:jboss:domain:resource-adapters:1.1">
             <resource-adapters>
+
+                <!-- This is the resource adapter for SoftwareAG webMethods Broker -->
                 <resource-adapter id="webm-jmsra.rar">
                     <archive>
                         webm-jmsra.rar
@@ -68,11 +89,69 @@
                     <config-property name="SupportsXA">
                         false
                     </config-property>
+                    <config-property name="UserName">
+                        CN=brokerclient, O=webM, ST=CA, C=US
+                    </config-property>
+                    <config-property name="Password">
+                        ${VAULT::broker-ssl::password::OWQyRRMjZm9NjktMTA5Zi00Yzc0L7WFhYWQ4tZTU2eeSMsszUwMmwytY1NDNlTElORV9CUkVBS2pib3NzdmF1bHQ=}
+                    </config-property>
                     <connection-definitions>
                         <connection-definition class-name="com.sun.genericra.outbound.ManagedJMSConnectionFactory"
-                                               jndi-name="java:/jms/broker" enabled="true" pool-name="java:/jms/broker">
+                                               jndi-name="java:/jms/broker/wm" enabled="true" use-java-context="true"
+                                               pool-name="java:/jms/broker/wm" use-ccm="true">
                             <config-property name="JndiProperties">
                                 java.naming.factory.initial=com.webmethods.jms.naming.WmJmsNamingCtxFactory,java.naming.provider.url=wmjmsnaming://mybroker@wmvm:6849
+                            </config-property>
+                            <config-property name="ConnectionValidationEnabled">
+                                true
+                            </config-property>
+                            <config-property name="ConnectionFactoryJndiName">
+                                OutboundQueueConnectionFactory
+                            </config-property>
+                            <pool>
+                                <min-pool-size>10</min-pool-size>
+                                <max-pool-size>50</max-pool-size>
+                                <prefill>true</prefill>
+                                <use-strict-min>true</use-strict-min>
+                                <flush-strategy>IdleConnections</flush-strategy>
+                            </pool>
+                            <security>
+                                <application/>
+                            </security>
+                            <validation>
+                                <background-validation>true</background-validation>
+                            </validation>
+                        </connection-definition>
+                    </connection-definitions>
+                </resource-adapter>
+
+                <!-- This is the resource adapter for SoftwareAG Terracotta Universal Messaging -->
+                <resource-adapter id="um-jmsra.rar">
+                    <archive>
+                        um-jmsra.rar
+                    </archive>
+                    <transaction-support>XATransaction</transaction-support>
+                    <config-property name="JndiProperties">
+                        java.naming.factory.initial=com.pcbsys.nirvana.nSpace.NirvanaContextFactory,java.naming.provider.url=nsp://umvm:9000,java.naming.security.authentication=simple
+                    </config-property>
+                    <config-property name="SupportsXA">
+                        true
+                    </config-property>
+                    <config-property name="DeliveryType">
+                        Synchronous
+                    </config-property>
+                    <config-property name="UserName">
+                        umclient
+                    </config-property>
+                    <config-property name="Password">
+                        ${VAULT::broker-ssl::umpassword::OWQyRRMjZm9NjktMTA5Zi00Yzc0L7WFhYWQ4tZTU2eeSMsszUwMmwytY1NDNlTElORV9CUkVBS2pib3NzdmF1bHQ=}
+                    </config-property>
+                    <connection-definitions>
+                        <connection-definition class-name="com.sun.genericra.outbound.ManagedJMSConnectionFactory"
+                                               jndi-name="java:/jms/broker/um" enabled="true" use-java-context="true"
+                                               pool-name="java:/jms/broker/um" use-ccm="true">
+                            <config-property name="JndiProperties">
+                                java.naming.factory.initial=com.pcbsys.nirvana.nSpace.NirvanaContextFactory,java.naming.provider.url=nsp://umvm:9000,java.naming.security.authentication=simple
                             </config-property>
                             <config-property name="ConnectionValidationEnabled">
                                 true

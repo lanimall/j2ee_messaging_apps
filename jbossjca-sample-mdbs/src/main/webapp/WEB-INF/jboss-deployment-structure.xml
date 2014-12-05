@@ -1,8 +1,8 @@
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
     <deployment>
         <!-- This allows you to define additional dependencies, it is the same as using the Dependencies: manifest attribute -->
-        <dependencies>
-            <module name="com.softwareag.webMethods.broker" />
-        </dependencies>
+        <!--<dependencies>-->
+            <!--<module name="com.softwareag.webMethods.broker" />-->
+        <!--</dependencies>-->
     </deployment>
 </jboss-deployment-structure>

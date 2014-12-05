@@ -19,22 +19,22 @@ import java.util.Hashtable;
 /**
  * Servlet implementation class SimpleMessageProducer
  */
-@WebServlet("/SimpleMessageProducer")
-public class SimpleMessageProducer extends HttpServlet {
-	private static Logger log = LoggerFactory.getLogger(SimpleMessageProducer.class);
+@WebServlet("/SimpleUMJmsProducer")
+public class SimpleUMJmsProducer extends HttpServlet {
+	private static Logger log = LoggerFactory.getLogger(SimpleUMJmsProducer.class);
 
 	private static final long serialVersionUID = 1L;
 
 	private static final int MSG_COUNT = 50;
-	private static final String BROKER_CONTEXTFACTORY = "com.webmethods.jms.naming.WmJmsNamingCtxFactory";
-    private static final String BROKER_URL = "wmjmsnaming://mybroker@wmvm:6849";
-    private static final String BROKER_QUEUECONNECTIONFACTORY = "SimpleQueueConnectionFactory";
-	private static final String BROKER_QUEUE = "simplequeue";
+	private static final String DEFAULT_CONTEXTFACTORY = "com.pcbsys.nirvana.nSpace.NirvanaContextFactory";
+    private static final String DEFAULT_URL = "nsp://umvm:9000/";
+    private static final String DEFAULT_QUEUECONNECTIONFACTORY = "SimpleQueueConnectionFactory";
+	private static final String DEFAULT_QUEUENAME = "simplequeue";
 
 	/**
-	 * @see HttpServlet#HttpServlet()
+	 * @see javax.servlet.http.HttpServlet#HttpServlet()
 	 */
-	public SimpleMessageProducer() {
+	public SimpleUMJmsProducer() {
 		super();
 	}
 
@@ -44,7 +44,7 @@ public class SimpleMessageProducer extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		System.out.println("Testing");
@@ -55,7 +55,7 @@ public class SimpleMessageProducer extends HttpServlet {
 		try {
 			String connectionUrl=req.getParameter("connectionUrl");
 			if(null == connectionUrl)
-                connectionUrl = BROKER_URL;
+                connectionUrl = DEFAULT_URL;
 
 			String jndiConnectionFactory = req.getParameter("jndiConnectionFactory");
 			String destinationName = "";
@@ -76,11 +76,17 @@ public class SimpleMessageProducer extends HttpServlet {
 			log.debug(String.format("Sending %d messages to url [%s], %s name [%s], using factory jndi name [%s]",MSG_COUNT, connectionUrl, (isQueue)?"queue":"topic", destinationName, jndiConnectionFactory));
 
 			out.write(String.format("<p>Sending %d messages to url [<em>%s</em>], <br /><em>%s [%s]</em>, <br />using factory jndi name [<em>%s</em>]</p>",MSG_COUNT, connectionUrl, (isQueue)?"queue":"topic", destinationName, jndiConnectionFactory));
-			sendMessage(connectionUrl, jndiConnectionFactory, destinationName, isQueue);
 
-			System.out.println("50 Messages Sent to " + "NIRVANA" + " Successfully");
+            int msgCount = 0;
+            for (msgCount = 0; msgCount < MSG_COUNT; msgCount++) {
+                String message = "This is message " + (msgCount + 1);
+                sendMessage(connectionUrl, jndiConnectionFactory, destinationName, message, isQueue);
+                out.write("Message (" + msgCount + "): " + message + "</br>");
+            }
 
-			out.write("<p><i>Messages Sent Successfully</i></p>");
+            System.out.println(msgCount + " messages sent successfully");
+
+			out.write("<p><i>" + msgCount + "messages sent successfully</i></p>");
 		} catch (JMSException e) {
             log.error("Error occurred", e);
 			out.write("<h2>A problem occurred during the delivery of this message: " + e.getMessage() + " </h2>");
@@ -94,49 +100,47 @@ public class SimpleMessageProducer extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doGet(req, resp);
 	}
 
-	private void sendMessage(String connectionUrl, String jndiConnectionFactory, String destinationName, boolean isQueue) throws JMSException {
+	private void sendMessage(String connectionUrl, String jndiConnectionFactory, String destinationName, String textToSend, boolean isQueue) throws JMSException {
 		Connection connection = null;
 
 		try
 		{
 			// creating properties file for getting initial context
 			Hashtable<String,String> env = new Hashtable<String,String>();
-			env.put("java.naming.factory.initial", BROKER_CONTEXTFACTORY);
+			env.put("java.naming.factory.initial", DEFAULT_CONTEXTFACTORY);
 
             if(null != connectionUrl && !"".equals(connectionUrl)){
 				env.put("java.naming.provider.url", connectionUrl);
-				env.put("nirvana.provider.url", connectionUrl);
 			}
 
 			for(String key : env.keySet()){
-				System.out.println(String.format("Context: %s - %s",key.toString(), env.get(key)));
+                log.debug(String.format("Context: %s - %s",key.toString(), env.get(key)));
 			}
 
-			System.out.println(String.format("System Properties: %s - %s","java.naming.provider.url", System.getProperty("java.naming.provider.url", "not-set!")));
-			System.out.println(String.format("System Properties: %s - %s","nirvana.provider.url", System.getProperty("nirvana.provider.url", "not-set!")));
+            log.info(String.format("System Properties: %s - %s","java.naming.provider.url", System.getProperty("java.naming.provider.url", "not-set!")));
 			
 			Context namingContext = new InitialContext(env);
 
-			System.out.println("Context Created : " + namingContext.toString());
+            log.info("Context Created : " + namingContext.toString());
 
 			// Lookup Connection Factory
 			ConnectionFactory connectionFactory = (ConnectionFactory) namingContext.lookup(jndiConnectionFactory);
 
-			System.out.println("Lookup Connection Factory Success : " + connectionFactory.toString());
+            log.info("Lookup Connection Factory Success : " + connectionFactory.toString());
 
 			connection = connectionFactory.createConnection(); // Create connection
 
-			System.out.println("Connection Created : " + connection.toString());
+            log.info("Connection Created : " + connection.toString());
 
 			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE); // Create Session
 
-			System.out.println("Session Created : " + connection.toString());
+            log.info("Session Created : " + connection.toString());
 
 			//avoid another jndi lookup here
 			Destination destination;
@@ -145,20 +149,20 @@ public class SimpleMessageProducer extends HttpServlet {
 			else 
 				destination = session.createTopic(destinationName);
 
-			System.out.println("Destination Created : " + destination);
+            log.info("Destination Created : " + destination);
 
 			// Create Message Producer
 			MessageProducer producer = session.createProducer(destination); 
 
 			// Create Message
-			TextMessage msg = session.createTextMessage(); 
+			TextMessage msg = session.createTextMessage();
+            msg.setText(textToSend);
 
-			for (int i = 0; i < MSG_COUNT; i++) {
-				msg.setText("Im here for NIRVANA " + i);
-				producer.send(msg); // Send Message
-			}
+            log.info(String.format("Sending new message to %s %s : %s ", (isQueue) ? "queue" : "topic", destinationName, textToSend));
 
-			System.out.println(MSG_COUNT + " messages sent successfully");
+            producer.send(msg); // Send Message
+
+            log.info("message sent successfully");
 		}
 		catch (Exception e)
 		{
