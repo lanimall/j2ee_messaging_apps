@@ -10,6 +10,6 @@
 	<url>https://github.com/lanimall/messaging-samples</url>
 
 	<modules>
-		<module>jbossjca-sample-mdbs</module>
+		<module>jca-jms-samples</module>
 	</modules>
 </project>
