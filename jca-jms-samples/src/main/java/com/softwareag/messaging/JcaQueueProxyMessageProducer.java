@@ -29,11 +29,12 @@ public class JcaQueueProxyMessageProducer extends HttpServlet {
     private static final long serialVersionUID = -8314702649252239L;
     private static final int DEFAULT_MSG_COUNT = 5;
     private static Logger log = LoggerFactory.getLogger(JcaQueueProxyMessageProducer.class);
+
     //this uses the resource-adapter to make sure it's a managed connection etc...
     @Resource(mappedName = "java:/jms/broker2")
     private ConnectionFactory connectionFactory;
 
-    @Resource
+    @Resource(mappedName = "java:/jms/SomeSimpleQueue")
     private Destination jmsDestination;
 
     @Override
