@@ -23,6 +23,7 @@ public class AppConfig {
     private static final Logger log = LoggerFactory.getLogger(AppConfig.class);
     //singleton instance
     private static AppConfig instance;
+
     //wrapper property
     private final PropertyUtils propertyUtils;
 

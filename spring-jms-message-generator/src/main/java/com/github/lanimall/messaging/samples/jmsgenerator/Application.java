@@ -45,7 +45,8 @@ public class Application implements CommandLineRunner {
 	public static void main(String[] args) {
 		log.info("Loading Spring ApplicationContext...");
         SpringApplication app = new SpringApplication(Application.class);
-		ApplicationContext ctx = app.run(args);
+        app.setWebEnvironment(false);
+        ApplicationContext ctx = app.run(args);
 		log.info("Loaded Spring ApplicationContext.");
 	}
 }

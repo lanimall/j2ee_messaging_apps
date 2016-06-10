@@ -1,4 +1,4 @@
-package com.softwareag.messaging;
+package com.softwareag.messaging.publish;
 
 import com.softwareag.messaging.utils.AppConfig;
 import org.slf4j.Logger;
@@ -12,12 +12,12 @@ import java.util.Hashtable;
 /**
  * Created by FabienSanglier on 3/14/15.
  */
-public class TestJMSConnect {
-    private static Logger log = LoggerFactory.getLogger(TestJMSConnect.class);
+public class TestConsoleJMSPublish {
+    private static Logger log = LoggerFactory.getLogger(TestConsoleJMSPublish.class);
 
     private static final long serialVersionUID = 1L;
 
-    public TestJMSConnect() {
+    public TestConsoleJMSPublish() {
         super();
     }
 
@@ -47,17 +47,12 @@ public class TestJMSConnect {
             if (null == destinationName)
                 throw new RuntimeException("jms.destination.name not defined.");
 
-            int msgTotal = AppConfig.getInstance().getPropertyHelper().getPropertyAsInt("default.message.count", 10);
+            log.debug(String.format("Sending %d messages to url [%s], %s name [%s], using factory jndi name [%s]", 1, connectionUrl, (isQueue) ? "queue" : "topic", destinationName, jndiConnectionFactory));
 
-            log.debug(String.format("Sending %d messages to url [%s], %s name [%s], using factory jndi name [%s]", msgTotal, connectionUrl, (isQueue) ? "queue" : "topic", destinationName, jndiConnectionFactory));
+            String message = "This is a message";
+            sendMessage(connectionUrl, jndiConnectionFactory, destinationName, message, isQueue);
 
-            int msgCount = 0;
-            for (msgCount = 0; msgCount < msgTotal; msgCount++) {
-                String message = "This is message " + (msgCount + 1);
-                sendMessage(connectionUrl, jndiConnectionFactory, destinationName, message, isQueue);
-            }
-
-            System.out.println(msgCount + " messages sent successfully");
+            System.out.println("messages sent successfully");
         } catch (JMSException e) {
             log.error("Error occurred", e);
         }
