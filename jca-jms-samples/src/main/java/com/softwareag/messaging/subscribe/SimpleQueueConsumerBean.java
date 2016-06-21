@@ -66,13 +66,13 @@ public class SimpleQueueConsumerBean implements MessageListener, MessageDrivenBe
         if(log.isDebugEnabled())
             log.debug("SimpleQueueConsumerBean: onMessage() start");
 
-        MapMessage msg = null;
+        TextMessage msg = null;
         try {
             if (null != rcvMessage) {
-                if (rcvMessage instanceof MapMessage) {
-                    msg = (MapMessage) rcvMessage;
+                if (rcvMessage instanceof TextMessage) {
+                    msg = (TextMessage) rcvMessage;
                     if(log.isInfoEnabled())
-                        log.info("SimpleQueueConsumerBean: Received Message from queue: " + msg.getStringProperty(JMSHelper.PAYLOAD_TEXTMSG_PROPERTY));
+                        log.info("SimpleQueueConsumerBean: Received Message from queue: " + msg.getText());
                 } else {
                     throw new EJBException("SimpleQueueConsumerBean: Message of wrong type: " + rcvMessage.getClass().getName());
                 }

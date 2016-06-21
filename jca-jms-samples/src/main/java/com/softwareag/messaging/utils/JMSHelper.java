@@ -20,9 +20,6 @@ public class JMSHelper {
     private String defaultDestinationName;
     private DestinationType defaultDestinationType;
 
-    public static final String PAYLOAD_TEXTMSG_PROPERTY = "text";
-    public static final String PAYLOAD_BYTES_PROPERTY = "padding";
-
     public enum DestinationType {
         QUEUE,
         TOPIC
@@ -64,23 +61,23 @@ public class JMSHelper {
         this.defaultDestinationType = defaultDestinationType;
     }
 
-    public void sendMessage(final Map<String,String> payload) throws JMSException {
-        sendMessage(null, payload, null);
+    public String sendMessage(final String payload, final Map<String,String> headerProperties) throws JMSException {
+        return sendMessage(null, payload, headerProperties);
     }
 
-    public void sendMessage(Destination destination, final Map<String,String> payload) throws JMSException {
-        sendMessage(destination, payload, null);
+    public String sendMessage(Destination destination, final String payload) throws JMSException {
+        return sendMessage(destination, payload, null);
     }
 
-    public void sendMessage(Destination destination, final Map<String,String> payload, final Map<String,String> headerProperties) throws JMSException {
-        sendMessage(destination, payload, headerProperties, null, null, DeliveryMode.PERSISTENT);
+    public String sendMessage(Destination destination, final String payload, final Map<String,String> headerProperties) throws JMSException {
+        return sendMessage(destination, payload, headerProperties, null, null, DeliveryMode.PERSISTENT, 4);
     }
 
-    public void sendMessage(final Map<String,String> payload, final Map<String,String> headerProperties, String correlationID, Destination replyTo, int deliveryMode) throws JMSException {
-        sendMessage(null, payload, headerProperties, correlationID, replyTo, deliveryMode);
+    public String sendMessage(final String payload, final Map<String,String> headerProperties, String correlationID, Destination replyTo, int deliveryMode, int priority) throws JMSException {
+        return sendMessage(null, payload, headerProperties, correlationID, replyTo, deliveryMode, priority);
     }
 
-    public void sendMessage(Destination destination, final Map<String,String> payload, final Map<String,String> headerProperties, String correlationID, Destination replyTo, int deliveryMode) throws JMSException {
+    public String sendMessage(Destination destination, final String payload, final Map<String,String> headerProperties, String correlationID, Destination replyTo, int deliveryMode, int priority) throws JMSException {
         Connection connection = null;
 
         try {
@@ -116,14 +113,11 @@ public class JMSHelper {
             // Create Message Producer
             MessageProducer producer = session.createProducer(destinationLocal);
             producer.setDeliveryMode(deliveryMode);
+            producer.setPriority(priority);
 
             // Create Message
-            MapMessage msg = session.createMapMessage();
-            if(null != payload){
-                for (String payloadProperty : payload.keySet()){
-                    msg.setStringProperty(payloadProperty, payload.get(payloadProperty));
-                }
-            }
+            TextMessage msg = session.createTextMessage();
+            msg.setText(payload);
 
             if(null != replyTo)
                 msg.setJMSReplyTo(replyTo);
@@ -141,6 +135,8 @@ public class JMSHelper {
 
             if(log.isDebugEnabled())
                 log.debug("message sent successfully");
+
+            return msg.getJMSMessageID();
         } catch (Exception e) {
             log.error("error while sending messages", e);
             throw new JMSException("Could not send messages");

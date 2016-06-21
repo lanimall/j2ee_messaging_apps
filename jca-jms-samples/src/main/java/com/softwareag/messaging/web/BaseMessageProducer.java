@@ -61,13 +61,13 @@ public abstract class BaseMessageProducer extends HttpServlet {
 
         out.write("<h1>Sending JMS message</h1>");
         try {
-            String message = String.format("This is a text message with random number: %d", rdm.nextInt());
+            int randomNumber = rdm.nextInt();
+            String message = String.format("This is a text message with random number: %d", randomNumber);
 
-            Map<String,String> payload = new HashMap<String, String>(1);
-            payload.put(JMSHelper.PAYLOAD_TEXTMSG_PROPERTY, message);
-            payload.put(JMSHelper.PAYLOAD_BYTES_PROPERTY, messagePayload);
+            Map<String,String> headerProperties = new HashMap<String, String>(4);
+            headerProperties.put("number_property", new Integer(randomNumber).toString());
 
-            jmsHelper.sendMessage(payload);
+            jmsHelper.sendMessage(messagePayload, headerProperties);
             out.write(String.format("<p><i>%s</i></p>", message));
             out.write("<p><b>messages sent successfully</b></p>");
         } catch (JMSException e) {

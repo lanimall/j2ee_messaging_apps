@@ -48,13 +48,21 @@ public class ResponseQueueConsumerBean implements MessageListener, MessageDriven
         if(log.isDebugEnabled())
             log.debug("ResponseQueueConsumerBean: onMessage() start");
 
-        MapMessage msg = null;
+        TextMessage msg = null;
         try {
             if (null != rcvMessage) {
-                if (rcvMessage instanceof MapMessage) {
-                    msg = (MapMessage) rcvMessage;
+                if (rcvMessage instanceof TextMessage) {
+                    msg = (TextMessage) rcvMessage;
+
+                    String responseText = String.format("%s * %s = %s [correlationID = %s]",
+                            msg.getStringProperty("factor1"),
+                            msg.getStringProperty("factor2"),
+                            msg.getStringProperty("result"),
+                            msg.getJMSCorrelationID()
+                    );
+
                     if(log.isInfoEnabled())
-                        log.info("ResponseQueueConsumerBean: Received Message from queue: " + msg.getStringProperty(JMSHelper.PAYLOAD_TEXTMSG_PROPERTY));
+                        log.info("ResponseQueueConsumerBean: Received Message from queue with response: " + responseText);
                 } else {
                     throw new EJBException("ResponseQueueConsumerBean: Message of wrong type: " + rcvMessage.getClass().getName());
                 }

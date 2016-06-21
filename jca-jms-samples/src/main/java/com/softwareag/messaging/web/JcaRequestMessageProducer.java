@@ -62,13 +62,11 @@ public class JcaRequestMessageProducer extends BaseMessageProducer {
             String correlationId = JMSHelper.generateCorrelationID();
             String message = String.format("How much is %d * %d? [correlationID = %s]", factor1, factor2, correlationId);
 
-            Map<String,String> payload = new HashMap<String, String>(4);
-            payload.put(JMSHelper.PAYLOAD_TEXTMSG_PROPERTY, message);
-            payload.put("factor1", new Integer(factor1).toString());
-            payload.put("factor2", new Integer(factor2).toString());
-            payload.put(JMSHelper.PAYLOAD_BYTES_PROPERTY, messagePayload);
+            Map<String,String> headerProperties = new HashMap<String, String>(4);
+            headerProperties.put("factor1", new Integer(factor1).toString());
+            headerProperties.put("factor2", new Integer(factor2).toString());
 
-            jmsHelper.sendMessage(payload, null, correlationId, null, DeliveryMode.NON_PERSISTENT);
+            jmsHelper.sendMessage(messagePayload, headerProperties, correlationId, null, DeliveryMode.NON_PERSISTENT, 4);
 
             out.write(String.format("<p><i>%s</i></p>", message));
             out.write("<p><i>messages sent successfully</i></p>");

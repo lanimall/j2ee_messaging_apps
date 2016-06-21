@@ -59,49 +59,58 @@ public class RequestConsumerReplyBean implements MessageListener, MessageDrivenB
         if(log.isDebugEnabled())
             log.debug("RequestConsumerReplyBean: onMessage() start");
 
-        MapMessage msg = null;
+        TextMessage msg = null;
         try {
 
             if (null != rcvMessage) {
-                if (rcvMessage instanceof MapMessage) {
-                    msg = (MapMessage) rcvMessage;
+                if (rcvMessage instanceof TextMessage) {
+                    msg = (TextMessage) rcvMessage;
 
-                    if(log.isDebugEnabled())
-                        log.debug("RequestConsumerReplyBean: Received Message from queue: " + msg.getStringProperty(JMSHelper.PAYLOAD_TEXTMSG_PROPERTY));
+                    String msgPayload = msg.getText();
 
                     //get correlationid from message
                     String correlationId = msg.getJMSCorrelationID();
 
                     int deliveryMode = msg.getJMSDeliveryMode();
+                    int priority = msg.getJMSPriority();
 
                     //get the replyTo (if not set, let the JMSHelper use the default destination
                     Destination replyTo = msg.getJMSReplyTo();
 
-                    Map<String,String> responsePayload = new HashMap<String, String>(3);
-                    responsePayload.put("factor1", msg.getStringProperty("factor1"));
-                    responsePayload.put("factor2", msg.getStringProperty("factor2"));
+                    if(log.isDebugEnabled()) {
+                        String request = String.format("%s * %s ?[correlationID = %s]",
+                                msg.getStringProperty("factor1"),
+                                msg.getStringProperty("factor2"),
+                                correlationId
+                        );
+
+                        log.debug("RequestConsumerReplyBean: Received Message from queue: " + request);
+                    }
+
+                    Map<String,String> responseHeaderProperties = new HashMap<String, String>(3);
+                    responseHeaderProperties.put("factor1", msg.getStringProperty("factor1"));
+                    responseHeaderProperties.put("factor2", msg.getStringProperty("factor2"));
 
                     //build the response
                     try {
                         int result = performOperation(Integer.parseInt(msg.getStringProperty("factor1")), Integer.parseInt(msg.getStringProperty("factor2")));
-                        responsePayload.put("result", new Integer(result).toString());
+                        responseHeaderProperties.put("result", new Integer(result).toString());
                     } catch (NumberFormatException e) {
-                        responsePayload.put("result", "NAN");
+                        responseHeaderProperties.put("result", "NAN");
                     }
 
-                    String responseText = String.format("%s * %s = %s [correlationID = %s]",
-                            responsePayload.get("factor1"),
-                            responsePayload.get("factor2"),
-                            responsePayload.get("result"),
-                            correlationId
-                            );
+                    if(log.isDebugEnabled()) {
+                        String responseText = String.format("%s * %s = %s [correlationID = %s]",
+                                responseHeaderProperties.get("factor1"),
+                                responseHeaderProperties.get("factor2"),
+                                responseHeaderProperties.get("result"),
+                                correlationId
+                        );
 
-                    responsePayload.put(JMSHelper.PAYLOAD_TEXTMSG_PROPERTY, responseText);
-
-                    if(log.isDebugEnabled())
                         log.debug("About to respond with text: " + responseText);
+                    }
 
-                    jmsHelper.sendMessage(replyTo, responsePayload, null, correlationId, null, deliveryMode);
+                    jmsHelper.sendMessage(replyTo, msgPayload, responseHeaderProperties, correlationId, null, deliveryMode, priority);
                 } else {
                     throw new EJBException("RequestConsumerReplyBean: Message of wrong type: " + rcvMessage.getClass().getName());
                 }
