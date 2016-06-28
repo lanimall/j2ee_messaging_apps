@@ -1,0 +1,29 @@
+<ejb-jar-bnd
+        xmlns="http://websphere.ibm.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-ejb-jar-bnd_1_1.xsd"
+        version="1.1">
+
+    <session name="JmsManagedSimplePublisherBean">
+        <resource-ref name="jms/someManagedCF" binding-name="SAGUMRAQueueConnectionFactory"></resource-ref>
+        <resource-ref name="jms/someManagedSimpleDestination" binding-name="SAGUMSimpleQueue"></resource-ref>
+    </session>
+    <session name="JmsManagedSimpleCachedPublisherBean">
+        <resource-ref name="jms/someManagedCF" binding-name="SAGUMRAQueueConnectionFactory"></resource-ref>
+        <resource-ref name="jms/someManagedSimpleDestination" binding-name="SAGUMSimpleQueue"></resource-ref>
+    </session>
+    <session name="JmsManagedRequestReplyPublisherBean">
+        <resource-ref name="jms/someManagedCF" binding-name="SAGUMRAQueueConnectionFactory"></resource-ref>
+        <resource-ref name="jms/someManagedRequestDestination" binding-name="SAGUMRequestQueue"></resource-ref>
+    </session>
+    <session name="JmsManagedRequestReplyCachedPublisherBean">
+        <resource-ref name="jms/someManagedCF" binding-name="SAGUMRAQueueConnectionFactory"></resource-ref>
+        <resource-ref name="jms/someManagedRequestDestination" binding-name="SAGUMRequestQueue"></resource-ref>
+    </session>
+    <message-driven name="SimpleQueueConsumerBean">
+        <jca-adapter activation-spec-binding-name="SAGUMConsumeSimpleQueue" />
+    </message-driven>
+    <message-driven name="ResponseQueueConsumerBean">
+        <jca-adapter activation-spec-binding-name="SAGUMConsumeResponseQueue" />
+    </message-driven>
+</ejb-jar-bnd>

@@ -1,0 +1,14 @@
+<ejb-jar-bnd
+        xmlns="http://websphere.ibm.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-ejb-jar-bnd_1_1.xsd"
+        version="1.1">
+
+    <message-driven name="RequestReplyQueueConsumerBean">
+        <jca-adapter activation-spec-binding-name="SAGUMConsumeAndReplyRequestQueue" />
+        <resource-ref name="jms/someManagedCF" binding-name="SAGUMRAQueueConnectionFactory">
+        </resource-ref>
+        <resource-ref name="jms/someManagedReplyTo" binding-name="SAGUMResponseQueue">
+        </resource-ref>
+    </message-driven>
+</ejb-jar-bnd>
