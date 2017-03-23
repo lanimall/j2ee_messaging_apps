@@ -20,10 +20,14 @@
     </appender>
 
     <logger name="com.softwareaggov.messaging">
+        <level value="info"/>
+    </logger>
+
+    <logger name="com.sun.genericjmsra">
         <level value="debug"/>
     </logger>
 
-    <root level="debug">
+    <root level="warn">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>

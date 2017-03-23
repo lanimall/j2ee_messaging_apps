@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * <p>
@@ -51,16 +52,16 @@ public class CountersServlet extends BaseMessageProducer {
 
         try {
             out.write("<ul>");
-            for(String counter : counterNames){
+            for(String counterKey : counterNames){
                 if (null != reset && "true".equalsIgnoreCase(reset))
-                    messageProcessingCounter.reset(counter);
+                    messageProcessingCounter.reset(counterKey);
 
-                out.write(String.format("<li>Counter [%s] = %d</li>", counter, messageProcessingCounter.getCount(counter)));
+                out.write(String.format("<li>Counter [%s] = %d (Rate= %d / sec)</li>", counterKey, messageProcessingCounter.getCount(counterKey), messageProcessingCounter.getCountRate(counterKey)));
             }
             out.write("</ul>");
         } catch (Exception exc){
-            out.write(String.format("<p>An error occurred:%s</p>",exc.getMessage()));
-            exc.printStackTrace(out);
+            log.error("Error Occurred", exc);
+            throw new ServletException(exc);
         }
         finally {
             if (out != null) {

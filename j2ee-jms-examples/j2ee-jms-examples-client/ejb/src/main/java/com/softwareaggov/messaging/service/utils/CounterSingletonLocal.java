@@ -5,7 +5,8 @@ package com.softwareaggov.messaging.service.utils;
  */
 public interface CounterSingletonLocal {
     String[] getAllCounterNames();
-    int getCount(String key);
-    void increment(String key);
-    int reset(String counterName);
+    long getCount(String key);
+    long incrementAndGet(String key);
+    long reset(String counterName);
+    long getCountRate(String key);
 }

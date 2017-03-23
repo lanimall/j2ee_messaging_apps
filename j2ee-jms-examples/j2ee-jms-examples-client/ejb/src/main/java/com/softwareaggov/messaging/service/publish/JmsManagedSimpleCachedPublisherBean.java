@@ -1,5 +1,6 @@
 package com.softwareaggov.messaging.service.publish;
 
+import com.softwareaggov.messaging.jms.CachedConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,7 @@ import javax.jms.Destination;
 @Stateless(mappedName = "JmsManagedSimpleCachedPublisherBean")
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Local(JmsPublisherLocal.class)
-public class JmsManagedSimpleCachedPublisherBean extends JmsPublisherCachedConnectionBaseBean {
+public class JmsManagedSimpleCachedPublisherBean extends JmsPublisherBaseBean {
     private static Logger log = LoggerFactory.getLogger(JmsManagedSimpleCachedPublisherBean.class);
 
     @Resource(name = "jms/someManagedCF")
@@ -29,7 +30,7 @@ public class JmsManagedSimpleCachedPublisherBean extends JmsPublisherCachedConne
 
     @Override
     public ConnectionFactory getJmsConnectionFactory() {
-        return jmsConnectionFactory;
+        return new CachedConnectionFactory(jmsConnectionFactory);
     }
 
     @Override

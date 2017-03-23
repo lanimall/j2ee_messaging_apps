@@ -4,14 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.Local;
-import javax.ejb.Singleton;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import javax.ejb.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -23,11 +17,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CounterSingletonBean implements CounterSingletonLocal {
     private static Logger log = LoggerFactory.getLogger(CounterSingletonBean.class);
 
-    private ConcurrentHashMap<String, Integer> counters = null;
+    private ConcurrentHashMap<String, Long> counters;
+
+    private volatile Long lastCounterCheckpointTime;
+    private volatile HashMap<String, Long> counterPreviousCheckpoint;
+    private volatile HashMap<String, Long> countersRates;
 
     @PostConstruct
     public void initialize() {
-        this.counters = new ConcurrentHashMap();
+        this.counters = new ConcurrentHashMap<String, Long>();
+        this.counterPreviousCheckpoint = new HashMap<String, Long>();
+        this.countersRates = new HashMap<String, Long>();
     }
 
     @Override
@@ -40,33 +40,70 @@ public class CounterSingletonBean implements CounterSingletonLocal {
     }
 
     @Override
-    public int getCount(String key) {
-        int count = (counters.containsKey(key))?counters.get(key):0;
+    public long getCount(String key) {
+        long count = (counters.containsKey(key))?counters.get(key):0L;
         log.debug(String.format("getting counter for key %s = %d", key, count));
         return count;
     }
 
     @Override
-    public void increment(String key) {
-        log.debug("incrementing counter key " + key);
-        if (counters.putIfAbsent(key, new Integer(1)) == null) {
-            log.debug("initialized new key and put count to 1");
-            return;
-        }
-
-        Integer old;
-        do {
-            old = counters.get(key);
-            log.debug("old key " + old);
-        } while (!counters.replace(key, old, old+1)); // Assumes no removal.
-
-        log.debug("new count post increment:" + getCount(key));
+    public long getCountRate(String key) {
+        long rate = (countersRates.containsKey(key))?countersRates.get(key):0L;
+        log.debug(String.format("getting counter rate for key %s = %d", key, rate));
+        return rate;
     }
 
     @Override
-    public int reset(String key) {
-        log.debug("resetting counter key " + key);
+    public long incrementAndGet(String key) {
+        log.debug("incrementing counter key " + key);
+        if (counters.putIfAbsent(key, new Long(1)) == null) {
+            log.debug("initialized new key and put count to 1");
+            return 1L;
+        }
 
-        return counters.replace(key, new Integer(0));
+        Long oldVal, newVal;
+        do {
+            oldVal = counters.get(key);
+            newVal = oldVal + 1;
+        } while (!counters.replace(key, oldVal, newVal)); // Assumes no removal.
+
+        log.debug("new count post increment:" + newVal.toString());
+        return newVal;
+    }
+
+    @Override
+    public long reset(String key) {
+        log.debug("resetting counter key " + key);
+        return counters.replace(key, new Long(0));
+    }
+
+    @Schedule(hour = "*", minute = "*", second = "*/5", persistent = false, info="rate calculation timer")
+    public void calculateRates() {
+        long now = new Date().getTime();
+        long timeSinceLastCheckpoint = 0L;
+        if(null != lastCounterCheckpointTime) {
+            timeSinceLastCheckpoint = now - lastCounterCheckpointTime;
+        }
+
+        for (Map.Entry<String, Long> entry : counters.entrySet()) {
+            //make copies to make sure nothing changes during the processing here
+            String currentCounterKey = entry.getKey();
+            long currentCount = entry.getValue();
+
+            if(counterPreviousCheckpoint.containsKey(currentCounterKey) && timeSinceLastCheckpoint > 0) {
+                long diffCount = currentCount - counterPreviousCheckpoint.get(currentCounterKey);
+                if(diffCount > 0)
+                    countersRates.put(currentCounterKey, diffCount * 1000 / timeSinceLastCheckpoint);
+                else
+                    countersRates.put(currentCounterKey, 0L);
+            } else {
+                countersRates.put(currentCounterKey, 0L);
+            }
+
+            //save the current values in the previous checkpoint hashmap
+            counterPreviousCheckpoint.put(currentCounterKey, currentCount);
+        }
+
+        lastCounterCheckpointTime = now;
     }
 }

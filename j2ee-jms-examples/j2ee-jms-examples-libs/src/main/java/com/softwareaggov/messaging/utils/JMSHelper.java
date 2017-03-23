@@ -29,6 +29,13 @@ public class JMSHelper {
         super();
     }
 
+    public void cleanup(){
+        connectionFactory = null;
+        defaultDestination = null;
+        defaultDestinationName = null;
+        defaultDestinationType = null;
+    }
+
     public ConnectionFactory getConnectionFactory() {
         return connectionFactory;
     }
@@ -144,6 +151,7 @@ public class JMSHelper {
         } finally {
             if (null != connection)
                 connection.close();
+            connection = null;
         }
     }
 

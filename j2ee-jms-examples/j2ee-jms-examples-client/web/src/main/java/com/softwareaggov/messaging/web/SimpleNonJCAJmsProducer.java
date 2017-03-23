@@ -5,7 +5,6 @@ import com.softwareaggov.messaging.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -91,8 +90,8 @@ public class SimpleNonJCAJmsProducer extends BaseMessageProducer {
             out.write(String.format("<p><i>%s</i></p>", message));
             out.write("<p><b>messages sent successfully</b></p>");
         } catch (Exception exc){
-            out.write(String.format("<p>An error occurred:%s</p>",exc.getMessage()));
-            exc.printStackTrace(out);
+            log.error("Error Occurred", exc);
+            throw new ServletException(exc);
         } finally {
             if (out != null) {
                 out.close();

@@ -21,11 +21,11 @@
     </appender>
 
     <category name="com.softwareaggov.messaging">
-        <priority value="DEBUG"/>
+        <priority value="INFO"/>
     </category>
 
     <root>
-        <priority value="INFO" />
+        <priority value="WARN" />
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>

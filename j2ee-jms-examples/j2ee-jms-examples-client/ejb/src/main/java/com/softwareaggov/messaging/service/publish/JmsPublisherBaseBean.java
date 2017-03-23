@@ -6,7 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.*;
+import javax.annotation.PreDestroy;
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -34,6 +38,13 @@ public abstract class JmsPublisherBaseBean implements JmsPublisherLocal {
         this.jmsHelper = JMSHelper.createSender(getJmsConnectionFactory(), getJmsDestination());
     }
 
+    @PreDestroy
+    private void cleanup(){
+        if(null != jmsHelper)
+            jmsHelper.cleanup();
+        jmsHelper = null;
+    }
+
     @TransactionAttribute(value=TransactionAttributeType.NOT_SUPPORTED)
     public String sendTextMessage(final String msgTextPayload, final Map<String,String> msgHeaderProperties) {
         String returnText = "";
@@ -45,9 +56,9 @@ public abstract class JmsPublisherBaseBean implements JmsPublisherLocal {
             returnText = jmsHelper.sendTextMessage(msgTextPayload, msgHeaderProperties, JMSHelper.generateCorrelationID(), null, DeliveryMode.NON_PERSISTENT, 4);
 
             //increment processing counter
-            messageProcessingCounter.increment(this.getClass().getSimpleName());
-
+            messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName());
         } catch (JMSException e) {
+            messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-errors");
             log.error("JMS Error occurred", e);
             throw new EJBException(e);
         }

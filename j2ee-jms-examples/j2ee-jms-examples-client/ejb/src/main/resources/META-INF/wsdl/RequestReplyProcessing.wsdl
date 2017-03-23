@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://com.softwareaggov.messaging/jaxws/jms" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="RequestReplyService" targetNamespace="http://com.softwareaggov.messaging/jaxws/jms">
+    <wsdl:types>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://com.softwareaggov.messaging/jaxws/jms" elementFormDefault="unqualified" targetNamespace="http://com.softwareaggov.messaging/jaxws/jms" version="1.0">
+            <xs:element name="getRandomNumber" type="tns:getRandomNumber"/>
+            <xs:element name="getRandomNumberResponse" type="tns:getRandomNumberResponse"/>
+            <xs:element name="performMultiplicationFromStrings" type="tns:performMultiplicationFromStrings"/>
+            <xs:element name="performMultiplicationFromStringsResponse" type="tns:performMultiplicationFromStringsResponse"/>
+            <xs:complexType name="performMultiplicationFromStrings">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+                    <xs:element minOccurs="0" name="arg1" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="performMultiplicationFromStringsResponse">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="return" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="getRandomNumber">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="getRandomNumberResponse">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="return" type="xs:long"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getRandomNumberResponse">
+        <wsdl:part element="tns:getRandomNumberResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="performMultiplicationFromStrings">
+        <wsdl:part element="tns:performMultiplicationFromStrings" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="getRandomNumber">
+        <wsdl:part element="tns:getRandomNumber" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="performMultiplicationFromStringsResponse">
+        <wsdl:part element="tns:performMultiplicationFromStringsResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="RequestReplyProcessing">
+        <wsdl:operation name="performMultiplicationFromStrings">
+            <wsdl:input message="tns:performMultiplicationFromStrings" name="performMultiplicationFromStrings">
+            </wsdl:input>
+            <wsdl:output message="tns:performMultiplicationFromStringsResponse" name="performMultiplicationFromStringsResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getRandomNumber">
+            <wsdl:input message="tns:getRandomNumber" name="getRandomNumber">
+            </wsdl:input>
+            <wsdl:output message="tns:getRandomNumberResponse" name="getRandomNumberResponse">
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="RequestReplyServiceSoapBinding" type="tns:RequestReplyProcessing">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="performMultiplicationFromStrings">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="performMultiplicationFromStrings">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="performMultiplicationFromStringsResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getRandomNumber">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="getRandomNumber">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="getRandomNumberResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="RequestReplyService">
+        <wsdl:port binding="tns:RequestReplyServiceSoapBinding" name="RequestReplyPort">
+            <soap:address location="http://aws_jboss1:8080/j2ee-jms-examples-server-ejb/RequestReplyService/RequestReplyProcessing"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

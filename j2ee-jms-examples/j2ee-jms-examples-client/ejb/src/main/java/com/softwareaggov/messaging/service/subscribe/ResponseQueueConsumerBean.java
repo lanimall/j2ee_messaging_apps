@@ -5,6 +5,7 @@ import com.softwareaggov.messaging.service.utils.MessageProcessingLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -33,6 +34,12 @@ public class ResponseQueueConsumerBean implements MessageListener, MessageDriven
     @EJB
     private CounterSingletonLocal messageProcessingCounter;
 
+    @Resource(name="mockSleepTimeInMillis")
+    private Long mockSleepTimeInMillis = 0L;
+
+    @Resource(name="mockExceptionsCountInterval")
+    private Integer mockExceptionsCountInterval = 0;
+
     private transient MessageDrivenContext mdbContext;
 
     public ResponseQueueConsumerBean() {
@@ -40,8 +47,8 @@ public class ResponseQueueConsumerBean implements MessageListener, MessageDriven
     }
 
     public void ejbRemove() throws EJBException {
-        log.info("ResponseQueueConsumerBean: ejbRemove");
-        messageProcessingCounter.increment(this.getClass().getSimpleName() + "-remove");
+        log.info("ejbRemove()");
+        messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-remove");
     }
 
     public void setMessageDrivenContext(MessageDrivenContext ctx) throws EJBException {
@@ -49,8 +56,8 @@ public class ResponseQueueConsumerBean implements MessageListener, MessageDriven
     }
 
     public void ejbCreate() {
-        log.info("ResponseQueueConsumerBean: ejbCreate");
-        messageProcessingCounter.increment(this.getClass().getSimpleName() + "-create");
+        log.info("ejbCreate()");
+        messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-create");
     }
 
     /**
@@ -58,46 +65,30 @@ public class ResponseQueueConsumerBean implements MessageListener, MessageDriven
      */
     public void onMessage(Message rcvMessage) {
         if(log.isDebugEnabled())
-            log.debug("ResponseQueueConsumerBean: onMessage() start");
+            log.debug("onMessage() start");
 
-        TextMessage msg = null;
         try {
-            if (null != rcvMessage) {
-                if (rcvMessage instanceof TextMessage) {
-                    msg = (TextMessage) rcvMessage;
-                    String messageProperties = messageProcessing.stringifyMessageProperties(msg, "factor1", "factor2", "result");
+            messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-consumed");
 
-//                    String responseText = String.format("%s * %s = %s [correlationID = %s]",
-//                            msg.getStringProperty("factor1"),
-//                            msg.getStringProperty("factor2"),
-//                            msg.getStringProperty("result"),
-//                            msg.getJMSCorrelationID()
-//                    );
+            messageProcessing.processReqReplyResponseMessage(rcvMessage);
 
-                    //increment processing counter
-                    messageProcessingCounter.increment(this.getClass().getSimpleName());
-
-                    messageProperties = String.format("%s [correlationID = %s]",
-                            messageProperties,
-                            msg.getJMSCorrelationID()
-                    );
-
-                    if(log.isInfoEnabled())
-                        log.info("ResponseQueueConsumerBean: Received Message from queue with header properties: {}",
-                                messageProperties
-                        );
-
-//                    if(log.isInfoEnabled())
-//                        log.info("ResponseQueueConsumerBean: Received Message from queue with response: " + responseText);
-                } else {
-                    throw new EJBException("ResponseQueueConsumerBean: Message of wrong type: " + rcvMessage.getClass().getName());
-                }
-            } else {
-                if(log.isInfoEnabled())
-                    log.info("ResponseQueueConsumerBean: Received Message from queue: null");
+            //add to single total counter for this main class
+            long newCount = messageProcessingCounter.incrementAndGet(ResponseQueueConsumerBean.class.getSimpleName() + "-consumed-totals");
+            if(null != mockSleepTimeInMillis && mockSleepTimeInMillis > 0) {
+                log.debug("Sleeping " + mockSleepTimeInMillis + " to mock processing time...");
+                Thread.sleep(mockSleepTimeInMillis);
             }
-        } catch (JMSException e) {
-            throw new EJBException(e);
+
+            if(null != mockExceptionsCountInterval && mockExceptionsCountInterval > 0) {
+                if (newCount % mockExceptionsCountInterval == 0) {
+                    throw new EJBException("This is a mocked exception to mock failed processing");
+                }
+            }
+
+            messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-processed");
+        } catch (Exception exc){
+            messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-processing-errors");
+            throw new EJBException(exc);
         }
     }
 }

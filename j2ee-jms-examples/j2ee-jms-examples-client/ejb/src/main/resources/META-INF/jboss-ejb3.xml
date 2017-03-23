@@ -72,7 +72,7 @@
             <activation-config>
                 <activation-config-property>
                     <activation-config-property-name>destinationJndiName</activation-config-property-name>
-                    <activation-config-property-value>SimpleQueue</activation-config-property-value>
+                    <activation-config-property-value>IRS/EAIB/ReqReply/SimpleTestQueue</activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>destinationType</activation-config-property-name>
@@ -80,11 +80,15 @@
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>connectionFactoryJndiName</activation-config-property-name>
-                    <activation-config-property-value>JbossQCF</activation-config-property-value>
+                    <activation-config-property-value>JBOSSSubQCF</activation-config-property-value>
+                </activation-config-property>
+                <activation-config-property>
+                    <activation-config-property-name>batchSize</activation-config-property-name>
+                    <activation-config-property-value>${mdb.SimpleQueueConsumerBean.activationspecs.batchSize:1}</activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxPoolSize</activation-config-property-name>
-                    <activation-config-property-value>20</activation-config-property-value>
+                    <activation-config-property-value>${mdb.SimpleQueueConsumerBean.activationspecs.maxPoolSize:8}</activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxWaitTime</activation-config-property-name>
@@ -107,6 +111,16 @@
                     <activation-config-property-value>1</activation-config-property-value>
                 </activation-config-property>
             </activation-config>
+            <env-entry>
+                <env-entry-name>mockSleepTimeInMillis</env-entry-name>
+                <env-entry-type>java.lang.Long</env-entry-type>
+                <env-entry-value>${mdb.SimpleQueueConsumerBean.mockSleepTimeInMillis:0}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>mockExceptionsCountInterval</env-entry-name>
+                <env-entry-type>java.lang.Integer</env-entry-type>
+                <env-entry-value>${mdb.SimpleQueueConsumerBean.mockExceptionsCountInterval:0}</env-entry-value>
+            </env-entry>
         </message-driven>
         <message-driven>
             <ejb-name>ResponseQueueConsumerBean</ejb-name>
@@ -114,8 +128,7 @@
             <activation-config>
                 <activation-config-property>
                     <activation-config-property-name>destinationJndiName</activation-config-property-name>
-                    <activation-config-property-value>JMSReqReply/ResponseQueue
-                    </activation-config-property-value>
+                    <activation-config-property-value>IRS/EAIB/ReqReply/ResponseQueue</activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>destinationType</activation-config-property-name>
@@ -123,11 +136,15 @@
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>connectionFactoryJndiName</activation-config-property-name>
-                    <activation-config-property-value>JbossQCF</activation-config-property-value>
+                    <activation-config-property-value>JBOSSSubQCF</activation-config-property-value>
+                </activation-config-property>
+                <activation-config-property>
+                    <activation-config-property-name>batchSize</activation-config-property-name>
+                    <activation-config-property-value>${mdb.ResponseQueueConsumerBean.activationspecs.batchSize:1}</activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxPoolSize</activation-config-property-name>
-                    <activation-config-property-value>20</activation-config-property-value>
+                    <activation-config-property-value>${mdb.ResponseQueueConsumerBean.activationspecs.maxPoolSize:8}</activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxWaitTime</activation-config-property-name>
@@ -150,6 +167,16 @@
                     <activation-config-property-value>1</activation-config-property-value>
                 </activation-config-property>
             </activation-config>
+            <env-entry>
+                <env-entry-name>mockSleepTimeInMillis</env-entry-name>
+                <env-entry-type>java.lang.Long</env-entry-type>
+                <env-entry-value>${mdb.ResponseQueueConsumerBean.mockSleepTimeInMillis:0}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>mockExceptionsCountInterval</env-entry-name>
+                <env-entry-type>java.lang.Integer</env-entry-type>
+                <env-entry-value>${mdb.ResponseQueueConsumerBean.mockExceptionsCountInterval:0}</env-entry-value>
+            </env-entry>
         </message-driven>
     </jboss:enterprise-beans>
     <assembly-descriptor>

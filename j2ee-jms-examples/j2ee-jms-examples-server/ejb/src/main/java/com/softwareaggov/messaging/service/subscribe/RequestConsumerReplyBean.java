@@ -19,7 +19,9 @@ import java.util.Map;
  * @author Fabien Sanglier
  */
 
-@MessageDriven(name = "RequestReplyQueueConsumerBean")
+@MessageDriven(name = "RequestReplyQueueConsumerBean", activationConfig = {
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge")
+})
 @TransactionManagement(value = TransactionManagementType.BEAN)
 @TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
 public class RequestConsumerReplyBean implements MessageListener, MessageDrivenBean {
@@ -116,8 +118,8 @@ public class RequestConsumerReplyBean implements MessageListener, MessageDrivenB
                     throw new EJBException("RequestConsumerReplyBean: Message of wrong type: " + rcvMessage.getClass().getName());
                 }
             } else {
-                if(log.isDebugEnabled())
-                    log.debug("RequestConsumerReplyBean: Received Message from queue: null");
+                if(log.isWarnEnabled())
+                    log.warn("Received Message from queue: null");
             }
         } catch (JMSException e) {
             throw new EJBException(e);

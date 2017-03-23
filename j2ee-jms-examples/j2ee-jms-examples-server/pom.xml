@@ -25,6 +25,10 @@
         <module>ear</module>
     </modules>
 
+    <properties>
+        <cxf.version>3.1.6</cxf.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <!-- Define the version of the EJB jar so that we don't need to repeat ourselves in every module -->
@@ -43,6 +47,18 @@
                 <version>${project.version}</version>
                 <type>war</type>
                 <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-jms</artifactId>
+                <version>${cxf.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
