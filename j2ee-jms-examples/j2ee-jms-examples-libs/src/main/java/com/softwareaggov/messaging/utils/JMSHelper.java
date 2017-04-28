@@ -80,14 +80,14 @@ public class JMSHelper {
         return sendTextMessage(destination, payload, headerProperties, null, null, DeliveryMode.PERSISTENT, 4);
     }
 
-    public String sendTextMessage(final String payload, final Map<String,String> headerProperties, String correlationID, Destination replyTo, int deliveryMode, int priority) throws JMSException {
+    public String sendTextMessage(final String payload, final Map<String,String> headerProperties, String correlationID, Destination replyTo, Integer deliveryMode, Integer priority) throws JMSException {
         return sendTextMessage(null, payload, headerProperties, correlationID, replyTo, deliveryMode, priority);
     }
 
-    public String sendTextMessage(Destination destination, final String payload, final Map<String,String> headerProperties, String correlationID, Destination replyTo, int deliveryMode, int priority) throws JMSException {
+    public String sendTextMessage(Destination destination, final String payload, final Map<String,String> headerProperties, String correlationID, Destination replyTo, Integer deliveryMode, Integer priority) throws JMSException {
         Connection connection = null;
 
-        try {
+        try{
             if (null == connectionFactory)
                 throw new JMSException("connection factory is null...can't do anything...");
 
@@ -120,8 +120,11 @@ public class JMSHelper {
 
             // Create Message Producer
             MessageProducer producer = session.createProducer(destinationLocal);
-            producer.setDeliveryMode(deliveryMode);
-            producer.setPriority(priority);
+            if(null != deliveryMode)
+                producer.setDeliveryMode(deliveryMode);
+
+            if(null != priority)
+                producer.setPriority(priority);
 
             // Create Message
             TextMessage msg = session.createTextMessage();
@@ -144,14 +147,18 @@ public class JMSHelper {
             if(log.isDebugEnabled())
                 log.debug("message sent successfully");
 
+            //test: failure!
+//            if(null != producer)
+//                producer.close();
+
+            //test ok.
+            if(null != session)
+                session.close();
+
             return msg.getJMSMessageID();
-        } catch (Exception e) {
-            log.error("error while sending messages", e);
-            throw new JMSException("Could not send messages");
         } finally {
             if (null != connection)
                 connection.close();
-            connection = null;
         }
     }
 
@@ -224,9 +231,6 @@ public class JMSHelper {
             TextMessage receivedMessage = (TextMessage)responseConsumer.receive( 15000 );
 
             return receivedMessage.getText();
-        } catch (Exception e) {
-            log.error("error while sending/receiving messages", e);
-            throw new JMSException("Could not send/receive messages");
         } finally {
             if (null != connection)
                 connection.close();
@@ -268,6 +272,9 @@ public class JMSHelper {
         } catch (NamingException e) {
             log.error("Issue with JNDI lookup", e);
         }
+
+        if (null == jndiConnectionFactory)
+            throw new IllegalArgumentException("JNDI Lookup failed: jms.connection.factory could not be found in the JNDI");
 
         return createSender(connectionFactory, destinationName, destinationType);
     }
