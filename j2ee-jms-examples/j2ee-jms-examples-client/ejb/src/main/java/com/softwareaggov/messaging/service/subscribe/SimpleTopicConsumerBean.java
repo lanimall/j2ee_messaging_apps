@@ -1,16 +1,11 @@
 package com.softwareaggov.messaging.service.subscribe;
 
-import com.softwareaggov.messaging.service.utils.CounterSingletonLocal;
-import com.softwareaggov.messaging.service.utils.MessageProcessingLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 /**
  * <p>
@@ -20,15 +15,15 @@ import javax.jms.TextMessage;
  * @author Fabien Sanglier
  */
 
-@MessageDriven(name = "ResponseQueueConsumerBean")
+@MessageDriven(name = "SimpleTopicConsumerBean")
 @TransactionManagement(value = TransactionManagementType.BEAN)
 @TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
-public class ResponseQueueConsumerBean extends BaseProcessingConsumer implements MessageListener, MessageDrivenBean {
-    private static final long serialVersionUID = -4602751473208935601L;
+public class SimpleTopicConsumerBean extends BaseProcessingConsumer implements MessageListener, MessageDrivenBean {
+    private static final long serialVersionUID = -4602752342903745601L;
 
-    private static Logger log = LoggerFactory.getLogger(ResponseQueueConsumerBean.class);
+    private static Logger log = LoggerFactory.getLogger(SimpleTopicConsumerBean.class);
 
-    public ResponseQueueConsumerBean() {
+    public SimpleTopicConsumerBean() {
         super();
     }
 

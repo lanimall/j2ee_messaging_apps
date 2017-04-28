@@ -24,16 +24,13 @@ import java.util.Map;
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
-@WebServlet("/JcaSimpleQueueMessageProducer")
-public class JcaSimpleQueueMessageProducer extends BaseMessageProducer {
+@WebServlet("/JcaSimpleTopicMessageProducer")
+public class JcaSimpleTopicMessageProducer extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
-    private static Logger log = LoggerFactory.getLogger(JcaSimpleQueueMessageProducer.class);
+    private static Logger log = LoggerFactory.getLogger(JcaSimpleTopicMessageProducer.class);
 
-    @EJB(beanName = "JmsManagedSimplePublisherBean") //here specify the bean name because I have multiple bean for the same interface
+    @EJB(beanName = "JmsManagedSimpleTopicPublisherBean") //here specify the bean name because I have multiple bean for the same interface
     private JmsPublisherLocal jmsSimplePublisher;
-
-    @EJB(beanName = "JmsManagedSimpleCachedPublisherBean") //here specify the bean name because I have multiple bean for the same interface
-    private JmsPublisherLocal jmsSimpleCachedPublisher;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -41,9 +38,7 @@ public class JcaSimpleQueueMessageProducer extends BaseMessageProducer {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
 
-        boolean useCached = Boolean.parseBoolean(req.getParameter("useCachedConnection"));
-
-        out.write("<h1>Sending JMS message To Queue</h1>");
+        out.write("<h1>Sending JMS message To Topic</h1>");
         try {
             int randomNumber = rdm.nextInt();
             String message = String.format("This is a text message with random number: %d", randomNumber);
@@ -51,10 +46,7 @@ public class JcaSimpleQueueMessageProducer extends BaseMessageProducer {
             Map<String,String> headerProperties = new HashMap<String, String>(4);
             headerProperties.put("number_property", new Integer(randomNumber).toString());
 
-            if(useCached)
-                jmsSimpleCachedPublisher.sendTextMessage(messagePayload, headerProperties);
-            else
-                jmsSimplePublisher.sendTextMessage(messagePayload, headerProperties);
+            jmsSimplePublisher.sendTextMessage(messagePayload, headerProperties);
 
             out.write(String.format("<p><i>%s</i></p>", message));
             out.write("<p><b>messages sent successfully</b></p>");

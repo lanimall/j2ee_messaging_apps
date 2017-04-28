@@ -4,30 +4,13 @@
         xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-ejb-jar-bnd_1_1.xsd"
         version="1.1">
 
-    <!-- UM Resource Adapter -->
-    <!--
-    <session name="JmsManagedSimplePublisherBean">
-        <resource-ref name="jms/someManagedCF" binding-name="SAGUMRAQueueConnectionFactory"></resource-ref>
-        <resource-ref name="jms/someManagedSimpleDestination" binding-name="SAGUMSimpleQueue"></resource-ref>
-    </session>
-    <session name="JmsManagedSimpleCachedPublisherBean">
-        <resource-ref name="jms/someManagedCF" binding-name="SAGUMRAQueueConnectionFactory"></resource-ref>
-        <resource-ref name="jms/someManagedSimpleDestination" binding-name="SAGUMSimpleQueue"></resource-ref>
-    </session>
-    <session name="JmsManagedRequestReplyPublisherBean">
-        <resource-ref name="jms/someManagedCF" binding-name="SAGUMRAQueueConnectionFactory"></resource-ref>
-        <resource-ref name="jms/someManagedRequestDestination" binding-name="SAGUMRequestQueue"></resource-ref>
-    </session>
-    <session name="JmsManagedRequestReplyCachedPublisherBean">
-        <resource-ref name="jms/someManagedCF" binding-name="SAGUMRAQueueConnectionFactory"></resource-ref>
-        <resource-ref name="jms/someManagedRequestDestination" binding-name="SAGUMRequestQueue"></resource-ref>
-    </session>
-    -->
-
-    <!-- Broker Resource Adapter -->
     <session name="JmsManagedSimplePublisherBean">
         <resource-ref name="jms/someManagedCF" binding-name="AppSimpleTestQueueConnectionFactory"></resource-ref>
         <resource-ref name="jms/someManagedSimpleDestination" binding-name="AppSimpleQueue"></resource-ref>
+    </session>
+    <session name="JmsManagedSimpleTopicPublisherBean">
+        <resource-ref name="jms/someManagedCF" binding-name="AppSimpleTestTopicConnectionFactory"></resource-ref>
+        <resource-ref name="jms/someManagedSimpleDestination" binding-name="AppSimpleTopic"></resource-ref>
     </session>
     <session name="JmsManagedSimpleCachedPublisherBean">
         <resource-ref name="jms/someManagedCF" binding-name="AppSimpleTestQueueConnectionFactory"></resource-ref>
@@ -42,20 +25,11 @@
         <resource-ref name="jms/someManagedRequestDestination" binding-name="AppRequestQueue"></resource-ref>
     </session>
 
-
-    <!-- UM Activation Specs -->
-    <!--
-    <message-driven name="SimpleQueueConsumerBean">
-        <jca-adapter activation-spec-binding-name="SAGUMConsumeSimpleQueue" />
-    </message-driven>
-    <message-driven name="ResponseQueueConsumerBean">
-        <jca-adapter activation-spec-binding-name="SAGUMConsumeResponseQueue" />
-    </message-driven>
-    -->
-
-    <!-- Broker Activation Specs -->
     <message-driven name="SimpleQueueConsumerBean">
         <jca-adapter activation-spec-binding-name="AppSimpleQueueConsumer" />
+    </message-driven>
+    <message-driven name="SimpleTopicConsumerBean">
+        <jca-adapter activation-spec-binding-name="AppSimpleTopicConsumer" />
     </message-driven>
     <message-driven name="ResponseQueueConsumerBean">
         <jca-adapter activation-spec-binding-name="AppResponseConsumer" />

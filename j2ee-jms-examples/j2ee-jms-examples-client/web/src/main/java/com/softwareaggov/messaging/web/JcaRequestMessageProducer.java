@@ -45,7 +45,7 @@ public class JcaRequestMessageProducer extends BaseMessageProducer {
         boolean useCached = Boolean.parseBoolean(req.getParameter("useCachedConnection"));
 
         try {
-            out.write("<h1>Sending JMS message</h1>");
+            out.write("<h1>Sending JMS message to Request Queue</h1>");
             int factor1 = rdm.nextInt(1000);
             int factor2 = rdm.nextInt(1000);
 

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.TransactionAttribute;
@@ -26,6 +27,12 @@ public abstract class JmsPublisherBaseBean implements JmsPublisherLocal {
 
     @EJB
     private CounterSingletonLocal messageProcessingCounter;
+
+    @Resource(name="jmsDeliveryMode")
+    private Integer jmsDeliveryMode = null;
+
+    @Resource(name="jmsPriority")
+    private Integer jmsPriority = null;
 
     private transient JMSHelper jmsHelper;
 
@@ -53,7 +60,7 @@ public abstract class JmsPublisherBaseBean implements JmsPublisherLocal {
             log.debug("in EJB: sendTextMessage");
 
         try {
-            returnText = jmsHelper.sendTextMessage(msgTextPayload, msgHeaderProperties, JMSHelper.generateCorrelationID(), null, DeliveryMode.NON_PERSISTENT, 4);
+            returnText = jmsHelper.sendTextMessage(msgTextPayload, msgHeaderProperties, JMSHelper.generateCorrelationID(), null, jmsDeliveryMode, jmsPriority);
 
             //increment processing counter
             messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName());
