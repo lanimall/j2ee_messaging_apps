@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="RequestReplyService"
+             targetNamespace="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply"
+             xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soapjms="http://www.w3.org/2010/soapjms/"
+             xmlns:tns="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata">
+  <types>
+    <xsd:schema>
+            <xsd:import namespace="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply" schemaLocation="RequestReplyService_schema1.xsd"/>
+        </xsd:schema>
+  </types>
+  <message name="performMultiplicationFromStringsResponse">
+    <part name="parameters" element="tns:performMultiplicationFromStringsResponse">
+    </part>
+  </message>
+  <message name="performMultiplicationFromStrings">
+    <part name="parameters" element="tns:performMultiplicationFromStrings">
+    </part>
+  </message>
+  <message name="getRandomNumberResponse">
+    <part name="parameters" element="tns:getRandomNumberResponse">
+    </part>
+  </message>
+  <message name="getRandomNumber">
+    <part name="parameters" element="tns:getRandomNumber">
+    </part>
+  </message>
+  <portType name="RequestReplyPortType">
+    <operation name="performMultiplicationFromStrings">
+      <input message="tns:performMultiplicationFromStrings" wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyPortType/performMultiplicationFromStringsRequest">
+    </input>
+      <output message="tns:performMultiplicationFromStringsResponse" wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyPortType/performMultiplicationFromStringsResponse">
+    </output>
+    </operation>
+    <operation name="getRandomNumber">
+      <input message="tns:getRandomNumber" wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyPortType/getRandomNumberRequest">
+    </input>
+      <output message="tns:getRandomNumberResponse" wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyPortType/getRandomNumberResponse">
+    </output>
+    </operation>
+  </portType>
+  <binding name="RequestReplyJmsPortBinding" type="tns:RequestReplyPortType">
+    <soap:binding style="document" transport="http://www.w3.org/2010/soapjms/"/>
+    <operation name="performMultiplicationFromStrings">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getRandomNumber">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="RequestReplyJmsService">
+    <port name="RequestReplyJmsPort" binding="tns:RequestReplyJmsPortBinding">
+      <soap:address location="jms:jndi:jms/AppRequestQueue?targetService=RequestReplyPort&amp;replyToName=jms/AppReplyQueue"/>
+    </port>
+    <soapjms:jndiConnectionFactoryName>java:jms/someManagedCF</soapjms:jndiConnectionFactoryName>
+  </service>
+</definitions>

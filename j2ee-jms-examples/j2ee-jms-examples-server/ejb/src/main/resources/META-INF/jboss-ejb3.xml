@@ -11,7 +11,7 @@
     <jboss:enterprise-beans>
         <message-driven>
             <ejb-name>RequestReplyQueueConsumerBean</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.service.subscribe.RequestConsumerReplyBean</ejb-class>
+            <ejb-class>com.softwareaggov.messaging.service.endpoints.RequestReplyQueueConsumerBean</ejb-class>
             <resource-ref>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
                 <res-type>javax.jms.QueueConnectionFactory</res-type>

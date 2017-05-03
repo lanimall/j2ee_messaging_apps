@@ -1,6 +1,6 @@
 package com.softwareaggov.messaging.web;
 
-import com.softwareaggov.messaging.service.utils.RequestReplyProcessingClientLocal;
+import com.softwareaggov.messaging.service.publish.soap.RequestReplyClientLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,13 +22,16 @@ import java.io.PrintWriter;
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
-@WebServlet("/SyncRequestReplyWithSoap")
+@WebServlet("/RequestReplyWithSoap")
 public class RequestReplyWithSoap extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
     private static Logger log = LoggerFactory.getLogger(RequestReplyWithSoap.class);
 
-    @EJB(beanName = "RequestReplyProcessingSoapClientBean") //here specify the bean name because I have multiple bean for the same interface
-    private RequestReplyProcessingClientLocal requestReplyProcessingSoap;
+    @EJB(beanName = "RequestReplySoapHttpClientBean") //here specify the bean name because I have multiple bean for the same interface
+    private RequestReplyClientLocal requestReplyWithSoapHttp;
+
+    @EJB(beanName = "RequestReplySoapJmsClientBean") //here specify the bean name because I have multiple bean for the same interface
+    private RequestReplyClientLocal requestReplyWithSoapJms;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -36,7 +39,7 @@ public class RequestReplyWithSoap extends BaseMessageProducer {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
 
-        boolean useSoapJMS = Boolean.parseBoolean(req.getParameter("useSoapOverJMS"));
+        boolean useSoapJMS = Boolean.parseBoolean(req.getParameter("useSoapJMS"));
 
         try {
             out.write("<h1>Sending Internal SOAP requests:</h1>");
@@ -47,9 +50,9 @@ public class RequestReplyWithSoap extends BaseMessageProducer {
             int factor2 = rdm.nextInt();
             String result = "";
             if(useSoapJMS)
-                result = requestReplyProcessingSoap.performMultiplicationFromStrings(new Integer(factor1).toString(), new Integer(factor2).toString());
+                result = requestReplyWithSoapJms.performMultiplicationFromStrings(new Integer(factor1).toString(), new Integer(factor2).toString());
             else
-                result = requestReplyProcessingSoap.performMultiplicationFromStrings(new Integer(factor1).toString(), new Integer(factor2).toString());
+                result = requestReplyWithSoapHttp.performMultiplicationFromStrings(new Integer(factor1).toString(), new Integer(factor2).toString());
 
             String message = String.format("How much is %d * %d? --> Response: %s", factor1, factor2, result);
             out.write(String.format("<p><i>%s</i></p>", message));
@@ -57,9 +60,9 @@ public class RequestReplyWithSoap extends BaseMessageProducer {
             out.write("<h2>Request 2:</h2>");
             long number;
             if(useSoapJMS)
-                number = requestReplyProcessingSoap.getRandomNumber();
+                number = requestReplyWithSoapJms.getRandomNumber();
             else
-                number = requestReplyProcessingSoap.getRandomNumber();
+                number = requestReplyWithSoapHttp.getRandomNumber();
 
             message = String.format("Generate a random number from server --> Response: %d", number);
             out.write(String.format("<p><i>%s</i></p>", message));

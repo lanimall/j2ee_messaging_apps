@@ -31,7 +31,7 @@
     <message-driven name="SimpleTopicConsumerBean">
         <jca-adapter activation-spec-binding-name="AppSimpleTopicConsumer" />
     </message-driven>
-    <message-driven name="ResponseQueueConsumerBean">
-        <jca-adapter activation-spec-binding-name="AppResponseConsumer" />
+    <message-driven name="ReplyQueueConsumerBean">
+        <jca-adapter activation-spec-binding-name="AppReplyConsumer" />
     </message-driven>
 </ejb-jar-bnd>

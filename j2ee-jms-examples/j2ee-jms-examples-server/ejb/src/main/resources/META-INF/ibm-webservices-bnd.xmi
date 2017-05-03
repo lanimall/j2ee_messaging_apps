@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<com.ibm.etools.webservice.wsbnd:WSBinding xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:com.ibm.etools.webservice.wsbnd="http://www.ibm.com/websphere/appserver/schemas/5.0.2/wsbnd.xmi" xmi:id="WSBinding_1493751564974">
+  <routerModules xmi:id="RouterModule_1493751564975" transport="http" name="j2ee-jms-examples-server-ejb_WasHTTPRouter.war"/>
+  <routerModules xmi:id="RouterModule_1493751631476" transport="jms" name="j2ee-jms-examples-server-ejb_WasJMSRouter.jar"/>
+</com.ibm.etools.webservice.wsbnd:WSBinding>

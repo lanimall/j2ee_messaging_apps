@@ -1,16 +1,11 @@
 package com.softwareaggov.messaging.service.subscribe;
 
-import com.softwareaggov.messaging.service.utils.CounterSingletonLocal;
-import com.softwareaggov.messaging.service.utils.MessageProcessingLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 /**
  * <p>
@@ -20,7 +15,7 @@ import javax.jms.TextMessage;
  * @author Fabien Sanglier
  */
 
-@MessageDriven(name = "ResponseQueueConsumerBean")
+@MessageDriven(name = "ReplyQueueConsumerBean")
 @TransactionManagement(value = TransactionManagementType.BEAN)
 @TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
 public class ResponseQueueConsumerBean extends BaseProcessingConsumer implements MessageListener, MessageDrivenBean {

@@ -49,6 +49,7 @@ public abstract class BaseProcessingConsumer implements MessageDrivenBean {
     protected void processMessage(Message rcvMessage) {
         if(log.isDebugEnabled())
             log.debug("ProcessMessage start");
+
         try {
             long newCount = messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-consumed");
 

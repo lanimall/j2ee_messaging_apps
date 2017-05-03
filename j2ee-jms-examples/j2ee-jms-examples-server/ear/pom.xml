@@ -27,12 +27,6 @@
         <!-- Depend on the ejb module and war so that we can package them -->
         <dependency>
             <groupId>com.softwareaggov.messaging</groupId>
-            <artifactId>j2ee-jms-examples-server-web</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>com.softwareaggov.messaging</groupId>
             <artifactId>j2ee-jms-examples-server-ejb</artifactId>
             <version>1.0-SNAPSHOT</version>
             <type>ejb</type>
@@ -53,16 +47,6 @@
                         are in easy way to package any libraries needed in the ear, and automatically 
                         have any modules (EJB-JARs and WARs) use them -->
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
-                    <modules>
-                        <!-- Default context root of the web app is /j2ee-jms-examples-web.
-                            If a custom context root is needed, uncomment the following snippet to
-                            register our War as a web module and set the contextRoot property -->
-                        <webModule>
-                            <groupId>com.softwareaggov.messaging</groupId>
-                            <artifactId>j2ee-jms-examples-server-web</artifactId>
-                            <contextRoot>/j2ee-jms-examples-server</contextRoot>
-                        </webModule>
-                    </modules>
                     <fileNameMapping>no-version</fileNameMapping>
                 </configuration>
             </plugin>
@@ -88,6 +72,52 @@
                             <port>${deploy.target.port}</port>
                             <username>${deploy.target.username}</username>
                             <password>${deploy.target.password}</password>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>websphere</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.softwareaggov.messaging</groupId>
+                    <artifactId>j2ee-jms-examples-server-ejb_WasJMSRouter</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                    <type>ejb</type>
+                </dependency>
+                <dependency>
+                    <groupId>com.softwareaggov.messaging</groupId>
+                    <artifactId>j2ee-jms-examples-server-ejb_WasHTTPRouter</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                    <type>war</type>
+                </dependency>
+            </dependencies>
+            <build>
+                <finalName>${project.parent.artifactId}</finalName>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-ear-plugin</artifactId>
+                        <version>${version.ear.plugin}</version>
+                        <configuration>
+                            <!-- Tell Maven we are using Java EE 6 -->
+                            <version>6</version>
+                            <!-- Use Java EE ear libraries as needed. Java EE ear libraries
+                                are in easy way to package any libraries needed in the ear, and automatically
+                                have any modules (EJB-JARs and WARs) use them -->
+                            <defaultLibBundleDir>lib</defaultLibBundleDir>
+                            <modules>
+                                <!-- Default context root of the web app is /j2ee-jms-examples-web.
+                                    If a custom context root is needed, uncomment the following snippet to
+                                    register our War as a web module and set the contextRoot property -->
+                                <webModule>
+                                    <groupId>com.softwareaggov.messaging</groupId>
+                                    <artifactId>j2ee-jms-examples-server-ejb_WasHTTPRouter</artifactId>
+                                    <contextRoot>/j2ee-jms-examples-server</contextRoot>
+                                </webModule>
+                            </modules>
+                            <fileNameMapping>no-version</fileNameMapping>
                         </configuration>
                     </plugin>
                 </plugins>

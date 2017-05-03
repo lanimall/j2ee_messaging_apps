@@ -21,8 +21,9 @@
     </licenses>
     <modules>
         <module>ejb</module>
-        <module>web</module>
         <module>ear</module>
+        <module>ejb_WasHTTPRouter</module>
+        <module>ejb_WasJMSRouter</module>
     </modules>
 
     <properties>

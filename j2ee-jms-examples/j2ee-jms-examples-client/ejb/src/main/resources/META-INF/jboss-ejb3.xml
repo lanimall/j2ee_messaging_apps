@@ -255,7 +255,7 @@
             </env-entry>
         </message-driven>
         <message-driven>
-            <ejb-name>ResponseQueueConsumerBean</ejb-name>
+            <ejb-name>ReplyQueueConsumerBean</ejb-name>
             <ejb-class>com.softwareaggov.messaging.service.subscribe.ResponseQueueConsumerBean</ejb-class>
             <activation-config>
                 <activation-config-property>

@@ -5,10 +5,10 @@
         version="1.1">
 
     <message-driven name="RequestReplyQueueConsumerBean">
-        <jca-adapter activation-spec-binding-name="SAGUMConsumeAndReplyRequestQueue" />
-        <resource-ref name="jms/someManagedCF" binding-name="SAGUMRAQueueConnectionFactory">
+        <jca-adapter activation-spec-binding-name="AppRequestConsumer" />
+        <resource-ref name="jms/someManagedCF" binding-name="AppReqReplyQueueConnectionFactory">
         </resource-ref>
-        <resource-ref name="jms/someManagedReplyTo" binding-name="SAGUMResponseQueue">
+        <resource-ref name="jms/someManagedReplyTo" binding-name="AppReplyQueue">
         </resource-ref>
     </message-driven>
 </ejb-jar-bnd>
