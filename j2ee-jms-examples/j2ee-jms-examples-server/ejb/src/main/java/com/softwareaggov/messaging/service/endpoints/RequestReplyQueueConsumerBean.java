@@ -1,6 +1,6 @@
 package com.softwareaggov.messaging.service.endpoints;
 
-import com.softwareaggov.messaging.service.processors.RequestReplyProcessing;
+import com.softwareaggov.messaging.service.processors.RequestReplyProcessingLocal;
 import com.softwareaggov.messaging.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +33,8 @@ public class RequestReplyQueueConsumerBean implements MessageListener, MessageDr
     @Resource(name = "jms/someManagedReplyTo")
     private Destination jmsDefaultReplyTo;
 
-    @EJB(beanName = "RequestReplyProcessingBean", beanInterface = RequestReplyProcessing.class)
-    private RequestReplyProcessing requestReplyProcessing;
+    @EJB(beanName = "RequestReplyProcessingBean", beanInterface = RequestReplyProcessingLocal.class)
+    private RequestReplyProcessingLocal requestReplyProcessing;
 
     private transient JMSHelper jmsHelper;
     private transient MessageDrivenContext mdbContext;

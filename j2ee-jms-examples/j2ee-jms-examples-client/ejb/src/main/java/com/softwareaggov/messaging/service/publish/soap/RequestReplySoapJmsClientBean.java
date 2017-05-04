@@ -1,7 +1,7 @@
 package com.softwareaggov.messaging.service.publish.soap;
 
-import com.softwareaggov.messaging.service.soapclient.http.RequestReplyHttpService;
-import com.softwareaggov.messaging.service.soapclient.http.RequestReplyPortType;
+import com.softwareaggov.messaging.service.soapclient.RequestReplyService;
+import com.softwareaggov.messaging.service.soapclient.RequestReplyServicePortType;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
@@ -15,7 +15,7 @@ import java.net.URL;
 @Local(RequestReplyClientLocal.class)
 public class RequestReplySoapJmsClientBean implements RequestReplyClientLocal {
 
-    private transient RequestReplyPortType servicePort;
+    private transient RequestReplyServicePortType servicePort;
     private final String WSDL_LOCATION = "/META-INF/wsdl/RequestReplyJmsService.wsdl";
 
     public RequestReplySoapJmsClientBean() {
@@ -23,9 +23,9 @@ public class RequestReplySoapJmsClientBean implements RequestReplyClientLocal {
 
     @PostConstruct
     public void initialize() {
-        URL serviceWsdl = RequestReplySoapJmsClientBean.class.getResource(WSDL_LOCATION);
-        RequestReplyHttpService service = new RequestReplyHttpService(serviceWsdl);
-        this.servicePort = service.getRequestReplyHttpPort();
+        URL serviceWsdl = RequestReplySoapHttpClientBean.class.getResource(WSDL_LOCATION);
+        RequestReplyService service = new RequestReplyService(serviceWsdl);
+        this.servicePort = service.getRequestReplyServicePort();
     }
 
     public Long getRandomNumber(){

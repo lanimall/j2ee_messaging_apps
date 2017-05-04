@@ -1,5 +1,5 @@
 
-package com.softwareaggov.messaging.service.soapclient.http;
+package com.softwareaggov.messaging.service.soapclient;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

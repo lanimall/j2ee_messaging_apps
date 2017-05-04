@@ -16,8 +16,8 @@ import java.util.Random;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
-@Local(RequestReplyProcessing.class)
-public class RequestReplyProcessingBean implements RequestReplyProcessing {
+@Local(RequestReplyProcessingLocal.class)
+public class RequestReplyProcessingBean implements RequestReplyProcessingLocal {
     private static Logger log = LoggerFactory.getLogger(RequestReplyProcessingBean.class);
 
     private transient Random rnd;

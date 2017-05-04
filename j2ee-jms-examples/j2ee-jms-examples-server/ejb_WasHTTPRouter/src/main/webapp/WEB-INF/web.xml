@@ -1,21 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?><web-app id="WebApp_ID" version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><web-app id="WebApp_ID" version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <display-name>HTTP router for j2ee-jms-examples-server-ejb.jar</display-name>
     <servlet>
-        <display-name>Web services Router servlet for port-component RequestReplyHttpImpl</display-name>
-        <servlet-name>RequestReplyHttpImpl</servlet-name>
-        <servlet-class>com.ibm.ws.websvcs.transport.http.WASAxis2Servlet</servlet-class>
-    </servlet>
-    <servlet>
-        <display-name>Web services Router servlet for port-component RequestReplyJMSImpl</display-name>
-        <servlet-name>RequestReplyJMSImpl</servlet-name>
+        <display-name>Web services Router servlet for port-component RequestReplyServiceImpl</display-name>
+        <servlet-name>RequestReplyServiceImpl</servlet-name>
         <servlet-class>com.ibm.ws.websvcs.transport.http.WASAxis2Servlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>RequestReplyHttpImpl</servlet-name>
-        <url-pattern>/RequestReplyHttpService</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>RequestReplyJMSImpl</servlet-name>
-        <url-pattern>/RequestReplyJmsService</url-pattern>
+        <servlet-name>RequestReplyServiceImpl</servlet-name>
+        <url-pattern>/RequestReplyService</url-pattern>
     </servlet-mapping>
 </web-app>
