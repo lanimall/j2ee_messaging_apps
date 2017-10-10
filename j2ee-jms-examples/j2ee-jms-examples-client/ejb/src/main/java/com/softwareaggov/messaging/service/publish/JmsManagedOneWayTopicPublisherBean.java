@@ -18,8 +18,8 @@ import javax.jms.Destination;
 @Stateless(mappedName = "JmsManagedSimpleTopicPublisherBean")
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Local(JmsPublisherLocal.class)
-public class JmsManagedSimpleTopicPublisherBean extends JmsPublisherBaseBean {
-    private static Logger log = LoggerFactory.getLogger(JmsManagedSimpleTopicPublisherBean.class);
+public class JmsManagedOneWayTopicPublisherBean extends JmsPublisherOneWayBaseBean {
+    private static Logger log = LoggerFactory.getLogger(JmsManagedOneWayTopicPublisherBean.class);
 
     @Resource(name = "jms/someManagedCF")
     private ConnectionFactory jmsConnectionFactory;

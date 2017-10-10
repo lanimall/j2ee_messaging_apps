@@ -19,8 +19,9 @@ import java.util.Map;
  * A servlet that sends several JMS messages to a JMS queue or a topic
  * as defined by the jmsDestination variable that is bound to a JCA admin object (hence using JCA construct)
  * </p>
- * <p>
+ * <p/>
  * The servlet is registered and mapped to /JcaQueueProxyMessageProducer using the {@linkplain javax.servlet.annotation.WebServlet
+ *
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
@@ -29,10 +30,12 @@ public class JcaSimpleQueueMessageProducer extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
     private static Logger log = LoggerFactory.getLogger(JcaSimpleQueueMessageProducer.class);
 
-    @EJB(beanName = "JmsManagedSimplePublisherBean") //here specify the bean name because I have multiple bean for the same interface
+    @EJB(beanName = "JmsManagedSimplePublisherBean")
+    //here specify the bean name because I have multiple bean for the same interface
     private JmsPublisherLocal jmsSimplePublisher;
 
-    @EJB(beanName = "JmsManagedSimpleCachedPublisherBean") //here specify the bean name because I have multiple bean for the same interface
+    @EJB(beanName = "JmsManagedSimpleCachedPublisherBean")
+    //here specify the bean name because I have multiple bean for the same interface
     private JmsPublisherLocal jmsSimpleCachedPublisher;
 
     @Override
@@ -48,10 +51,10 @@ public class JcaSimpleQueueMessageProducer extends BaseMessageProducer {
             int randomNumber = rdm.nextInt();
             String message = String.format("This is a text message with random number: %d", randomNumber);
 
-            Map<String,String> headerProperties = new HashMap<String, String>(4);
+            Map<String, String> headerProperties = new HashMap<String, String>(4);
             headerProperties.put("number_property", new Integer(randomNumber).toString());
 
-            if(useCached)
+            if (useCached)
                 jmsSimpleCachedPublisher.sendTextMessage(messagePayload, headerProperties);
             else
                 jmsSimplePublisher.sendTextMessage(messagePayload, headerProperties);
@@ -59,7 +62,7 @@ public class JcaSimpleQueueMessageProducer extends BaseMessageProducer {
             out.write(String.format("<p><i>%s</i></p>", message));
             out.write("<p><b>messages sent successfully</b></p>");
             out.close();
-        } catch (Throwable exc){
+        } catch (Throwable exc) {
             log.error("Error Occurred", exc);
             throw new ServletException(exc);
         }

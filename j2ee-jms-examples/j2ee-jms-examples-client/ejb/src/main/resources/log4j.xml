@@ -25,7 +25,7 @@
     </category>
 
     <root>
-        <priority value="WARN" />
+        <priority value="WARN"/>
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>

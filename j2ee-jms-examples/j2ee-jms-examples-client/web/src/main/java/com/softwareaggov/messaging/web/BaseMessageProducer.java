@@ -15,7 +15,7 @@ import java.util.Random;
  * <p>
  * Base Servlet
  * </p>
- * <p>
+ * <p/>
  *
  * @author Fabien Sanglier
  * @HttpServlet}. </p>

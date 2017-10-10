@@ -11,7 +11,7 @@
     <jboss:enterprise-beans>
         <session>
             <ejb-name>JmsManagedSimplePublisherBean</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.service.publish.JmsManagedSimplePublisherBean</ejb-class>
+            <ejb-class>com.softwareaggov.messaging.service.publish.JmsManagedOneWayPublisherBean</ejb-class>
             <resource-ref>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
                 <res-type>javax.jms.QueueConnectionFactory</res-type>
@@ -35,7 +35,7 @@
         </session>
         <session>
             <ejb-name>JmsManagedSimpleTopicPublisherBean</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.service.publish.JmsManagedSimpleTopicPublisherBean</ejb-class>
+            <ejb-class>com.softwareaggov.messaging.service.publish.JmsManagedOneWayTopicPublisherBean</ejb-class>
             <resource-ref>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
                 <res-type>javax.jms.QueueConnectionFactory</res-type>
@@ -59,7 +59,7 @@
         </session>
         <session>
             <ejb-name>JmsManagedSimpleCachedPublisherBean</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.service.publish.JmsManagedSimpleCachedPublisherBean</ejb-class>
+            <ejb-class>com.softwareaggov.messaging.service.publish.JmsManagedOneWayCachedPublisherBean</ejb-class>
             <resource-ref>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
                 <res-type>javax.jms.QueueConnectionFactory</res-type>
@@ -136,7 +136,9 @@
             <activation-config>
                 <activation-config-property>
                     <activation-config-property-name>destinationJndiName</activation-config-property-name>
-                    <activation-config-property-value>${SimpleQueueConsumerBean.mdb.activationspecs.destinationJndiName}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${SimpleQueueConsumerBean.mdb.activationspecs.destinationJndiName}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>destinationType</activation-config-property-name>
@@ -144,15 +146,19 @@
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>connectionFactoryJndiName</activation-config-property-name>
-                    <activation-config-property-value>${SimpleQueueConsumerBean.mdb.activationspecs.connectionFactoryJndiName}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${SimpleQueueConsumerBean.mdb.activationspecs.connectionFactoryJndiName}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>batchSize</activation-config-property-name>
-                    <activation-config-property-value>${SimpleQueueConsumerBean.mdb.activationspecs.batchSize:1}</activation-config-property-value>
+                    <activation-config-property-value>${SimpleQueueConsumerBean.mdb.activationspecs.batchSize:1}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxPoolSize</activation-config-property-name>
-                    <activation-config-property-value>${SimpleQueueConsumerBean.mdb.activationspecs.maxPoolSize:8}</activation-config-property-value>
+                    <activation-config-property-value>${SimpleQueueConsumerBean.mdb.activationspecs.maxPoolSize:8}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxWaitTime</activation-config-property-name>
@@ -168,11 +174,15 @@
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>reconnectAttempts</activation-config-property-name>
-                    <activation-config-property-value>${SimpleQueueConsumerBean.mdb.activationspecs.reconnectAttempts:50}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${SimpleQueueConsumerBean.mdb.activationspecs.reconnectAttempts:50}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>reconnectInterval</activation-config-property-name>
-                    <activation-config-property-value>${SimpleQueueConsumerBean.mdb.activationspecs.reconnectInterval:20}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${SimpleQueueConsumerBean.mdb.activationspecs.reconnectInterval:20}
+                    </activation-config-property-value>
                 </activation-config-property>
             </activation-config>
             <env-entry>
@@ -192,7 +202,9 @@
             <activation-config>
                 <activation-config-property>
                     <activation-config-property-name>destinationJndiName</activation-config-property-name>
-                    <activation-config-property-value>${SimpleTopicConsumerBean.mdb.activationspecs.destinationJndiName}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${SimpleTopicConsumerBean.mdb.activationspecs.destinationJndiName}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>destinationType</activation-config-property-name>
@@ -200,7 +212,9 @@
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>connectionFactoryJndiName</activation-config-property-name>
-                    <activation-config-property-value>${SimpleTopicConsumerBean.mdb.activationspecs.connectionFactoryJndiName}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${SimpleTopicConsumerBean.mdb.activationspecs.connectionFactoryJndiName}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>subscriptionDurability</activation-config-property-name>
@@ -208,7 +222,8 @@
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>subscriptionName</activation-config-property-name>
-                    <activation-config-property-value>AppSimpleTopicConsumer.JBOSSClient1</activation-config-property-value>
+                    <activation-config-property-value>AppSimpleTopicConsumer.JBOSSClient1
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>shareClientid</activation-config-property-name>
@@ -216,11 +231,13 @@
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>batchSize</activation-config-property-name>
-                    <activation-config-property-value>${SimpleTopicConsumerBean.mdb.activationspecs.batchSize:1}</activation-config-property-value>
+                    <activation-config-property-value>${SimpleTopicConsumerBean.mdb.activationspecs.batchSize:1}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxPoolSize</activation-config-property-name>
-                    <activation-config-property-value>${SimpleTopicConsumerBean.mdb.activationspecs.maxPoolSize:8}</activation-config-property-value>
+                    <activation-config-property-value>${SimpleTopicConsumerBean.mdb.activationspecs.maxPoolSize:8}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxWaitTime</activation-config-property-name>
@@ -236,11 +253,15 @@
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>reconnectAttempts</activation-config-property-name>
-                    <activation-config-property-value>${SimpleTopicConsumerBean.mdb.activationspecs.reconnectAttempts:50}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${SimpleTopicConsumerBean.mdb.activationspecs.reconnectAttempts:50}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>reconnectInterval</activation-config-property-name>
-                    <activation-config-property-value>${SimpleTopicConsumerBean.mdb.activationspecs.reconnectInterval:20}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${SimpleTopicConsumerBean.mdb.activationspecs.reconnectInterval:20}
+                    </activation-config-property-value>
                 </activation-config-property>
             </activation-config>
             <env-entry>
@@ -260,7 +281,9 @@
             <activation-config>
                 <activation-config-property>
                     <activation-config-property-name>destinationJndiName</activation-config-property-name>
-                    <activation-config-property-value>${ResponseQueueConsumerBean.mdb.activationspecs.destinationJndiName}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${ResponseQueueConsumerBean.mdb.activationspecs.destinationJndiName}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>destinationType</activation-config-property-name>
@@ -268,15 +291,19 @@
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>connectionFactoryJndiName</activation-config-property-name>
-                    <activation-config-property-value>${ResponseQueueConsumerBean.mdb.activationspecs.connectionFactoryJndiName}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${ResponseQueueConsumerBean.mdb.activationspecs.connectionFactoryJndiName}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>batchSize</activation-config-property-name>
-                    <activation-config-property-value>${ResponseQueueConsumerBean.mdb.activationspecs.batchSize:1}</activation-config-property-value>
+                    <activation-config-property-value>${ResponseQueueConsumerBean.mdb.activationspecs.batchSize:1}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxPoolSize</activation-config-property-name>
-                    <activation-config-property-value>${ResponseQueueConsumerBean.mdb.activationspecs.maxPoolSize:8}</activation-config-property-value>
+                    <activation-config-property-value>${ResponseQueueConsumerBean.mdb.activationspecs.maxPoolSize:8}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxWaitTime</activation-config-property-name>
@@ -292,11 +319,15 @@
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>reconnectAttempts</activation-config-property-name>
-                    <activation-config-property-value>${ResponseQueueConsumerBean.mdb.activationspecs.reconnectAttempts:50}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${ResponseQueueConsumerBean.mdb.activationspecs.reconnectAttempts:50}
+                    </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>reconnectInterval</activation-config-property-name>
-                    <activation-config-property-value>${ResponseQueueConsumerBean.mdb.activationspecs.reconnectInterval:20}</activation-config-property-value>
+                    <activation-config-property-value>
+                        ${ResponseQueueConsumerBean.mdb.activationspecs.reconnectInterval:20}
+                    </activation-config-property-value>
                 </activation-config-property>
             </activation-config>
             <env-entry>

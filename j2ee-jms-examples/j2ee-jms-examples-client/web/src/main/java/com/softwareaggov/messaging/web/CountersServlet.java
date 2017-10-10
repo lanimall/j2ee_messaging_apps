@@ -17,8 +17,9 @@ import java.io.PrintWriter;
  * A servlet that sends several JMS messages to a JMS queue or a topic
  * as defined by the jmsDestination variable that is bound to a JCA admin object (hence using JCA construct)
  * </p>
- * <p>
+ * <p/>
  * The servlet is registered and mapped to /JcaQueueProxyMessageProducer using the {@linkplain javax.servlet.annotation.WebServlet
+ *
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
@@ -41,9 +42,9 @@ public class CountersServlet extends BaseMessageProducer {
         String reset = req.getParameter("reset");
 
         String[] counterNames;
-        if(null != counterName && !"".equals(counterName)) {
+        if (null != counterName && !"".equals(counterName)) {
             out.write("<h1>Printing specific counters</h1>");
-            counterNames = new String[] {counterName};
+            counterNames = new String[]{counterName};
         } else {
             out.write("<h1>Printing all counters</h1>");
             counterNames = messageProcessingCounter.getAllCounterNames();
@@ -51,18 +52,17 @@ public class CountersServlet extends BaseMessageProducer {
 
         try {
             out.write("<ul>");
-            for(String counterKey : counterNames){
+            for (String counterKey : counterNames) {
                 if (null != reset && "true".equalsIgnoreCase(reset))
                     messageProcessingCounter.reset(counterKey);
 
                 out.write(String.format("<li>Counter [%s] = %d (Rate= %d / sec)</li>", counterKey, messageProcessingCounter.getCount(counterKey), messageProcessingCounter.getCountRate(counterKey)));
             }
             out.write("</ul>");
-        } catch (Exception exc){
+        } catch (Exception exc) {
             log.error("Error Occurred", exc);
             throw new ServletException(exc);
-        }
-        finally {
+        } finally {
             if (out != null) {
                 out.close();
             }

@@ -21,17 +21,20 @@ import java.util.Map;
  * Simple JMS Publisher bean relying on the connection factory to create the JMS connection on each call
  * Created by fabien.sanglier on 6/15/16.
  */
-public abstract class JmsPublisherBaseBean implements JmsPublisherLocal {
-    private static Logger log = LoggerFactory.getLogger(JmsPublisherBaseBean.class);
+public abstract class JmsPublisherSyncWaitBaseBean implements JmsPublisherLocal {
+    private static Logger log = LoggerFactory.getLogger(JmsPublisherSyncWaitBaseBean.class);
 
     @EJB
     private CounterSingletonLocal messageProcessingCounter;
 
-    @Resource(name="jmsDeliveryMode")
+    @Resource(name = "jmsDeliveryMode")
     private Integer jmsDeliveryMode = null;
 
-    @Resource(name="jmsPriority")
+    @Resource(name = "jmsPriority")
     private Integer jmsPriority = null;
+
+    @Resource(name = "jmsResponseWaitMillis")
+    private Integer jmsResponseWaitMillis = null;
 
     private transient JMSHelper jmsHelper;
 
@@ -39,30 +42,38 @@ public abstract class JmsPublisherBaseBean implements JmsPublisherLocal {
 
     public abstract Destination getJmsDestination();
 
+    public abstract Destination getJmsReplyDestination();
+
     @PostConstruct
-    private void init(){
-        this.jmsHelper = JMSHelper.createSender(getJmsConnectionFactory(), getJmsDestination());
+    private void init() {
+        this.jmsHelper = JMSHelper.createSender(getJmsConnectionFactory());
     }
 
     @PreDestroy
-    private void cleanup(){
-        if(null != jmsHelper)
+    private void cleanup() {
+        if (null != jmsHelper)
             jmsHelper.cleanup();
         jmsHelper = null;
     }
 
-    @TransactionAttribute(value=TransactionAttributeType.NOT_SUPPORTED)
-    public String sendTextMessage(final String msgTextPayload, final Map<String,String> msgHeaderProperties) {
+    @TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
+    public String sendTextMessage(final String msgTextPayload, final Map<String, String> msgHeaderProperties) {
         String returnText = "";
 
-        if(log.isDebugEnabled())
+        if (log.isDebugEnabled())
             log.debug("in EJB: sendTextMessage");
 
         try {
-            returnText = jmsHelper.sendTextMessage(msgTextPayload, msgHeaderProperties, JMSHelper.generateCorrelationID(), null, jmsDeliveryMode, jmsPriority);
+            returnText = jmsHelper.sendTextMessageAndWait(getJmsDestination(), msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, getJmsReplyDestination(), jmsResponseWaitMillis);
 
             //increment processing counter
             messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName());
+
+            if (null == returnText) {
+                messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-responseIsNull");
+            } else {
+                messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-responseNotNull");
+            }
         } catch (JMSException e) {
             messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-errors");
             log.error("JMS Error occurred", e);

@@ -20,8 +20,9 @@ import java.util.Map;
  * A servlet that sends several JMS messages to a JMS queue or a topic
  * as defined by the jmsDestination variable that is bound to a JCA admin object (hence using JCA construct)
  * </p>
- * <p>
+ * <p/>
  * The servlet is registered and mapped to /JcaQueueProxyMessageProducer using the {@linkplain javax.servlet.annotation.WebServlet
+ *
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
@@ -30,10 +31,12 @@ public class JcaRequestMessageProducer extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
     private static Logger log = LoggerFactory.getLogger(JcaRequestMessageProducer.class);
 
-    @EJB(beanName = "JmsManagedRequestReplyPublisherBean") //here specify the bean name because I have multiple bean for the same interface
+    @EJB(beanName = "JmsManagedRequestReplyPublisherBean")
+    //here specify the bean name because I have multiple bean for the same interface
     private JmsPublisherLocal jmsRequestReplyPublisher;
 
-    @EJB(beanName = "JmsManagedRequestReplyCachedPublisherBean") //here specify the bean name because I have multiple bean for the same interface
+    @EJB(beanName = "JmsManagedRequestReplyCachedPublisherBean")
+    //here specify the bean name because I have multiple bean for the same interface
     private JmsPublisherLocal jmsRequestReplyCachedPublisher;
 
     @Override
@@ -52,11 +55,11 @@ public class JcaRequestMessageProducer extends BaseMessageProducer {
             String correlationId = JMSHelper.generateCorrelationID();
             String message = String.format("How much is %d * %d? [correlationID = %s]", factor1, factor2, correlationId);
 
-            Map<String,String> headerProperties = new HashMap<String, String>(4);
+            Map<String, String> headerProperties = new HashMap<String, String>(4);
             headerProperties.put("factor1", new Integer(factor1).toString());
             headerProperties.put("factor2", new Integer(factor2).toString());
 
-            if(useCached)
+            if (useCached)
                 jmsRequestReplyCachedPublisher.sendTextMessage(messagePayload, headerProperties);
             else
                 jmsRequestReplyPublisher.sendTextMessage(messagePayload, headerProperties);
@@ -64,7 +67,7 @@ public class JcaRequestMessageProducer extends BaseMessageProducer {
             out.write(String.format("<p><i>%s</i></p>", message));
             out.write("<p><i>messages sent successfully</i></p>");
             out.close();
-        } catch (Throwable exc){
+        } catch (Throwable exc) {
             log.error("Error Occurred", exc);
             throw new ServletException(exc);
         }

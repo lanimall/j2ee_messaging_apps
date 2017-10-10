@@ -29,7 +29,7 @@ public class JMSHelper {
         super();
     }
 
-    public void cleanup(){
+    public void cleanup() {
         connectionFactory = null;
         defaultDestination = null;
         defaultDestinationName = null;
@@ -68,43 +68,32 @@ public class JMSHelper {
         this.defaultDestinationType = defaultDestinationType;
     }
 
-    public String sendTextMessage(final String payload, final Map<String,String> headerProperties) throws JMSException {
-        return sendTextMessage(null, payload, headerProperties);
+    public String sendTextMessage(Destination destination, final String payload, final Map<String, String> headerProperties) throws JMSException {
+        return sendTextMessage(destination, payload, headerProperties, DeliveryMode.PERSISTENT, 4, null, null);
     }
 
-    public String sendTextMessage(Destination destination, final String payload) throws JMSException {
-        return sendTextMessage(destination, payload, null);
-    }
-
-    public String sendTextMessage(Destination destination, final String payload, final Map<String,String> headerProperties) throws JMSException {
-        return sendTextMessage(destination, payload, headerProperties, null, null, DeliveryMode.PERSISTENT, 4);
-    }
-
-    public String sendTextMessage(final String payload, final Map<String,String> headerProperties, String correlationID, Destination replyTo, Integer deliveryMode, Integer priority) throws JMSException {
-        return sendTextMessage(null, payload, headerProperties, correlationID, replyTo, deliveryMode, priority);
-    }
-
-    public String sendTextMessage(Destination destination, final String payload, final Map<String,String> headerProperties, String correlationID, Destination replyTo, Integer deliveryMode, Integer priority) throws JMSException {
+    public String sendTextMessage(Destination destination, final String payload, final Map<String, String> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
         Connection connection = null;
-
-        try{
+        Session session = null;
+        MessageProducer producer = null;
+        try {
             if (null == connectionFactory)
                 throw new JMSException("connection factory is null...can't do anything...");
 
             connection = connectionFactory.createConnection(); // Create connection
             boolean transacted = false;
-            Session session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE); // Create Session
+            session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE); // Create Session
 
             //avoid another jndi lookup here
             Destination destinationLocal = null;
-            if(null != destination) {
+            if (null != destination) {
                 destinationLocal = destination;
             } else {
-                if(null != defaultDestination){
+                if (null != defaultDestination) {
                     destinationLocal = defaultDestination;
                 } else {
-                    if(!"".equals(defaultDestinationName)) {
-                        if(null != defaultDestinationType) {
+                    if (!"".equals(defaultDestinationName)) {
+                        if (null != defaultDestinationType) {
                             if (defaultDestinationType == DestinationType.QUEUE)
                                 destinationLocal = session.createQueue(defaultDestinationName);
                             else if (defaultDestinationType == DestinationType.TOPIC)
@@ -119,69 +108,70 @@ public class JMSHelper {
             }
 
             // Create Message Producer
-            MessageProducer producer = session.createProducer(destinationLocal);
-            if(null != deliveryMode)
+            producer = session.createProducer(destinationLocal);
+            if (null != deliveryMode)
                 producer.setDeliveryMode(deliveryMode);
 
-            if(null != priority)
+            if (null != priority)
                 producer.setPriority(priority);
 
             // Create Message
             TextMessage msg = session.createTextMessage();
             msg.setText(payload);
 
-            if(null != replyTo)
+            if (null != replyTo)
                 msg.setJMSReplyTo(replyTo);
 
-            if(null != correlationID)
+            if (null != correlationID)
                 msg.setJMSCorrelationID(correlationID);
 
-            if(null != headerProperties){
-                for(Entry<String, String> entry : headerProperties.entrySet()){
-                    msg.setStringProperty(entry.getKey(),entry.getValue());
+            if (null != headerProperties) {
+                for (Entry<String, String> entry : headerProperties.entrySet()) {
+                    msg.setStringProperty(entry.getKey(), entry.getValue());
                 }
             }
 
             producer.send(msg); // Send Message
 
-            if(log.isDebugEnabled())
+            if (log.isDebugEnabled())
                 log.debug("message sent successfully");
-
-            //test: failure!
-//            if(null != producer)
-//                producer.close();
-
-            //test ok.
-            if(null != session)
-                session.close();
 
             return msg.getJMSMessageID();
         } finally {
+            if (null != producer)
+                producer.close();
+
+            if (null != session)
+                session.close();
+
             if (null != connection)
                 connection.close();
         }
     }
 
-    public String sendMessageAndWaitForReply(Destination destination, String textToSend, final Map<String,String> msgProperties, Destination replyTo) throws JMSException {
+    public String sendTextMessageAndWait(Destination destination, String textToSend, final Map<String, String> msgProperties, Integer deliveryMode, Integer priority, Destination replyTo, Integer replyWaitTimeoutMs) throws JMSException {
         Connection connection = null;
+        Session session = null;
+        MessageProducer producer = null;
+        MessageConsumer responseConsumer = null;
 
         try {
             if (null == connectionFactory)
                 throw new JMSException("connection factory is null...can't do anything...");
 
             connection = connectionFactory.createConnection(); // Create connection
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE); // Create Session
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE); // Create Session
 
             //avoid another jndi lookup here
             Destination destinationLocal = null;
-            if(null != destination) {
+            if (null != destination) {
                 destinationLocal = destination;
             } else {
-                if(null != defaultDestination){
+                if (null != defaultDestination) {
                     destinationLocal = defaultDestination;
                 } else {
-                    if(!"".equals(defaultDestinationName)) {
-                        if(null != defaultDestinationType) {
+                    if (!"".equals(defaultDestinationName)) {
+                        if (null != defaultDestinationType) {
                             if (defaultDestinationType == DestinationType.QUEUE)
                                 destinationLocal = session.createQueue(defaultDestinationName);
                             else if (defaultDestinationType == DestinationType.TOPIC)
@@ -196,56 +186,78 @@ public class JMSHelper {
             }
 
             // Create Message Producer
-            MessageProducer producer = session.createProducer(destinationLocal);
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+            producer = session.createProducer(destinationLocal);
+            if (null != deliveryMode)
+                producer.setDeliveryMode(deliveryMode);
 
-            //create a new correlationid
-            String correlationId = UUID.randomUUID().toString();
-
-            //create a consumer with a selector for the correlationid
-            MessageConsumer responseConsumer = session.createConsumer(replyTo, String.format("JMSCorrelationID='%s'", correlationId));
+            if (null != priority)
+                producer.setPriority(priority);
 
             // Create Message
             TextMessage msg = session.createTextMessage();
+            msg.setText(textToSend);
+
+            if (null != replyTo)
+                msg.setJMSReplyTo(replyTo);
 
             //important: add the correlationID for sync correlation a bit later
+            String correlationId = generateCorrelationID();
             msg.setJMSCorrelationID(correlationId);
 
             //add the replyTo destination
             msg.setJMSReplyTo(replyTo);
 
-            msg.setText(textToSend);
-            if(null != msgProperties){
-                for(Entry<String, String> entry : msgProperties.entrySet()){
-                    msg.setStringProperty(entry.getKey(),entry.getValue());
+            if (null != msgProperties) {
+                for (Entry<String, String> entry : msgProperties.entrySet()) {
+                    msg.setStringProperty(entry.getKey(), entry.getValue());
                 }
             }
+
+            //create a consumer with a selector for the correlationid
+            responseConsumer = session.createConsumer(replyTo, String.format("JMSCorrelationID='%s'", correlationId));
 
             //send the message
             producer.send(msg); // Send Message
 
-            if(log.isDebugEnabled())
+            if (log.isDebugEnabled())
                 log.debug("message sent successfully");
 
-            //now wait for the response with a timeout
-            TextMessage receivedMessage = (TextMessage)responseConsumer.receive( 15000 );
+            //now wait for the response with a timeout (0 means infinite wait)
+            if (replyWaitTimeoutMs <= 0) replyWaitTimeoutMs = 0;
+            TextMessage receivedMessage = (TextMessage) responseConsumer.receive(replyWaitTimeoutMs);
+
+            //if null, it means no message came within the timeout (or consumer got closed concurrently)
+            if (null == receivedMessage) {
+                if (log.isWarnEnabled())
+                    log.warn("Didn't receive message response within timeout {} for Message CorrelationID {}", replyWaitTimeoutMs, msg.getJMSCorrelationID());
+                return null;
+            }
 
             return receivedMessage.getText();
         } finally {
+            if (null != producer)
+                producer.close();
+
+            if (null != responseConsumer)
+                responseConsumer.close();
+
+            if (null != session)
+                session.close();
+
             if (null != connection)
                 connection.close();
         }
     }
 
-    public static JMSHelper createTopicSender (Hashtable<String, String> jndiEnv, final String jndiConnectionFactory, String destinationName){
+    public static JMSHelper createTopicSender(Hashtable<String, String> jndiEnv, final String jndiConnectionFactory, String destinationName) {
         return createSender(jndiEnv, jndiConnectionFactory, destinationName, DestinationType.TOPIC);
     }
 
-    public static JMSHelper createQueueSender (Hashtable<String, String> jndiEnv, final String jndiConnectionFactory, String destinationName) {
+    public static JMSHelper createQueueSender(Hashtable<String, String> jndiEnv, final String jndiConnectionFactory, String destinationName) {
         return createSender(jndiEnv, jndiConnectionFactory, destinationName, DestinationType.QUEUE);
     }
 
-    public static JMSHelper createSender (Hashtable<String, String> jndiEnv, final String jndiConnectionFactory, String destinationName, DestinationType destinationType){
+    public static JMSHelper createSender(Hashtable<String, String> jndiEnv, final String jndiConnectionFactory, String destinationName, DestinationType destinationType) {
         if (null == jndiEnv) {
             throw new IllegalArgumentException("jndi params not defined.");
         } else if (log.isDebugEnabled()) {
@@ -262,12 +274,12 @@ public class JMSHelper {
         try {
             Context namingContext = new InitialContext(jndiEnv);
 
-            if(log.isDebugEnabled())
+            if (log.isDebugEnabled())
                 log.debug("Context Created : " + namingContext.toString());
 
             connectionFactory = (ConnectionFactory) namingContext.lookup(jndiConnectionFactory);
 
-            if(log.isDebugEnabled())
+            if (log.isDebugEnabled())
                 log.debug("Lookup Connection Factory Success : " + connectionFactory.toString());
         } catch (NamingException e) {
             log.error("Issue with JNDI lookup", e);
@@ -279,7 +291,7 @@ public class JMSHelper {
         return createSender(connectionFactory, destinationName, destinationType);
     }
 
-    public static JMSHelper createSender (ConnectionFactory connectionFactory, String defaultDestinationName, DestinationType defaultDestinationType){
+    public static JMSHelper createSender(ConnectionFactory connectionFactory, String defaultDestinationName, DestinationType defaultDestinationType) {
         JMSHelper msgSender = new JMSHelper();
         msgSender.setConnectionFactory(connectionFactory);
         msgSender.setDefaultDestinationName(defaultDestinationName);
@@ -288,13 +300,13 @@ public class JMSHelper {
         return msgSender;
     }
 
-    public static JMSHelper createSender (ConnectionFactory connectionFactory) {
+    public static JMSHelper createSender(ConnectionFactory connectionFactory) {
         JMSHelper msgSender = new JMSHelper();
         msgSender.setConnectionFactory(connectionFactory);
         return msgSender;
     }
 
-    public static JMSHelper createSender (ConnectionFactory connectionFactory, Destination defaultDestination){
+    public static JMSHelper createSender(ConnectionFactory connectionFactory, Destination defaultDestination) {
         JMSHelper msgSender = new JMSHelper();
         msgSender.setConnectionFactory(connectionFactory);
         msgSender.setDefaultDestination(defaultDestination);
@@ -302,7 +314,7 @@ public class JMSHelper {
         return msgSender;
     }
 
-    public static String generateCorrelationID(){
+    public static String generateCorrelationID() {
         return UUID.randomUUID().toString();
     }
 }

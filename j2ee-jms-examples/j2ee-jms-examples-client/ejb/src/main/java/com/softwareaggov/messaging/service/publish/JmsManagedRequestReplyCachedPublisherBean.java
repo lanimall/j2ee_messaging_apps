@@ -19,7 +19,7 @@ import javax.jms.Destination;
 @Stateless(mappedName = "JmsManagedRequestReplyCachedPublisherBean")
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Local(JmsPublisherLocal.class)
-public class JmsManagedRequestReplyCachedPublisherBean extends JmsPublisherBaseBean {
+public class JmsManagedRequestReplyCachedPublisherBean extends JmsPublisherSyncWaitBaseBean {
     private static Logger log = LoggerFactory.getLogger(JmsManagedRequestReplyCachedPublisherBean.class);
 
     @Resource(name = "jms/someManagedCF")
@@ -27,6 +27,9 @@ public class JmsManagedRequestReplyCachedPublisherBean extends JmsPublisherBaseB
 
     @Resource(name = "jms/someManagedRequestDestination")
     private Destination jmsDestination;
+
+    @Resource(name = "jms/someManagedReplyDestination")
+    private Destination jmsReplyDestination;
 
     @Override
     public ConnectionFactory getJmsConnectionFactory() {
@@ -36,5 +39,10 @@ public class JmsManagedRequestReplyCachedPublisherBean extends JmsPublisherBaseB
     @Override
     public Destination getJmsDestination() {
         return jmsDestination;
+    }
+
+    @Override
+    public Destination getJmsReplyDestination() {
+        return jmsReplyDestination;
     }
 }

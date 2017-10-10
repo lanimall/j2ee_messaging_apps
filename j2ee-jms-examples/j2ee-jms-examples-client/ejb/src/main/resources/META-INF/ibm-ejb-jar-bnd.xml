@@ -5,6 +5,11 @@
         version="1.1">
 
     <session name="JmsManagedSimplePublisherBean">
+        <ejb-ref name="" binding-name=""></ejb-ref>
+        <interface binding-name="" class=""
+        <ejb-name>JmsManagedSimpleTopicPublisherBean</ejb-name>
+        <ejb-class>com.softwareaggov.messaging.service.publish.JmsManagedOneWayTopicPublisherBean</ejb-class>
+
         <resource-ref name="jms/someManagedCF" binding-name="AppSimpleTestQueueConnectionFactory"></resource-ref>
         <resource-ref name="jms/someManagedSimpleDestination" binding-name="AppSimpleQueue"></resource-ref>
     </session>
@@ -26,12 +31,12 @@
     </session>
 
     <message-driven name="SimpleQueueConsumerBean">
-        <jca-adapter activation-spec-binding-name="AppSimpleQueueConsumer" />
+        <jca-adapter activation-spec-binding-name="AppSimpleQueueConsumer"/>
     </message-driven>
     <message-driven name="SimpleTopicConsumerBean">
-        <jca-adapter activation-spec-binding-name="AppSimpleTopicConsumer" />
+        <jca-adapter activation-spec-binding-name="AppSimpleTopicConsumer"/>
     </message-driven>
     <message-driven name="ReplyQueueConsumerBean">
-        <jca-adapter activation-spec-binding-name="AppReplyConsumer" />
+        <jca-adapter activation-spec-binding-name="AppReplyConsumer"/>
     </message-driven>
 </ejb-jar-bnd>

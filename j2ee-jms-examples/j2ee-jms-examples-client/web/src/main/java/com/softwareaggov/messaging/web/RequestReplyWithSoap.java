@@ -17,8 +17,9 @@ import java.io.PrintWriter;
  * A servlet that sends several JMS messages to a JMS queue or a topic
  * as defined by the jmsDestination variable that is bound to a JCA admin object (hence using JCA construct)
  * </p>
- * <p>
+ * <p/>
  * The servlet is registered and mapped to /JcaQueueProxyMessageProducer using the {@linkplain javax.servlet.annotation.WebServlet
+ *
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
@@ -27,10 +28,12 @@ public class RequestReplyWithSoap extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
     private static Logger log = LoggerFactory.getLogger(RequestReplyWithSoap.class);
 
-    @EJB(beanName = "RequestReplySoapHttpClientBean") //here specify the bean name because I have multiple bean for the same interface
+    @EJB(beanName = "RequestReplySoapHttpClientBean")
+    //here specify the bean name because I have multiple bean for the same interface
     private RequestReplyClientLocal requestReplyWithSoapHttp;
 
-    @EJB(beanName = "RequestReplySoapJmsClientBean") //here specify the bean name because I have multiple bean for the same interface
+    @EJB(beanName = "RequestReplySoapJmsClientBean")
+    //here specify the bean name because I have multiple bean for the same interface
     private RequestReplyClientLocal requestReplyWithSoapJms;
 
     @Override
@@ -49,7 +52,7 @@ public class RequestReplyWithSoap extends BaseMessageProducer {
             int factor1 = rdm.nextInt();
             int factor2 = rdm.nextInt();
             String result = "";
-            if(useSoapJMS)
+            if (useSoapJMS)
                 result = requestReplyWithSoapJms.performMultiplicationFromStrings(new Integer(factor1).toString(), new Integer(factor2).toString());
             else
                 result = requestReplyWithSoapHttp.performMultiplicationFromStrings(new Integer(factor1).toString(), new Integer(factor2).toString());
@@ -59,14 +62,14 @@ public class RequestReplyWithSoap extends BaseMessageProducer {
 
             out.write("<h2>Request 2:</h2>");
             long number;
-            if(useSoapJMS)
+            if (useSoapJMS)
                 number = requestReplyWithSoapJms.getRandomNumber();
             else
                 number = requestReplyWithSoapHttp.getRandomNumber();
 
             message = String.format("Generate a random number from server --> Response: %d", number);
             out.write(String.format("<p><i>%s</i></p>", message));
-        } catch (Exception exc){
+        } catch (Exception exc) {
             log.error("Error Occurred", exc);
             throw new ServletException(exc);
         } finally {

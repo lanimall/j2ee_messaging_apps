@@ -15,8 +15,9 @@ import java.io.PrintWriter;
  * A servlet that sends several JMS messages to a JMS queue or a topic
  * as defined by the jmsDestination variable that is bound to a JCA admin object (hence using JCA construct)
  * </p>
- * <p>
+ * <p/>
  * The servlet is registered and mapped to /JcaQueueProxyMessageProducer using the {@linkplain javax.servlet.annotation.WebServlet
+ *
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
@@ -35,7 +36,7 @@ public class NoOpBaselineServlet extends BaseMessageProducer {
             out.write("<h1>Printing message</h1>");
             String message = String.format("This is a text message with random number: %d", rdm.nextInt());
             out.write(String.format("<p><i>%s</i></p>", message));
-        } catch (Exception exc){
+        } catch (Exception exc) {
             log.error("Error Occurred", exc);
             throw new ServletException(exc);
         } finally {
