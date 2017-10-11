@@ -1,4 +1,4 @@
-package com.softwareaggov.messaging.service.processors;
+package com.softwareaggov.messaging.service.processor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,34 +16,36 @@ import java.util.Random;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
-@Local(RequestReplyProcessingLocal.class)
-public class RequestReplyProcessingBean implements RequestReplyProcessingLocal {
-    private static Logger log = LoggerFactory.getLogger(RequestReplyProcessingBean.class);
+@Local(CalculationProcessingLocal.class)
+public class CalculationProcessingBean implements CalculationProcessingLocal {
+    private static Logger log = LoggerFactory.getLogger(CalculationProcessingBean.class);
 
     private transient Random rnd;
 
     @PostConstruct
-    protected void init(){
+    protected void init() {
         rnd = new Random(System.currentTimeMillis());
-    }
-
-    private long performMultiplication(long nb1, long nb2) {
-        return nb1 * nb2;
     }
 
     @Override
     public String performMultiplicationFromStrings(String nb1, String nb2) {
-        String response;
+        String result;
         try {
-            response = new Long(performMultiplication(Long.parseLong(nb1), Long.parseLong(nb2))).toString();
-        } catch (NumberFormatException e) {
-            response = "NAN";
+            result = new Long(performMultiplication(Long.parseLong(nb1), Long.parseLong(nb2))).toString();
+        } catch (NumberFormatException nfe) {
+            log.error("Error parsing the numbers", nfe);
+            result = "NaN";
         }
-        return response;
+        return result;
     }
 
     @Override
     public Long getRandomNumber() {
         return rnd.nextLong();
     }
+
+    private long performMultiplication(long nb1, long nb2) {
+        return nb1 * nb2;
+    }
+
 }

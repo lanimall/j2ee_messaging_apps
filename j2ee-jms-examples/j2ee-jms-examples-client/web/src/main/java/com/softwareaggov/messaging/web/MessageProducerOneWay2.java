@@ -25,12 +25,12 @@ import java.util.Map;
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
-@WebServlet("/JcaSimpleTopicMessageProducer")
-public class JcaSimpleTopicMessageProducer extends BaseMessageProducer {
+@WebServlet("/MessageProducerOneWay2")
+public class MessageProducerOneWay2 extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
-    private static Logger log = LoggerFactory.getLogger(JcaSimpleTopicMessageProducer.class);
+    private static Logger log = LoggerFactory.getLogger(MessageProducerOneWay2.class);
 
-    @EJB(beanName = "JmsManagedSimpleTopicPublisherBean")
+    @EJB(beanName = "JmsManagedOneWayTopicPublisherBean")
     //here specify the bean name because I have multiple bean for the same interface
     private JmsPublisherLocal jmsSimplePublisher;
 

@@ -1,7 +1,6 @@
 package com.softwareaggov.messaging.web;
 
 import com.softwareaggov.messaging.service.publish.JmsPublisherLocal;
-import com.softwareaggov.messaging.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,18 +25,18 @@ import java.util.Map;
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
-@WebServlet("/JcaAsyncRequestReply")
-public class JcaRequestMessageProducer extends BaseMessageProducer {
+@WebServlet("/MessageProducerOneWay")
+public class MessageProducerOneWay extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
-    private static Logger log = LoggerFactory.getLogger(JcaRequestMessageProducer.class);
+    private static Logger log = LoggerFactory.getLogger(MessageProducerOneWay.class);
 
-    @EJB(beanName = "JmsManagedRequestReplyPublisherBean")
+    @EJB(beanName = "JmsManagedOneWayPublisherBean")
     //here specify the bean name because I have multiple bean for the same interface
-    private JmsPublisherLocal jmsRequestReplyPublisher;
+    private JmsPublisherLocal jmsSimplePublisher;
 
-    @EJB(beanName = "JmsManagedRequestReplyCachedPublisherBean")
+    @EJB(beanName = "JmsManagedOneWayCachedPublisherBean")
     //here specify the bean name because I have multiple bean for the same interface
-    private JmsPublisherLocal jmsRequestReplyCachedPublisher;
+    private JmsPublisherLocal jmsSimpleCachedPublisher;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -47,25 +46,21 @@ public class JcaRequestMessageProducer extends BaseMessageProducer {
 
         boolean useCached = Boolean.parseBoolean(req.getParameter("useCachedConnection"));
 
+        out.write("<h1>Sending JMS message To Queue</h1>");
         try {
-            out.write("<h1>Sending JMS message to Request Queue</h1>");
-            int factor1 = rdm.nextInt(1000);
-            int factor2 = rdm.nextInt(1000);
-
-            String correlationId = JMSHelper.generateCorrelationID();
-            String message = String.format("How much is %d * %d? [correlationID = %s]", factor1, factor2, correlationId);
+            int randomNumber = rdm.nextInt();
+            String message = String.format("This is a text message with random number: %d", randomNumber);
 
             Map<String, String> headerProperties = new HashMap<String, String>(4);
-            headerProperties.put("factor1", new Integer(factor1).toString());
-            headerProperties.put("factor2", new Integer(factor2).toString());
+            headerProperties.put("number_property", new Integer(randomNumber).toString());
 
             if (useCached)
-                jmsRequestReplyCachedPublisher.sendTextMessage(messagePayload, headerProperties);
+                jmsSimpleCachedPublisher.sendTextMessage(messagePayload, headerProperties);
             else
-                jmsRequestReplyPublisher.sendTextMessage(messagePayload, headerProperties);
+                jmsSimplePublisher.sendTextMessage(messagePayload, headerProperties);
 
             out.write(String.format("<p><i>%s</i></p>", message));
-            out.write("<p><i>messages sent successfully</i></p>");
+            out.write("<p><b>messages sent successfully</b></p>");
             out.close();
         } catch (Throwable exc) {
             log.error("Error Occurred", exc);

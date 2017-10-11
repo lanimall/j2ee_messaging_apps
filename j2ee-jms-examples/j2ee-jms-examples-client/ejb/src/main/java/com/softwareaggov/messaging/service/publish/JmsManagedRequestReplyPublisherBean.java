@@ -27,9 +27,6 @@ public class JmsManagedRequestReplyPublisherBean extends JmsPublisherSyncWaitBas
     @Resource(name = "jms/someManagedRequestDestination")
     private Destination jmsDestination;
 
-    @Resource(name = "jms/someManagedReplyDestination")
-    private Destination jmsReplyDestination;
-
     @Override
     public ConnectionFactory getJmsConnectionFactory() {
         return jmsConnectionFactory;
@@ -38,10 +35,5 @@ public class JmsManagedRequestReplyPublisherBean extends JmsPublisherSyncWaitBas
     @Override
     public Destination getJmsDestination() {
         return jmsDestination;
-    }
-
-    @Override
-    public Destination getJmsReplyDestination() {
-        return jmsReplyDestination;
     }
 }

@@ -23,10 +23,10 @@ import java.io.PrintWriter;
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
-@WebServlet("/RequestReplyWithSoap")
-public class RequestReplyWithSoap extends BaseMessageProducer {
+@WebServlet("/MessageProducerSyncSoapJms")
+public class MessageProducerSyncSoapJms extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
-    private static Logger log = LoggerFactory.getLogger(RequestReplyWithSoap.class);
+    private static Logger log = LoggerFactory.getLogger(MessageProducerSyncSoapJms.class);
 
     @EJB(beanName = "RequestReplySoapHttpClientBean")
     //here specify the bean name because I have multiple bean for the same interface

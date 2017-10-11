@@ -28,9 +28,6 @@ public class JmsManagedRequestReplyCachedPublisherBean extends JmsPublisherSyncW
     @Resource(name = "jms/someManagedRequestDestination")
     private Destination jmsDestination;
 
-    @Resource(name = "jms/someManagedReplyDestination")
-    private Destination jmsReplyDestination;
-
     @Override
     public ConnectionFactory getJmsConnectionFactory() {
         return new CachedConnectionFactory(jmsConnectionFactory);
@@ -39,10 +36,5 @@ public class JmsManagedRequestReplyCachedPublisherBean extends JmsPublisherSyncW
     @Override
     public Destination getJmsDestination() {
         return jmsDestination;
-    }
-
-    @Override
-    public Destination getJmsReplyDestination() {
-        return jmsReplyDestination;
     }
 }

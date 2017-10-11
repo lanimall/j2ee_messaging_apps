@@ -7,10 +7,11 @@ import javax.jws.WebService;
  */
 
 @WebService(
-        name = "RequestReplyServicePortType",
-        targetNamespace = "http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply"
+        name = "ConsumeReplyServicePortType",
+        targetNamespace = "http://com.softwareaggov.messaging/j2ee-jms-examples/consumereply"
 )
-public interface RequestReplyServicePortType {
+public interface ConsumeReplyServicePortType {
     String performMultiplicationFromStrings(String nb1, String nb2);
+
     Long getRandomNumber();
 }

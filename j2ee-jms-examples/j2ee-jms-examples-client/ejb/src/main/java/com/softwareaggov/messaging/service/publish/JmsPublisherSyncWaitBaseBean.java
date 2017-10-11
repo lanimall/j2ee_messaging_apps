@@ -36,17 +36,32 @@ public abstract class JmsPublisherSyncWaitBaseBean implements JmsPublisherLocal 
     @Resource(name = "jmsResponseWaitMillis")
     private Integer jmsResponseWaitMillis = null;
 
+    @Resource(name = "jmsReplyDestinationName")
+    private String jmsReplyDestinationName;
+
+    @Resource(name = "jmsReplyDestinationType")
+    private String jmsReplyDestinationType;
+
     private transient JMSHelper jmsHelper;
+    private transient Destination jmsReplyTo;
 
     public abstract ConnectionFactory getJmsConnectionFactory();
 
     public abstract Destination getJmsDestination();
 
-    public abstract Destination getJmsReplyDestination();
-
     @PostConstruct
     private void init() {
         this.jmsHelper = JMSHelper.createSender(getJmsConnectionFactory());
+
+        //JMS reply destination
+        jmsReplyTo = null;
+        if (null != jmsReplyDestinationName && null != jmsReplyDestinationType) {
+            try {
+                jmsReplyTo = jmsHelper.lookupDestination(jmsReplyDestinationName, jmsReplyDestinationType);
+            } catch (Exception e) {
+                throw new EJBException(e);
+            }
+        }
     }
 
     @PreDestroy
@@ -64,7 +79,7 @@ public abstract class JmsPublisherSyncWaitBaseBean implements JmsPublisherLocal 
             log.debug("in EJB: sendTextMessage");
 
         try {
-            returnText = jmsHelper.sendTextMessageAndWait(getJmsDestination(), msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, getJmsReplyDestination(), jmsResponseWaitMillis);
+            returnText = jmsHelper.sendTextMessageAndWait(getJmsDestination(), msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, jmsReplyTo, jmsResponseWaitMillis);
 
             //increment processing counter
             messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName());

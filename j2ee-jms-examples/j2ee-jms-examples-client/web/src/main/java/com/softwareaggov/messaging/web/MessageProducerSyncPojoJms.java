@@ -1,6 +1,7 @@
 package com.softwareaggov.messaging.web;
 
 import com.softwareaggov.messaging.service.publish.JmsPublisherLocal;
+import com.softwareaggov.messaging.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,18 +26,18 @@ import java.util.Map;
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
-@WebServlet("/JcaSimpleQueueMessageProducer")
-public class JcaSimpleQueueMessageProducer extends BaseMessageProducer {
+@WebServlet("/MessageProducerSendAndWait")
+public class MessageProducerSyncPojoJms extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
-    private static Logger log = LoggerFactory.getLogger(JcaSimpleQueueMessageProducer.class);
+    private static Logger log = LoggerFactory.getLogger(MessageProducerSyncPojoJms.class);
 
-    @EJB(beanName = "JmsManagedSimplePublisherBean")
+    @EJB(beanName = "JmsManagedRequestReplyPublisherBean")
     //here specify the bean name because I have multiple bean for the same interface
-    private JmsPublisherLocal jmsSimplePublisher;
+    private JmsPublisherLocal jmsRequestReplyPublisher;
 
-    @EJB(beanName = "JmsManagedSimpleCachedPublisherBean")
+    @EJB(beanName = "JmsManagedRequestReplyCachedPublisherBean")
     //here specify the bean name because I have multiple bean for the same interface
-    private JmsPublisherLocal jmsSimpleCachedPublisher;
+    private JmsPublisherLocal jmsRequestReplyCachedPublisher;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -46,21 +47,25 @@ public class JcaSimpleQueueMessageProducer extends BaseMessageProducer {
 
         boolean useCached = Boolean.parseBoolean(req.getParameter("useCachedConnection"));
 
-        out.write("<h1>Sending JMS message To Queue</h1>");
         try {
-            int randomNumber = rdm.nextInt();
-            String message = String.format("This is a text message with random number: %d", randomNumber);
+            out.write("<h1>Sending JMS message to Request Queue</h1>");
+            int factor1 = rdm.nextInt(1000);
+            int factor2 = rdm.nextInt(1000);
+
+            String correlationId = JMSHelper.generateCorrelationID();
+            String message = String.format("How much is %d * %d? [correlationID = %s]", factor1, factor2, correlationId);
 
             Map<String, String> headerProperties = new HashMap<String, String>(4);
-            headerProperties.put("number_property", new Integer(randomNumber).toString());
+            headerProperties.put("factor1", new Integer(factor1).toString());
+            headerProperties.put("factor2", new Integer(factor2).toString());
 
             if (useCached)
-                jmsSimpleCachedPublisher.sendTextMessage(messagePayload, headerProperties);
+                jmsRequestReplyCachedPublisher.sendTextMessage(messagePayload, headerProperties);
             else
-                jmsSimplePublisher.sendTextMessage(messagePayload, headerProperties);
+                jmsRequestReplyPublisher.sendTextMessage(messagePayload, headerProperties);
 
             out.write(String.format("<p><i>%s</i></p>", message));
-            out.write("<p><b>messages sent successfully</b></p>");
+            out.write("<p><i>messages sent successfully</i></p>");
             out.close();
         } catch (Throwable exc) {
             log.error("Error Occurred", exc);

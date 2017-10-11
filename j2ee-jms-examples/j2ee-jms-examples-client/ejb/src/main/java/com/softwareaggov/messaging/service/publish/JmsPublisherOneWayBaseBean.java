@@ -33,7 +33,14 @@ public abstract class JmsPublisherOneWayBaseBean implements JmsPublisherLocal {
     @Resource(name = "jmsPriority")
     private Integer jmsPriority = null;
 
+    @Resource(name = "jmsReplyDestinationName")
+    private String jmsReplyDestinationName;
+
+    @Resource(name = "jmsReplyDestinationType")
+    private String jmsReplyDestinationType;
+
     private transient JMSHelper jmsHelper;
+    private transient Destination jmsReplyTo;
 
     public abstract ConnectionFactory getJmsConnectionFactory();
 
@@ -42,6 +49,16 @@ public abstract class JmsPublisherOneWayBaseBean implements JmsPublisherLocal {
     @PostConstruct
     private void init() {
         this.jmsHelper = JMSHelper.createSender(getJmsConnectionFactory());
+
+        //JMS reply destination
+        jmsReplyTo = null;
+        if (null != jmsReplyDestinationName && null != jmsReplyDestinationType) {
+            try {
+                jmsReplyTo = jmsHelper.lookupDestination(jmsReplyDestinationName, jmsReplyDestinationType);
+            } catch (Exception e) {
+                throw new EJBException(e);
+            }
+        }
     }
 
     @PreDestroy
@@ -59,7 +76,7 @@ public abstract class JmsPublisherOneWayBaseBean implements JmsPublisherLocal {
             log.debug("in EJB: sendTextMessage");
 
         try {
-            returnText = jmsHelper.sendTextMessage(getJmsDestination(), msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, JMSHelper.generateCorrelationID(), null);
+            returnText = jmsHelper.sendTextMessage(getJmsDestination(), msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, JMSHelper.generateCorrelationID(), jmsReplyTo);
 
             //increment processing counter
             messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName());

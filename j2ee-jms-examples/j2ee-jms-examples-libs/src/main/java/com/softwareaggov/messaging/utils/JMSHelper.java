@@ -14,58 +14,38 @@ import java.util.UUID;
 
 public class JMSHelper {
     private static Logger log = LoggerFactory.getLogger(JMSHelper.class);
-
     private ConnectionFactory connectionFactory;
-    private Destination defaultDestination;
-    private String defaultDestinationName;
-    private DestinationType defaultDestinationType;
 
-    public enum DestinationType {
+    public static String DESTINATION_TYPE_QUEUE = "queue";
+    public static String DESTINATION_TYPE_TOPIC = "topic";
+
+    static public enum DestinationType {
         QUEUE,
-        TOPIC
+        TOPIC;
+
+        static public DestinationType parse(String destinationTypeName) throws Exception {
+            JMSHelper.DestinationType destinationTypeLocal = QUEUE;
+            if ("topic".equalsIgnoreCase(destinationTypeName)) {
+                destinationTypeLocal = JMSHelper.DestinationType.TOPIC;
+            } else if ("queue".equalsIgnoreCase(destinationTypeName)) {
+                destinationTypeLocal = JMSHelper.DestinationType.QUEUE;
+            } else {
+                throw new Exception("value for destinationTypeName not valid - " + ((null != destinationTypeName) ? destinationTypeName : "null"));
+            }
+            return destinationTypeLocal;
+        }
     }
 
-    public JMSHelper() {
-        super();
+    private JMSHelper(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
     }
 
     public void cleanup() {
         connectionFactory = null;
-        defaultDestination = null;
-        defaultDestinationName = null;
-        defaultDestinationType = null;
     }
 
     public ConnectionFactory getConnectionFactory() {
         return connectionFactory;
-    }
-
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
-    }
-
-    public Destination getDefaultDestination() {
-        return defaultDestination;
-    }
-
-    public void setDefaultDestination(Destination defaultDestination) {
-        this.defaultDestination = defaultDestination;
-    }
-
-    public String getDefaultDestinationName() {
-        return defaultDestinationName;
-    }
-
-    public void setDefaultDestinationName(String defaultDestinationName) {
-        this.defaultDestinationName = defaultDestinationName;
-    }
-
-    public DestinationType getDefaultDestinationType() {
-        return defaultDestinationType;
-    }
-
-    public void setDefaultDestinationType(DestinationType defaultDestinationType) {
-        this.defaultDestinationType = defaultDestinationType;
     }
 
     public String sendTextMessage(Destination destination, final String payload, final Map<String, String> headerProperties) throws JMSException {
@@ -84,31 +64,11 @@ public class JMSHelper {
             boolean transacted = false;
             session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE); // Create Session
 
-            //avoid another jndi lookup here
-            Destination destinationLocal = null;
-            if (null != destination) {
-                destinationLocal = destination;
-            } else {
-                if (null != defaultDestination) {
-                    destinationLocal = defaultDestination;
-                } else {
-                    if (!"".equals(defaultDestinationName)) {
-                        if (null != defaultDestinationType) {
-                            if (defaultDestinationType == DestinationType.QUEUE)
-                                destinationLocal = session.createQueue(defaultDestinationName);
-                            else if (defaultDestinationType == DestinationType.TOPIC)
-                                destinationLocal = session.createTopic(defaultDestinationName);
-                        } else {
-                            throw new JMSException("destination type should be defined if using the destinationName construct");
-                        }
-                    } else {
-                        throw new JMSException("destination name is null...can't do anything...");
-                    }
-                }
-            }
+            if (null == destination)
+                throw new JMSException("Destination is null...can't do anything...");
 
             // Create Message Producer
-            producer = session.createProducer(destinationLocal);
+            producer = session.createProducer(destination);
             if (null != deliveryMode)
                 producer.setDeliveryMode(deliveryMode);
 
@@ -117,7 +77,9 @@ public class JMSHelper {
 
             // Create Message
             TextMessage msg = session.createTextMessage();
-            msg.setText(payload);
+
+            if (null != payload)
+                msg.setText(payload);
 
             if (null != replyTo)
                 msg.setJMSReplyTo(replyTo);
@@ -162,31 +124,15 @@ public class JMSHelper {
             connection = connectionFactory.createConnection(); // Create connection
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE); // Create Session
 
-            //avoid another jndi lookup here
-            Destination destinationLocal = null;
-            if (null != destination) {
-                destinationLocal = destination;
-            } else {
-                if (null != defaultDestination) {
-                    destinationLocal = defaultDestination;
-                } else {
-                    if (!"".equals(defaultDestinationName)) {
-                        if (null != defaultDestinationType) {
-                            if (defaultDestinationType == DestinationType.QUEUE)
-                                destinationLocal = session.createQueue(defaultDestinationName);
-                            else if (defaultDestinationType == DestinationType.TOPIC)
-                                destinationLocal = session.createTopic(defaultDestinationName);
-                        } else {
-                            throw new JMSException("destination type should be defined if using the destinationName construct");
-                        }
-                    } else {
-                        throw new JMSException("destination name is null...can't do anything...");
-                    }
-                }
-            }
+            if (null == destination)
+                throw new JMSException("Destination is null...can't do anything...");
+
+            //here, we could fall back on creating a temp response queue if reply is not specified...likely a good thing to try
+            if (null == replyTo)
+                throw new JMSException("ReplyTo Destination is null...can't do anything...");
 
             // Create Message Producer
-            producer = session.createProducer(destinationLocal);
+            producer = session.createProducer(destination);
             if (null != deliveryMode)
                 producer.setDeliveryMode(deliveryMode);
 
@@ -200,21 +146,11 @@ public class JMSHelper {
             if (null != replyTo)
                 msg.setJMSReplyTo(replyTo);
 
-            //important: add the correlationID for sync correlation a bit later
-            String correlationId = generateCorrelationID();
-            msg.setJMSCorrelationID(correlationId);
-
-            //add the replyTo destination
-            msg.setJMSReplyTo(replyTo);
-
             if (null != msgProperties) {
                 for (Entry<String, String> entry : msgProperties.entrySet()) {
                     msg.setStringProperty(entry.getKey(), entry.getValue());
                 }
             }
-
-            //create a consumer with a selector for the correlationid
-            responseConsumer = session.createConsumer(replyTo, String.format("JMSCorrelationID='%s'", correlationId));
 
             //send the message
             producer.send(msg); // Send Message
@@ -222,18 +158,29 @@ public class JMSHelper {
             if (log.isDebugEnabled())
                 log.debug("message sent successfully");
 
+            // Create a selector to only get the reply message that matches my request message id.
+            String selector = String.format("JMSCorrelationID='%s'", msg.getJMSMessageID());
+
+            //create a consumer with the selector
+            responseConsumer = session.createConsumer(replyTo, selector);
+
+            // Start the connection
+            connection.start();
+
             //now wait for the response with a timeout (0 means infinite wait)
             if (replyWaitTimeoutMs <= 0) replyWaitTimeoutMs = 0;
-            TextMessage receivedMessage = (TextMessage) responseConsumer.receive(replyWaitTimeoutMs);
+            Message receivedMessage = responseConsumer.receive(replyWaitTimeoutMs);
 
             //if null, it means no message came within the timeout (or consumer got closed concurrently)
-            if (null == receivedMessage) {
-                if (log.isWarnEnabled())
-                    log.warn("Didn't receive message response within timeout {} for Message CorrelationID {}", replyWaitTimeoutMs, msg.getJMSCorrelationID());
-                return null;
+            if (null != receivedMessage && receivedMessage instanceof TextMessage) {
+                return ((TextMessage) receivedMessage).getText();
+            } else {
+                if (null == receivedMessage) {
+                    throw new JMSException(String.format("Didn't receive message response within timeout [%d] for Message CorrelationID [%s]", replyWaitTimeoutMs, msg.getJMSCorrelationID()));
+                } else {
+                    throw new JMSException(String.format("Message response type not expected - received: [%s] / expected: [%s]", receivedMessage.getClass().getName(), TextMessage.class.getName()));
+                }
             }
-
-            return receivedMessage.getText();
         } finally {
             if (null != producer)
                 producer.close();
@@ -249,67 +196,99 @@ public class JMSHelper {
         }
     }
 
-    public static JMSHelper createTopicSender(Hashtable<String, String> jndiEnv, final String jndiConnectionFactory, String destinationName) {
-        return createSender(jndiEnv, jndiConnectionFactory, destinationName, DestinationType.TOPIC);
+    public Destination lookupTopicDestination(String destinationName) throws JMSException {
+        return lookupDestination(destinationName, DestinationType.TOPIC);
     }
 
-    public static JMSHelper createQueueSender(Hashtable<String, String> jndiEnv, final String jndiConnectionFactory, String destinationName) {
-        return createSender(jndiEnv, jndiConnectionFactory, destinationName, DestinationType.QUEUE);
+    public Destination lookupQueueDestination(String destinationName) throws JMSException {
+        return lookupDestination(destinationName, DestinationType.QUEUE);
     }
 
-    public static JMSHelper createSender(Hashtable<String, String> jndiEnv, final String jndiConnectionFactory, String destinationName, DestinationType destinationType) {
+    public Destination lookupDestination(String destinationName, String destinationType) throws Exception {
+        return lookupDestination(destinationName, JMSHelper.DestinationType.parse(destinationType));
+    }
+
+    public Destination lookupDestination(String destinationName, DestinationType destinationType) throws JMSException {
+        Connection connection = null;
+        Session session = null;
+        Destination destinationLocal = null;
+
+        if (null == connectionFactory)
+            throw new JMSException("connection factory is null...can't do anything...");
+
+        try {
+            connection = connectionFactory.createConnection(); // Create connection
+            boolean transacted = false;
+            session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE); // Create Session
+
+            if (!"".equals(destinationName)) {
+                if (null != destinationType) {
+                    if (destinationType == DestinationType.QUEUE)
+                        destinationLocal = session.createQueue(destinationName);
+                    else if (destinationType == DestinationType.TOPIC)
+                        destinationLocal = session.createTopic(destinationName);
+                } else {
+                    throw new JMSException("destination type should be defined if using the destinationName construct");
+                }
+            } else {
+                throw new JMSException("destination name is null...can't do anything...");
+            }
+        } finally {
+            if (null != session)
+                session.close();
+
+            if (null != connection)
+                connection.close();
+        }
+        return destinationLocal;
+    }
+
+    public static Object lookupJNDI(Hashtable<String, String> jndiEnv, final String lookupName) throws NamingException {
         if (null == jndiEnv) {
             throw new IllegalArgumentException("jndi params not defined.");
-        } else if (log.isDebugEnabled()) {
+        }
+
+        if (log.isDebugEnabled()) {
             for (String key : jndiEnv.keySet()) {
                 log.debug(String.format("Context: %s - %s", key.toString(), jndiEnv.get(key)));
             }
         }
 
-        if (null == jndiConnectionFactory)
-            throw new IllegalArgumentException("jms.connection.factory not defined.");
+        if (null == lookupName)
+            throw new IllegalArgumentException("lookupName not defined.");
 
         // Lookup Connection Factory
-        ConnectionFactory connectionFactory = null;
-        try {
-            Context namingContext = new InitialContext(jndiEnv);
+        Object jndiLookup = null;
+        Context namingContext = new InitialContext(jndiEnv);
 
+        if (log.isDebugEnabled())
+            log.debug("Context Created : " + namingContext.toString());
+
+        jndiLookup = (ConnectionFactory) namingContext.lookup(lookupName);
+
+        if (null != jndiLookup) {
             if (log.isDebugEnabled())
-                log.debug("Context Created : " + namingContext.toString());
-
-            connectionFactory = (ConnectionFactory) namingContext.lookup(jndiConnectionFactory);
-
-            if (log.isDebugEnabled())
-                log.debug("Lookup Connection Factory Success : " + connectionFactory.toString());
-        } catch (NamingException e) {
-            log.error("Issue with JNDI lookup", e);
+                log.debug("Lookup JNDI Success - Impl Class: {}" + jndiLookup.getClass().getName());
+        } else {
+            throw new NamingException("Lookup JNDI failed - object name could not be found");
         }
 
-        if (null == jndiConnectionFactory)
-            throw new IllegalArgumentException("JNDI Lookup failed: jms.connection.factory could not be found in the JNDI");
-
-        return createSender(connectionFactory, destinationName, destinationType);
-    }
-
-    public static JMSHelper createSender(ConnectionFactory connectionFactory, String defaultDestinationName, DestinationType defaultDestinationType) {
-        JMSHelper msgSender = new JMSHelper();
-        msgSender.setConnectionFactory(connectionFactory);
-        msgSender.setDefaultDestinationName(defaultDestinationName);
-        msgSender.setDefaultDestinationType(defaultDestinationType);
-
-        return msgSender;
+        return jndiLookup;
     }
 
     public static JMSHelper createSender(ConnectionFactory connectionFactory) {
-        JMSHelper msgSender = new JMSHelper();
-        msgSender.setConnectionFactory(connectionFactory);
-        return msgSender;
+        return new JMSHelper(connectionFactory);
     }
 
-    public static JMSHelper createSender(ConnectionFactory connectionFactory, Destination defaultDestination) {
-        JMSHelper msgSender = new JMSHelper();
-        msgSender.setConnectionFactory(connectionFactory);
-        msgSender.setDefaultDestination(defaultDestination);
+    public static JMSHelper createSender(Hashtable<String, String> jndiEnv, String connectionFactoryName) throws NamingException, JMSException {
+        JMSHelper msgSender = null;
+        Object connectionFactory = JMSHelper.lookupJNDI(jndiEnv, connectionFactoryName);
+
+        if (null != connectionFactory && connectionFactory instanceof ConnectionFactory) {
+            msgSender = new JMSHelper((ConnectionFactory) connectionFactory);
+        } else {
+            throw new JMSException("Unexpected connectionFactory object returned from JNDI");
+        }
 
         return msgSender;
     }

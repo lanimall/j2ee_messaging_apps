@@ -4,20 +4,15 @@
         xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-ejb-jar-bnd_1_1.xsd"
         version="1.1">
 
-    <session name="JmsManagedSimplePublisherBean">
-        <ejb-ref name="" binding-name=""></ejb-ref>
-        <interface binding-name="" class=""
-        <ejb-name>JmsManagedSimpleTopicPublisherBean</ejb-name>
-        <ejb-class>com.softwareaggov.messaging.service.publish.JmsManagedOneWayTopicPublisherBean</ejb-class>
-
+    <session name="JmsManagedOneWayPublisherBean">
         <resource-ref name="jms/someManagedCF" binding-name="AppSimpleTestQueueConnectionFactory"></resource-ref>
         <resource-ref name="jms/someManagedSimpleDestination" binding-name="AppSimpleQueue"></resource-ref>
     </session>
-    <session name="JmsManagedSimpleTopicPublisherBean">
+    <session name="JmsManagedOneWayTopicPublisherBean">
         <resource-ref name="jms/someManagedCF" binding-name="AppSimpleTestTopicConnectionFactory"></resource-ref>
         <resource-ref name="jms/someManagedSimpleDestination" binding-name="AppSimpleTopic"></resource-ref>
     </session>
-    <session name="JmsManagedSimpleCachedPublisherBean">
+    <session name="JmsManagedOneWayCachedPublisherBean">
         <resource-ref name="jms/someManagedCF" binding-name="AppSimpleTestQueueConnectionFactory"></resource-ref>
         <resource-ref name="jms/someManagedSimpleDestination" binding-name="AppSimpleQueue"></resource-ref>
     </session>

@@ -15,7 +15,7 @@ import javax.jms.Destination;
  * Created by fabien.sanglier on 6/28/16.
  */
 
-@Stateless(mappedName = "JmsManagedSimpleTopicPublisherBean")
+@Stateless(mappedName = "JmsManagedOneWayTopicPublisherBean")
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Local(JmsPublisherLocal.class)
 public class JmsManagedOneWayTopicPublisherBean extends JmsPublisherOneWayBaseBean {

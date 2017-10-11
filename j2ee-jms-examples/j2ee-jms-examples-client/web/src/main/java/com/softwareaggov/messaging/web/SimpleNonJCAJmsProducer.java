@@ -5,6 +5,9 @@ import com.softwareaggov.messaging.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +31,7 @@ public class SimpleNonJCAJmsProducer extends BaseMessageProducer {
     private static Logger log = LoggerFactory.getLogger(SimpleNonJCAJmsProducer.class);
 
     protected JMSHelper jmsHelper;
+    protected Destination defaultDestination;
 
     @Override
     public void init() throws ServletException {
@@ -54,22 +58,26 @@ public class SimpleNonJCAJmsProducer extends BaseMessageProducer {
         if (null == jmsConnectionFactory)
             throw new IllegalArgumentException("jms.connection.factory not defined.");
 
+        try {
+            jmsHelper = JMSHelper.createSender(jndiEnv, jmsConnectionFactory);
+        } catch (NamingException e) {
+            throw new ServletException(e);
+        } catch (JMSException e) {
+            throw new ServletException(e);
+        }
+
         //JMS destination
         String destinationTypeName = AppConfig.getInstance().getPropertyHelper().getProperty("jms.destination.type", "queue");
-        JMSHelper.DestinationType destinationType = JMSHelper.DestinationType.QUEUE;
-        if ("topic".equalsIgnoreCase(destinationTypeName)) {
-            destinationType = JMSHelper.DestinationType.TOPIC;
-        } else if ("queue".equalsIgnoreCase(destinationTypeName)) {
-            destinationType = JMSHelper.DestinationType.QUEUE;
-        } else {
-            throw new ServletException("jms.destination.type not valid.");
-        }
 
         String destinationName = AppConfig.getInstance().getPropertyHelper().getProperty("jms.destination.name");
         if (null == destinationName)
             throw new ServletException("jms.destination.name not defined.");
 
-        jmsHelper = JMSHelper.createSender(jndiEnv, jmsConnectionFactory, destinationName, destinationType);
+        try {
+            defaultDestination = jmsHelper.lookupDestination(destinationName, destinationTypeName);
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
     }
 
     @Override
@@ -83,13 +91,17 @@ public class SimpleNonJCAJmsProducer extends BaseMessageProducer {
             int randomNumber = rdm.nextInt();
             String message = String.format("This is a text message with random number: %d", randomNumber);
 
-            Map<String,String> headerProperties = new HashMap<String, String>(4);
+            Map<String, String> headerProperties = new HashMap<String, String>(4);
             headerProperties.put("number_property", new Integer(randomNumber).toString());
 
-            jmsHelper.sendTextMessage(messagePayload, headerProperties);
+            Destination destinationLocal = defaultDestination;
+            //we could allow setting up the destination from request parameters here...
+
+            jmsHelper.sendTextMessage(destinationLocal, messagePayload, headerProperties);
+
             out.write(String.format("<p><i>%s</i></p>", message));
             out.write("<p><b>messages sent successfully</b></p>");
-        } catch (Exception exc){
+        } catch (Exception exc) {
             log.error("Error Occurred", exc);
             throw new ServletException(exc);
         } finally {
