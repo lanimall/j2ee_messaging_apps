@@ -19,7 +19,7 @@ import javax.jms.MessageListener;
  * @author Fabien Sanglier
  */
 
-@MessageDriven(name = "SimpleConsumerBean")
+@MessageDriven
 public class SimpleConsumerBean extends AbstractConsumeMDB implements MessageListener, MessageDrivenBean {
     private static final long serialVersionUID = -4602758394560935601L;
 
