@@ -1,6 +1,6 @@
 package com.softwareaggov.messaging.web;
 
-import com.softwareaggov.messaging.service.utils.CounterSingletonLocal;
+import com.softwareaggov.messaging.service.utils.CounterLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class CountersServlet extends BaseMessageProducer {
     private static Logger log = LoggerFactory.getLogger(CountersServlet.class);
 
     @EJB
-    private CounterSingletonLocal messageProcessingCounter;
+    private CounterLocal messageProcessingCounter;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)

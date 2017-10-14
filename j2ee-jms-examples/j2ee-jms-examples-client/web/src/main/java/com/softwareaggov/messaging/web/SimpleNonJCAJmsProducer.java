@@ -1,7 +1,7 @@
 package com.softwareaggov.messaging.web;
 
-import com.softwareaggov.messaging.utils.AppConfig;
-import com.softwareaggov.messaging.utils.JMSHelper;
+import com.softwareaggov.messaging.libs.utils.AppConfig;
+import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <name>j2ee-jms-examples</name>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.softwareaggov.messaging</groupId>
@@ -19,6 +20,8 @@
         <module>j2ee-jms-examples-server</module>
         <module>j2ee-jms-examples-client</module>
         <module>j2ee-jms-examples-libs</module>
+        <module>SimpleJmsSend</module>
+        <module>SimpleJmsConsume</module>
     </modules>
 
     <properties>
@@ -32,8 +35,8 @@
         <version.surefire.plugin>2.10</version.surefire.plugin>
 
         <!-- maven-compiler-plugin -->
-        <maven.compiler.target>1.6</maven.compiler.target>
-        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
 
         <slf4j.version>1.7.1</slf4j.version>
         <junit.version>4.11</junit.version>
@@ -59,6 +62,20 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${version.surefire.plugin}</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
     <profiles>
         <profile>

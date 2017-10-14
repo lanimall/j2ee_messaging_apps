@@ -1,6 +1,6 @@
 package com.softwareaggov.messaging.service.subscribe;
 
-import com.softwareaggov.messaging.service.utils.CounterSingletonLocal;
+import com.softwareaggov.messaging.service.utils.CounterLocal;
 import com.softwareaggov.messaging.service.utils.MessageProcessingLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +22,12 @@ public abstract class BaseProcessingConsumer implements MessageDrivenBean {
     private MessageProcessingLocal messageProcessing;
 
     @EJB
-    private CounterSingletonLocal messageProcessingCounter;
+    private CounterLocal messageProcessingCounter;
 
-    @Resource(name="mockSleepTimeInMillis")
+    @Resource(name = "mockSleepTimeInMillis")
     private Long mockSleepTimeInMillis = 0L;
 
-    @Resource(name="mockExceptionsCountInterval")
+    @Resource(name = "mockExceptionsCountInterval")
     private Integer mockExceptionsCountInterval = 0;
 
     private transient MessageDrivenContext mdbContext;
@@ -47,7 +47,7 @@ public abstract class BaseProcessingConsumer implements MessageDrivenBean {
     }
 
     protected void processMessage(Message rcvMessage) {
-        if(log.isDebugEnabled())
+        if (log.isDebugEnabled())
             log.debug("ProcessMessage start");
 
         try {
@@ -55,12 +55,12 @@ public abstract class BaseProcessingConsumer implements MessageDrivenBean {
 
             messageProcessing.processSimpleQueueResponseMessage(rcvMessage);
 
-            if(null != mockSleepTimeInMillis && mockSleepTimeInMillis > 0) {
+            if (null != mockSleepTimeInMillis && mockSleepTimeInMillis > 0) {
                 log.debug("Sleeping " + mockSleepTimeInMillis + " to mock processing time...");
                 Thread.sleep(mockSleepTimeInMillis);
             }
 
-            if(null != mockExceptionsCountInterval && mockExceptionsCountInterval > 0) {
+            if (null != mockExceptionsCountInterval && mockExceptionsCountInterval > 0) {
                 if (newCount % mockExceptionsCountInterval == 0) {
                     throw new EJBException("This is a mocked exception to mock failed processing");
                 }

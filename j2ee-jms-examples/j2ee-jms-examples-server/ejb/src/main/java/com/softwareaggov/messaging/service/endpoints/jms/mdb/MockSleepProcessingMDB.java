@@ -23,7 +23,7 @@ public class MockSleepProcessingMDB extends AbstractConsumeReply implements Mess
 
     private static Logger log = LoggerFactory.getLogger(MockSleepProcessingMDB.class);
 
-    @EJB(beanName = "MockSleepMDBProcessorBean", beanInterface = MDBProcessorLocal.class)
+    @EJB(beanName = "MockSleepBean", beanInterface = MDBProcessorLocal.class)
     private MDBProcessorLocal messageProcessing;
 
     @Override

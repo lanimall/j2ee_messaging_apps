@@ -1,7 +1,7 @@
 package com.softwareaggov.messaging.service.publish;
 
-import com.softwareaggov.messaging.service.utils.CounterSingletonLocal;
-import com.softwareaggov.messaging.utils.JMSHelper;
+import com.softwareaggov.messaging.libs.utils.JMSHelper;
+import com.softwareaggov.messaging.service.utils.CounterLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ public abstract class JmsPublisherOneWayBaseBean implements JmsPublisherLocal {
     private static Logger log = LoggerFactory.getLogger(JmsPublisherOneWayBaseBean.class);
 
     @EJB
-    private CounterSingletonLocal messageProcessingCounter;
+    private CounterLocal messageProcessingCounter;
 
     @Resource(name = "jmsDeliveryMode")
     private Integer jmsDeliveryMode = null;

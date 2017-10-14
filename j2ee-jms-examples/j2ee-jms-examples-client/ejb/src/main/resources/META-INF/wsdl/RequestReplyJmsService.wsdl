@@ -2,7 +2,6 @@
 <definitions name="RequestReplyService"
              targetNamespace="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply"
              xmlns="http://schemas.xmlsoap.org/wsdl/"
-             xmlns:soapjms="http://www.w3.org/2010/soapjms/"
              xmlns:tns="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
              xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
@@ -10,7 +9,8 @@
              xmlns:jms="http://schemas.xmlsoap.org/wsdl/jms/">
     <types>
         <xsd:schema>
-            <xsd:import namespace="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply" schemaLocation="RequestReplyService_schema1.xsd"/>
+            <xsd:import namespace="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply"
+                        schemaLocation="RequestReplyService_schema1.xsd"/>
         </xsd:schema>
     </types>
     <message name="performMultiplicationFromStringsResponse">
@@ -31,15 +31,19 @@
     </message>
     <portType name="RequestReplyServicePortType">
         <operation name="performMultiplicationFromStrings">
-            <input message="tns:performMultiplicationFromStrings" wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyServicePortType/performMultiplicationFromStringsRequest">
+            <input message="tns:performMultiplicationFromStrings"
+                   wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyServicePortType/performMultiplicationFromStringsRequest">
             </input>
-            <output message="tns:performMultiplicationFromStringsResponse" wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyServicePortType/performMultiplicationFromStringsResponse">
+            <output message="tns:performMultiplicationFromStringsResponse"
+                    wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyServicePortType/performMultiplicationFromStringsResponse">
             </output>
         </operation>
         <operation name="getRandomNumber">
-            <input message="tns:getRandomNumber" wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyServicePortType/getRandomNumberRequest">
+            <input message="tns:getRandomNumber"
+                   wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyServicePortType/getRandomNumberRequest">
             </input>
-            <output message="tns:getRandomNumberResponse" wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyServicePortType/getRandomNumberResponse">
+            <output message="tns:getRandomNumberResponse"
+                    wsam:Action="http://com.softwareaggov.messaging/j2ee-jms-examples/requestreply/RequestReplyServicePortType/getRandomNumberResponse">
             </output>
         </operation>
     </portType>
@@ -76,7 +80,8 @@
             <!--<soapjms:jndiConnectionFactoryName>AppReqReplyQueueConnectionFactory</soapjms:jndiConnectionFactoryName>-->
 
             <!-- With RA - Using Temporary queues for the reply -->
-            <soap:address location="jms:jndi:AppSoapJmsRequestQueue?jndiConnectionFactoryName=AppReqReplyQueueConnectionFactory&amp;targetService=RequestReplyServicePortType"/>
+            <soap:address
+                    location="jms:jndi:AppSoapJmsRequestQueue?jndiConnectionFactoryName=AppReqReplyQueueConnectionFactory&amp;targetService=RequestReplyServicePortType"/>
 
             <!-- With RA - Using Permanent queue for the reply (using a RA reference for the replyTo causes exception so far...) -->
             <!--<soap:address location="jms:jndi:AppSoapJmsRequestQueue?jndiConnectionFactoryName=AppReqReplyQueueConnectionFactory&amp;targetService=RequestReplyServicePortType&amp;replyToName=AppReplyQueue"/>-->

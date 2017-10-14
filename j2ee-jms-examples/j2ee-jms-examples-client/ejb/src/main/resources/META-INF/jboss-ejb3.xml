@@ -11,7 +11,9 @@
     <jboss:enterprise-beans>
         <session>
             <ejb-name>JmsManagedOneWayPublisherBean</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.service.publish.JmsManagedOneWayPublisherBean</ejb-class>
+            <ejb-class>
+                com.softwareaggov.messaging.com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsManagedOneWayPublisherBean
+            </ejb-class>
             <resource-ref>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
                 <res-type>javax.jms.QueueConnectionFactory</res-type>
@@ -59,7 +61,9 @@
         </session>
         <session>
             <ejb-name>JmsManagedOneWayCachedPublisherBean</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.service.publish.JmsManagedOneWayCachedPublisherBean</ejb-class>
+            <ejb-class>
+                com.softwareaggov.messaging.com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsManagedOneWayCachedPublisherBean
+            </ejb-class>
             <resource-ref>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
                 <res-type>javax.jms.QueueConnectionFactory</res-type>
