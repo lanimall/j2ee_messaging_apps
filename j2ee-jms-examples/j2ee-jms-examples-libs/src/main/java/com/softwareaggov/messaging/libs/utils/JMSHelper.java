@@ -69,6 +69,7 @@ public class JMSHelper {
 
             // Create Message Producer
             producer = session.createProducer(destination);
+
             if (null != deliveryMode && deliveryMode >= 0)
                 producer.setDeliveryMode(deliveryMode);
 
@@ -77,7 +78,6 @@ public class JMSHelper {
 
             // Create Message
             TextMessage msg = session.createTextMessage();
-
             if (null != payload)
                 msg.setText(payload);
 

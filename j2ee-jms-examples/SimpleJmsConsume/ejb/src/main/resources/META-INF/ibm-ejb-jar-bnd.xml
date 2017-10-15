@@ -5,6 +5,6 @@
         version="1.1">
 
     <message-driven name="SimpleConsumerBean">
-        <jca-adapter activation-spec-binding-name="SimpleConsumer"/>
+        <jca-adapter activation-spec-binding-name="SimpleJmsConsumer"/>
     </message-driven>
 </ejb-jar-bnd>
