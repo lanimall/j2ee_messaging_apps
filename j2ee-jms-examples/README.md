@@ -2,6 +2,7 @@ j2ee-jms-examples: JMS example using multiple Java EE 6 patterns
 ==============================================================================================
 
 Author: Fabien Sanglier
+
 Source: <https://github.com/lanimall/messaging-samples/tree/master/j2ee-jms-examples>
 
 What is it?
