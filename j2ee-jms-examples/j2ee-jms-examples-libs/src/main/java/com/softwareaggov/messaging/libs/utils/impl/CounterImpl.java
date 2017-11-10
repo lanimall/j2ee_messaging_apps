@@ -4,9 +4,8 @@ import com.softwareaggov.messaging.libs.utils.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Schedule;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 /**
  * Created by fabien.sanglier on 6/28/16.
@@ -19,11 +18,27 @@ public class CounterImpl implements Counter {
     private volatile Long lastCounterCheckpointTime;
     private volatile HashMap<String, Long> counterPreviousCheckpoint;
     private volatile HashMap<String, Long> countersRates;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledFuture<?> rateCalculationHander;
 
     public CounterImpl() {
         this.counters = new ConcurrentHashMap<String, Long>();
         this.counterPreviousCheckpoint = new HashMap<String, Long>();
         this.countersRates = new HashMap<String, Long>();
+
+        final Runnable calculateRates = new Runnable() {
+            public void run() {
+                calculateRates();
+            }
+        };
+        rateCalculationHander = scheduler.scheduleAtFixedRate(calculateRates, 10, 5, TimeUnit.SECONDS);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        if (null != rateCalculationHander)
+            rateCalculationHander.cancel(true);
     }
 
     @Override
@@ -79,8 +94,7 @@ public class CounterImpl implements Counter {
         return counters.replace(key, new Long(0));
     }
 
-    @Schedule(hour = "*", minute = "*", second = "*/5", persistent = false, info = "rate calculation timer")
-    public void calculateRates() {
+    private void calculateRates() {
         long now = new Date().getTime();
         long timeSinceLastCheckpoint = 0L;
         if (null != lastCounterCheckpointTime) {
