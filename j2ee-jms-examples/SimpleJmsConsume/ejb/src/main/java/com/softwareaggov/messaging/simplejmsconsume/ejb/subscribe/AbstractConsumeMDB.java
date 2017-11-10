@@ -108,8 +108,11 @@ public abstract class AbstractConsumeMDB implements MessageListener, MessageDriv
                     int deliveryMode = msg.getJMSDeliveryMode();
                     int priority = msg.getJMSPriority();
 
-                    //get MessageID from message, and set the reply correlationID with it
-                    String correlationId = msg.getJMSMessageID();
+                    // Get correlationID from message if set.
+                    // If not set, then get the MessageID from message, and set the reply correlationID with it
+                    String correlationId = msg.getJMSCorrelationID();
+                    if (null == correlationId || "".equals(correlationId))
+                        correlationId = msg.getJMSMessageID();
 
                     //send reply
                     jmsHelper.sendTextMessage(replyTo, postProcessingPayload, postProcessingHeaderProperties, deliveryMode, priority, correlationId, null);
