@@ -4,11 +4,7 @@ import com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.Mess
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
-import javax.ejb.MessageDrivenBean;
-import javax.jms.ConnectionFactory;
+import javax.ejb.*;
 import javax.jms.MessageListener;
 
 /**
@@ -20,6 +16,7 @@ import javax.jms.MessageListener;
  */
 
 @MessageDriven
+@TransactionManagement(value = TransactionManagementType.BEAN)
 public class SimpleConsumerBean extends AbstractConsumeMDB implements MessageListener, MessageDrivenBean {
     private static final long serialVersionUID = -4602758394560935601L;
 
@@ -29,9 +26,6 @@ public class SimpleConsumerBean extends AbstractConsumeMDB implements MessageLis
     @EJB(beanName = "MockSleepBean")
     private MessageProcessorLocal messageProcessor;
 
-    @Resource(name = "jms/someReplyManagedCF")
-    private ConnectionFactory jmsConnectionFactory;
-
     public SimpleConsumerBean() {
         super();
     }
@@ -39,10 +33,5 @@ public class SimpleConsumerBean extends AbstractConsumeMDB implements MessageLis
     @Override
     protected MessageProcessorLocal getMessageProcessor() {
         return messageProcessor;
-    }
-
-    @Override
-    public ConnectionFactory getReplyConnectionFactory() {
-        return jmsConnectionFactory;
     }
 }

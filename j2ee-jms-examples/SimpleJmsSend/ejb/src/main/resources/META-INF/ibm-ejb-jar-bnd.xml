@@ -4,18 +4,39 @@
         xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-ejb-jar-bnd_1_1.xsd"
         version="1.1">
 
-    <session name="JmsManagedOneWayPublisherBean">
+    <session name="JmsSendAndForgetBean">
         <resource-ref name="jms/someManagedCF" binding-name="SimpleJmsSendConnectionFactory"></resource-ref>
         <resource-ref name="jms/someManagedDestination" binding-name="SimpleJmsSendDestination"></resource-ref>
+        <env-entry name="jmsDeliveryMode" value="-1"/>
+        <env-entry name="jmsPriority" value="-1"/>
+        <env-entry name="jmsReplyDestinationName" value=""/>
+        <env-entry name="jmsReplyDestinationType" value=""/>
     </session>
-    <session name="JmsManagedOneWayCachedPublisherBean">
+    <session name="JmsSendAndWaitBean">
         <resource-ref name="jms/someManagedCF" binding-name="SimpleJmsSendConnectionFactory"></resource-ref>
         <resource-ref name="jms/someManagedDestination" binding-name="SimpleJmsSendDestination"></resource-ref>
+        <env-entry name="jmsDeliveryMode" value="-1"/>
+        <env-entry name="jmsPriority" value="-1"/>
+        <env-entry name="jmsReplyDestinationName" value=""/>
+        <env-entry name="jmsReplyDestinationType" value=""/>
+        <env-entry name="jmsResponseWaitMillis" value="10000"/>
     </session>
-    <session name="JmsManagedSendAndWaitBean">
+    <session name="JmsSendAndForgetCachedConnectionTestBean">
         <resource-ref name="jms/someManagedCF" binding-name="SimpleJmsSendConnectionFactory"></resource-ref>
         <resource-ref name="jms/someManagedDestination" binding-name="SimpleJmsSendDestination"></resource-ref>
+        <env-entry name="jmsDeliveryMode" value="-1"/>
+        <env-entry name="jmsPriority" value="-1"/>
+        <env-entry name="jmsReplyDestinationName" value=""/>
+        <env-entry name="jmsReplyDestinationType" value=""/>
     </session>
-    <session name="JMSNonJCAOneWayPublisherBean">
+    <session name="JmsSendAndForgetNonJCATestBean">
+        <env-entry name="jmsDeliveryMode" value="-1"/>
+        <env-entry name="jmsPriority" value="-1"/>
+        <env-entry name="jmsReplyDestinationName" value=""/>
+        <env-entry name="jmsReplyDestinationType" value=""/>
+        <env-entry name="jms.jndi.contextfactory" value=""/>
+        <env-entry name="jms.jndi.connection.url" value=""/>
+        <env-entry name="jms.connectionfactory.name" value=""/>
+        <env-entry name="jms.default.destination.name" value=""/>
     </session>
 </ejb-jar-bnd>

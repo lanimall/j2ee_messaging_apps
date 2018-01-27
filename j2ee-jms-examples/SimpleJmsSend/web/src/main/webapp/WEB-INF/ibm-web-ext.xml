@@ -9,7 +9,7 @@
     <auto-encode-requests value="true"/>
     <auto-encode-responses value="false"/>
     <enable-directory-browsing value="false"/>
-    <enable-file-serving value="false"/>
+    <enable-file-serving value="true"/>
     <pre-compile-jsps value="false"/>
     <enable-reloading value="true"/>
     <enable-serving-servlets-by-class-name value="true"/>

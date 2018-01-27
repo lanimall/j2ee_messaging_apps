@@ -1,6 +1,7 @@
-package com.softwareaggov.messaging.simplejmssendoneway.web;
+package com.softwareaggov.messaging.simplejmssendoneway.web.compareTests;
 
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;
+import com.softwareaggov.messaging.simplejmssendoneway.web.BaseMessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,15 +24,12 @@ import java.io.PrintWriter;
  * @author Fabien Sanglier
  * @HttpServlet}. </p>
  */
-@WebServlet("/SimpleJmsSendOneWay")
-public class SimpleJmsSendOneWay extends BaseMessageProducer {
+@WebServlet("/JmsSendAndForgetCachedConnection")
+public class JmsSendAndForgetCachedConnection extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
-    private static Logger log = LoggerFactory.getLogger(SimpleJmsSendOneWay.class);
+    private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetCachedConnection.class);
 
-    @EJB(beanName = "JmsManagedOneWayPublisherBean")
-    private JmsPublisherLocal jmsSimplePublisher;
-
-    @EJB(beanName = "JmsManagedOneWayCachedPublisherBean")
+    @EJB(beanName = "JmsSendAndForgetCachedConnectionTestBean")
     private JmsPublisherLocal jmsSimpleCachedPublisher;
 
     @Override
@@ -40,15 +38,9 @@ public class SimpleJmsSendOneWay extends BaseMessageProducer {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
 
-        boolean useCached = Boolean.parseBoolean(req.getParameter("useCachedConnection"));
-
         out.write("<h1>Sending JMS message To Queue</h1>");
         try {
-            String response = "";
-            if (useCached)
-                response = jmsSimpleCachedPublisher.sendTextMessage(messagePayload, messageProperties);
-            else
-                response = jmsSimplePublisher.sendTextMessage(messagePayload, messageProperties);
+            String response = jmsSimpleCachedPublisher.sendTextMessage(messagePayload, messageProperties);
 
             out.write("<p><b>messages sent successfully</b></p>");
             out.write(String.format("<div><p>Response:</p><p>%s</p></div>", ((null != response) ? response : "null")));

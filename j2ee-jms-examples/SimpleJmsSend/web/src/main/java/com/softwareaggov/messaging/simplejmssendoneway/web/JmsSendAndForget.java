@@ -14,17 +14,21 @@ import java.io.PrintWriter;
 
 /**
  * <p>
- * A simplistic (on purpose) servlet that sends JMS messages without  JCA construct (no connection pooling and the likes...)
+ * A servlet that sends several JMS messages to a JMS queue or a topic
+ * as defined by the jmsDestination variable that is bound to a JCA admin object (hence using JCA construct)
  * </p>
+ * <p/>
+ * The servlet is registered and mapped to /JcaQueueProxyMessageProducer using the {@linkplain javax.servlet.annotation.WebServlet
  *
  * @author Fabien Sanglier
+ * @HttpServlet}. </p>
  */
-@WebServlet("/SimpleJmsNonJCASendOneWay")
-public class SimpleJmsNonJCASendOneWay extends BaseMessageProducer {
-    private static final long serialVersionUID = 1L;
-    private static Logger log = LoggerFactory.getLogger(SimpleJmsNonJCASendOneWay.class);
+@WebServlet("/JmsSendAndForget")
+public class JmsSendAndForget extends BaseMessageProducer {
+    private static final long serialVersionUID = -8314702649252239L;
+    private static Logger log = LoggerFactory.getLogger(JmsSendAndForget.class);
 
-    @EJB(beanName = "JMSNonJCAOneWayPublisherBean")
+    @EJB(beanName = "JmsSendAndForgetBean")
     private JmsPublisherLocal jmsSimplePublisher;
 
     @Override
@@ -32,8 +36,6 @@ public class SimpleJmsNonJCASendOneWay extends BaseMessageProducer {
             throws ServletException, IOException {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
-
-        boolean useCached = Boolean.parseBoolean(req.getParameter("useCachedConnection"));
 
         out.write("<h1>Sending JMS message To Queue</h1>");
         try {

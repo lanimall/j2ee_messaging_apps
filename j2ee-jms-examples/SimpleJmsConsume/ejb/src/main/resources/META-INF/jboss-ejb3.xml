@@ -16,61 +16,61 @@
                 <activation-config-property>
                     <activation-config-property-name>destinationJndiName</activation-config-property-name>
                     <activation-config-property-value>
-                        ${SimpleJmsConsume.SimpleConsumerBean.mdb.activationspecs.destinationJndiName:JMSSamples/SimpleQueue}
+                        ${SimpleJmsConsume.SimpleConsumerBean.activationspecs.destinationJndiName:JMSSamples/SimpleQueue}
                     </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>destinationType</activation-config-property-name>
                     <activation-config-property-value>
-                        ${SimpleJmsConsume.SimpleConsumerBean.mdb.activationspecs.destinationType:javax.jms.Queue}
+                        ${SimpleJmsConsume.SimpleConsumerBean.activationspecs.destinationType:javax.jms.Queue}
                     </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>connectionFactoryJndiName</activation-config-property-name>
                     <activation-config-property-value>
-                        ${SimpleJmsConsume.SimpleConsumerBean.mdb.activationspecs.connectionFactoryJndiName:JBOSSSubQCF}
+                        ${SimpleJmsConsume.SimpleConsumerBean.activationspecs.connectionFactoryJndiName:JBOSSSubQCF}
                     </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>batchSize</activation-config-property-name>
                     <activation-config-property-value>
-                        ${SimpleJmsConsume.SimpleConsumerBean.mdb.activationspecs.batchSize:1}
+                        ${SimpleJmsConsume.SimpleConsumerBean.activationspecs.batchSize:1}
                     </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxPoolSize</activation-config-property-name>
                     <activation-config-property-value>
-                        ${SimpleJmsConsume.SimpleConsumerBean.mdb.activationspecs.maxPoolSize:8}
+                        ${SimpleJmsConsume.SimpleConsumerBean.activationspecs.maxPoolSize:8}
                     </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>maxWaitTime</activation-config-property-name>
                     <activation-config-property-value>
-                        ${SimpleJmsConsume.SimpleConsumerBean.mdb.activationspecs.maxWaitTime:300}
+                        ${SimpleJmsConsume.SimpleConsumerBean.activationspecs.maxWaitTime:300}
                     </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>redeliveryAttempts</activation-config-property-name>
                     <activation-config-property-value>
-                        ${SimpleJmsConsume.SimpleConsumerBean.mdb.activationspecs.redeliveryAttempts:50}
+                        ${SimpleJmsConsume.SimpleConsumerBean.activationspecs.redeliveryAttempts:50}
                     </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>redeliveryInterval</activation-config-property-name>
                     <activation-config-property-value>
-                        ${SimpleJmsConsume.SimpleConsumerBean.mdb.activationspecs.redeliveryInterval:1}
+                        ${SimpleJmsConsume.SimpleConsumerBean.activationspecs.redeliveryInterval:1}
                     </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>reconnectAttempts</activation-config-property-name>
                     <activation-config-property-value>
-                        ${SimpleJmsConsume.SimpleConsumerBean.mdb.activationspecs.reconnectAttempts:50}
+                        ${SimpleJmsConsume.SimpleConsumerBean.activationspecs.reconnectAttempts:50}
                     </activation-config-property-value>
                 </activation-config-property>
                 <activation-config-property>
                     <activation-config-property-name>reconnectInterval</activation-config-property-name>
                     <activation-config-property-value>
-                        ${SimpleJmsConsume.SimpleConsumerBean.mdb.activationspecs.reconnectInterval:20}
+                        ${SimpleJmsConsume.SimpleConsumerBean.activationspecs.reconnectInterval:20}
                     </activation-config-property-value>
                 </activation-config-property>
             </activation-config>
@@ -79,6 +79,27 @@
                 <res-type>javax.jms.ConnectionFactory</res-type>
                 <jndi-name>java:/jms/JmsQueueConnectionFactory</jndi-name>
             </resource-ref>
+            <env-entry>
+                <env-entry-name>jmsMessageEnableReply</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${SimpleJmsConsume.SimpleConsumerBean.jmsMessageEnableReply:true}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsMessageReplyOverridesDefault</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${SimpleJmsConsume.SimpleConsumerBean.jmsMessageReplyOverridesDefault:true}
+                </env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsReplyDestinationName</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${SimpleJmsConsume.SimpleConsumerBean.jmsReplyDestinationName:}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsReplyDestinationType</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${SimpleJmsConsume.SimpleConsumerBean.jmsReplyDestinationType:}</env-entry-value>
+            </env-entry>
         </message-driven>
         <session>
             <ejb-name>MockSleepBean</ejb-name>
@@ -86,8 +107,29 @@
             <env-entry>
                 <env-entry-name>mockSleepTimeInMillis</env-entry-name>
                 <env-entry-type>java.lang.Long</env-entry-type>
-                <env-entry-value>${SimpleJmsConsume.SimpleConsumerBean.mdb.mockSleepTimeInMillis:0}</env-entry-value>
+                <env-entry-value>${SimpleJmsConsume.MockSleepBean.mockSleepTimeInMillis:0}</env-entry-value>
             </env-entry>
+        </session>
+        <session>
+            <ejb-name>MockSleepAndExceptionsBean</ejb-name>
+            <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.MockSleepAndExceptionsBean
+            </ejb-class>
+            <env-entry>
+                <env-entry-name>mockSleepTimeInMillis</env-entry-name>
+                <env-entry-type>java.lang.Long</env-entry-type>
+                <env-entry-value>${SimpleJmsConsume.MockSleepAndExceptionsBean.mockSleepTimeInMillis:0}
+                </env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>mockExceptionsCountInterval</env-entry-name>
+                <env-entry-type>java.lang.Long</env-entry-type>
+                <env-entry-value>${SimpleJmsConsume.MockSleepAndExceptionsBean.mockExceptionsCountInterval:0}
+                </env-entry-value>
+            </env-entry>
+        </session>
+        <session>
+            <ejb-name>NoopBean</ejb-name>
+            <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.NoopBean</ejb-class>
         </session>
     </jboss:enterprise-beans>
     <assembly-descriptor>

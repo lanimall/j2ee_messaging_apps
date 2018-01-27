@@ -6,7 +6,11 @@ import com.softwareaggov.messaging.simplejmsconsume.ejb.utils.CounterLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.*;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.ejb.MessageDrivenBean;
+import javax.ejb.MessageDrivenContext;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.Message;
@@ -21,8 +25,6 @@ import java.util.Map;
  * @author Fabien Sanglier
  */
 
-@TransactionManagement(value = TransactionManagementType.BEAN)
-@TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
 public abstract class AbstractConsumeMDB implements MessageListener, MessageDrivenBean {
     private static final long serialVersionUID = -4602751473208935601L;
 
@@ -33,29 +35,62 @@ public abstract class AbstractConsumeMDB implements MessageListener, MessageDriv
 
     private MessageDrivenContext mdbContext;
     private transient JMSHelper jmsHelper;
+    private transient Destination jmsDefaultReplyTo = null;
+
+    @Resource(name = "jmsMessageEnableReply")
+    private Boolean jmsMessageEnableReply = false;
+
+    @Resource(name = "jmsReplyDestinationName")
+    private String jmsReplyDestinationName = null;
+
+    @Resource(name = "jmsReplyDestinationType")
+    private String jmsReplyDestinationType = null;
+
+    @Resource(name = "jmsMessageReplyOverridesDefault")
+    private Boolean jmsMessageReplyOverridesDefault = true;
+
+    @Resource(name = "jms/someManagedReplyCF")
+    private ConnectionFactory jmsConnectionFactory = null;
 
     //get the implementation for the message processing
     protected abstract MessageProcessorLocal getMessageProcessor();
 
-    public abstract ConnectionFactory getReplyConnectionFactory();
+    public void ejbCreate() {
+        log.info("ejbCreate()");
+        messageProcessingCounter.incrementAndGet(getBeanName() + "-create");
+
+        //create JMSHelper
+        jmsDefaultReplyTo = null;
+        if (null != jmsConnectionFactory) {
+            jmsHelper = JMSHelper.createSender(jmsConnectionFactory);
+
+            //JMS reply destination
+            if (null != jmsReplyDestinationName && !"".equals(jmsReplyDestinationName) &&
+                    null != jmsReplyDestinationType && !"".equals(jmsReplyDestinationType)) {
+                try {
+                    jmsDefaultReplyTo = jmsHelper.lookupDestination(jmsReplyDestinationName, jmsReplyDestinationType);
+                } catch (Exception e) {
+                    log.error("Could not lookup/create the replyTo Destination...Check that the lookup info is accurate!", e);
+                }
+            }
+        }
+    }
 
     public void ejbRemove() throws EJBException {
         log.info("ejbRemove()");
-        messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-remove");
+        messageProcessingCounter.incrementAndGet(getBeanName() + "-remove");
+        jmsDefaultReplyTo = null;
+        if (null != jmsHelper)
+            jmsHelper.cleanup();
+        jmsHelper = null;
     }
 
     public void setMessageDrivenContext(MessageDrivenContext ctx) throws EJBException {
         mdbContext = ctx;
     }
 
-    public void ejbCreate() {
-        log.info("ejbCreate()");
-
-        messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-create");
-
-        //create the jmsHelper if connection factory is specified
-        if (null != getReplyConnectionFactory())
-            jmsHelper = JMSHelper.createSender(getReplyConnectionFactory());
+    protected String getBeanName() {
+        return this.getClass().getSimpleName();
     }
 
     /**
@@ -65,7 +100,7 @@ public abstract class AbstractConsumeMDB implements MessageListener, MessageDriv
         if (log.isDebugEnabled())
             log.debug("onMessage() start");
 
-        messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-consumed");
+        messageProcessingCounter.incrementAndGet(getBeanName() + "-consumed");
 
         try {
             if (null != msg) {
@@ -97,26 +132,38 @@ public abstract class AbstractConsumeMDB implements MessageListener, MessageDriv
                             ((null != postProcessingHeaders) ? postProcessingHeaders : "null"));
                 }
 
-                messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-processed");
+                messageProcessingCounter.incrementAndGet(getBeanName() + "-processed");
 
-                //get the replyTo if it's set, and if it is, reply
-                Destination replyTo = msg.getJMSReplyTo();
-                if (null != replyTo) {
-                    if (null == jmsHelper)
-                        throw new IllegalStateException("ReplyTo is set in the received message, but no connectionFactory defined to send the reply...unexpected.");
+                if (jmsMessageEnableReply) {
+                    //if replyTo overrides default, use it first, and only use default if the message replyTo is null
+                    //otherwise, force to using the default always
+                    Destination replyTo = null;
+                    if (jmsMessageReplyOverridesDefault) {
+                        replyTo = msg.getJMSReplyTo();
+                        if (null == replyTo)
+                            replyTo = jmsDefaultReplyTo;
+                    } else {
+                        replyTo = jmsDefaultReplyTo;
+                    }
 
-                    int deliveryMode = msg.getJMSDeliveryMode();
-                    int priority = msg.getJMSPriority();
+                    //if replyTo is set, reply
+                    if (null != replyTo) {
+                        if (null == jmsHelper)
+                            throw new IllegalStateException("ReplyTo is set in the received message, but no connectionFactory defined to send the reply...unexpected.");
 
-                    // Get correlationID from message if set.
-                    // If not set, then get the MessageID from message, and set the reply correlationID with it
-                    String correlationId = msg.getJMSCorrelationID();
-                    if (null == correlationId || "".equals(correlationId))
-                        correlationId = msg.getJMSMessageID();
+                        int deliveryMode = msg.getJMSDeliveryMode();
+                        int priority = msg.getJMSPriority();
 
-                    //send reply
-                    jmsHelper.sendTextMessage(replyTo, postProcessingPayload, postProcessingHeaderProperties, deliveryMode, priority, correlationId, null);
-                    messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-replied");
+                        // Get correlationID from message if set.
+                        // If not set, then get the MessageID from message, and set the reply correlationID with it
+                        String correlationId = msg.getJMSCorrelationID();
+                        if (null == correlationId || "".equals(correlationId))
+                            correlationId = msg.getJMSMessageID();
+
+                        //send reply
+                        jmsHelper.sendTextMessage(replyTo, postProcessingPayload, postProcessingHeaderProperties, deliveryMode, priority, correlationId, null);
+                        messageProcessingCounter.incrementAndGet(getBeanName() + "-replied");
+                    }
                 }
             } else {
                 if (log.isWarnEnabled())
@@ -124,7 +171,7 @@ public abstract class AbstractConsumeMDB implements MessageListener, MessageDriv
             }
 
         } catch (Exception e) {
-            messageProcessingCounter.incrementAndGet(this.getClass().getSimpleName() + "-errors");
+            messageProcessingCounter.incrementAndGet(getBeanName() + "-errors");
             throw new EJBException(e);
         }
     }

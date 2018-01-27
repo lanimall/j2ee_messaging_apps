@@ -13,16 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-/**
- * <p>
- * A servlet that sends several JMS messages to a JMS queue or a topic
- * as defined by the jmsDestination variable that is bound to a JCA admin object (hence using JCA construct)
- * </p>
- * <p/>
- * The servlet is registered and mapped to /JcaQueueProxyMessageProducer using the {@linkplain javax.servlet.annotation.WebServlet
- *
+/*
  * @author Fabien Sanglier
- * @HttpServlet}. </p>
+ *
  */
 @WebServlet("/messagecounters")
 public class CountersServlet extends HttpServlet {
@@ -40,7 +33,9 @@ public class CountersServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         String counterName = req.getParameter("countername");
-        String reset = req.getParameter("reset");
+        String resetParam = req.getParameter("reset");
+
+        boolean reset = (null != resetParam && "true".equalsIgnoreCase(resetParam)) ? true : false;
 
         String[] counterNames;
         if (null != counterName && !"".equals(counterName)) {
@@ -52,14 +47,16 @@ public class CountersServlet extends HttpServlet {
         }
 
         try {
+            out.write("<a href=" + req.getRequestURI() + "?reset=true" + ">Reset All Usage Counters</a>");
             out.write("<ul>");
             for (String counterKey : counterNames) {
-                if (null != reset && "true".equalsIgnoreCase(reset))
-                    messageProcessingCounter.reset(counterKey);
-
+                if (reset) messageProcessingCounter.reset(counterKey);
                 out.write(String.format("<li>Counter [%s] = %d (Rate= %d / sec)</li>", counterKey, messageProcessingCounter.getCount(counterKey), messageProcessingCounter.getCountRate(counterKey)));
             }
             out.write("</ul>");
+
+            //if reset, redirect to same page without the param
+            if (reset) resp.sendRedirect(req.getRequestURI());
         } catch (Exception exc) {
             log.error("Error Occurred", exc);
             throw new ServletException(exc);

@@ -33,7 +33,9 @@ public class CountersServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         String counterName = req.getParameter("countername");
-        String reset = req.getParameter("reset");
+        String resetParam = req.getParameter("reset");
+
+        boolean reset = (null != resetParam && "true".equalsIgnoreCase(resetParam)) ? true : false;
 
         String[] counterNames;
         if (null != counterName && !"".equals(counterName)) {
@@ -45,14 +47,16 @@ public class CountersServlet extends HttpServlet {
         }
 
         try {
+            out.write("<a href=" + req.getRequestURI() + "?reset=true" + ">Reset All Usage Counters</a>");
             out.write("<ul>");
             for (String counterKey : counterNames) {
-                if (null != reset && "true".equalsIgnoreCase(reset))
-                    messageProcessingCounter.reset(counterKey);
-
+                if (reset) messageProcessingCounter.reset(counterKey);
                 out.write(String.format("<li>Counter [%s] = %d (Rate= %d / sec)</li>", counterKey, messageProcessingCounter.getCount(counterKey), messageProcessingCounter.getCountRate(counterKey)));
             }
             out.write("</ul>");
+
+            //if reset, redirect to same page without the param
+            if (reset) resp.sendRedirect(req.getRequestURI());
         } catch (Exception exc) {
             log.error("Error Occurred", exc);
             throw new ServletException(exc);

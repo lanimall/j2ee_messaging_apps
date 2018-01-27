@@ -6,5 +6,20 @@
 
     <message-driven name="SimpleConsumerBean">
         <jca-adapter activation-spec-binding-name="SimpleJmsConsumer"/>
+        <resource-ref name="jms/someManagedReplyCF" binding-name="SimpleJmsSendConnectionFactory"></resource-ref>
+        <resource-ref name="jms/someManagedReplyTo" binding-name="SimpleJmsSendDestination"></resource-ref>
+        <env-entry name="jmsMessageEnableReply" value="true"/>
+        <env-entry name="jmsMessageReplyOverridesDefault" value="true"/>
+        <env-entry name="jmsReplyDestinationName" value=""/>
+        <env-entry name="jmsReplyDestinationType" value=""/>
     </message-driven>
+    <session name="MockSleepBean">
+        <env-entry name="mockSleepTimeInMillis" value="0"/>
+    </session>
+    <session name="MockSleepAndExceptionsBean">
+        <env-entry name="mockSleepTimeInMillis" value="0"/>
+        <env-entry name="mockExceptionsCountInterval" value="0"/>
+    </session>
+    <session name="NoopBean">
+    </session>
 </ejb-jar-bnd>

@@ -10,22 +10,27 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
+import javax.jms.JMSException;
+import java.util.Map;
 
 /**
  * Created by fabien.sanglier on 6/28/16.
  */
 
-@Stateless(mappedName = "JmsManagedSendAndWaitBean")
-@TransactionManagement(TransactionManagementType.CONTAINER)
+@Stateless(mappedName = "JmsSendAndWaitBean")
+@TransactionManagement(TransactionManagementType.BEAN)
 @Local(JmsPublisherLocal.class)
-public class JmsManagedSendAndWaitBean extends JmsPublisherSyncWaitBaseBean {
-    private static Logger log = LoggerFactory.getLogger(JmsManagedSendAndWaitBean.class);
+public class JmsSendAndWaitBean extends JmsPublisherBase implements JmsPublisherLocal {
+    private static Logger log = LoggerFactory.getLogger(JmsSendAndWaitBean.class);
 
     @Resource(name = "jms/someManagedCF")
     private ConnectionFactory jmsConnectionFactory;
 
     @Resource(name = "jms/someManagedDestination")
     private Destination jmsDestination;
+
+    @Resource(name = "jmsResponseWaitMillis")
+    private Long jmsResponseWaitMillis = null;
 
     @Override
     public ConnectionFactory getJmsConnectionFactory() {
@@ -35,5 +40,10 @@ public class JmsManagedSendAndWaitBean extends JmsPublisherSyncWaitBaseBean {
     @Override
     public Destination getJmsDestination() {
         return jmsDestination;
+    }
+
+    @Override
+    protected String sendMessage(Destination destination, String payload, Map<String, String> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+        return jmsHelper.sendTextMessageAndWait(destination, payload, headerProperties, deliveryMode, priority, replyTo, jmsResponseWaitMillis);
     }
 }

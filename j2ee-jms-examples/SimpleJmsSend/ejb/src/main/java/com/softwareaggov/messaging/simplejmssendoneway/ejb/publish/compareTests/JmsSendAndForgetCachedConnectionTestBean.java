@@ -1,5 +1,8 @@
-package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish;
+package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests;
 
+import com.softwareaggov.messaging.libs.jms.CachedConnectionFactory;
+import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;
+import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndForgetBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +18,11 @@ import javax.jms.Destination;
  * Created by fabien.sanglier on 6/28/16.
  */
 
-@Stateless(mappedName = "JmsManagedOneWayPublisherBean")
-@TransactionManagement(TransactionManagementType.CONTAINER)
+@Stateless(mappedName = "JmsSendAndForgetCachedConnectionTestBean")
+@TransactionManagement(TransactionManagementType.BEAN)
 @Local(JmsPublisherLocal.class)
-public class JmsManagedOneWayPublisherBean extends JmsPublisherOneWayBaseBean {
-    private static Logger log = LoggerFactory.getLogger(JmsManagedOneWayPublisherBean.class);
+public class JmsSendAndForgetCachedConnectionTestBean extends JmsSendAndForgetBean implements JmsPublisherLocal {
+    private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetCachedConnectionTestBean.class);
 
     @Resource(name = "jms/someManagedCF")
     private ConnectionFactory jmsConnectionFactory;
@@ -29,7 +32,7 @@ public class JmsManagedOneWayPublisherBean extends JmsPublisherOneWayBaseBean {
 
     @Override
     public ConnectionFactory getJmsConnectionFactory() {
-        return jmsConnectionFactory;
+        return new CachedConnectionFactory(jmsConnectionFactory);
     }
 
     @Override
