@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.ejb.MessageDrivenBean;
-import javax.ejb.MessageDrivenContext;
+import javax.ejb.*;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.Message;
@@ -25,13 +22,19 @@ import java.util.Map;
  * @author Fabien Sanglier
  */
 
-public abstract class AbstractConsumeMDB implements MessageListener, MessageDrivenBean {
+@MessageDriven(name = "MessageConsumerService")
+@TransactionManagement(value = TransactionManagementType.BEAN)
+public class MessageConsumerServiceBean implements MessageListener, MessageDrivenBean {
     private static final long serialVersionUID = -4602751473208935601L;
 
-    private static Logger log = LoggerFactory.getLogger(AbstractConsumeMDB.class);
+    private static Logger log = LoggerFactory.getLogger(MessageConsumerServiceBean.class);
 
     @EJB
     private CounterLocal messageProcessingCounter;
+
+    //Implementation for the message processing
+    @EJB
+    private MessageProcessorLocal messageProcessor;
 
     private MessageDrivenContext mdbContext;
     private transient JMSHelper jmsHelper;
@@ -40,11 +43,11 @@ public abstract class AbstractConsumeMDB implements MessageListener, MessageDriv
     @Resource(name = "jmsMessageEnableReply")
     private Boolean jmsMessageEnableReply = false;
 
-    @Resource(name = "jmsReplyDestinationName")
-    private String jmsReplyDestinationName = null;
+    @Resource(name = "jmsReplyDefaultDestinationName")
+    private String jmsReplyDefaultDestinationName = null;
 
-    @Resource(name = "jmsReplyDestinationType")
-    private String jmsReplyDestinationType = null;
+    @Resource(name = "jmsReplyDefaultDestinationType")
+    private String jmsReplyDefaultDestinationType = null;
 
     @Resource(name = "jmsMessageReplyOverridesDefault")
     private Boolean jmsMessageReplyOverridesDefault = true;
@@ -52,8 +55,6 @@ public abstract class AbstractConsumeMDB implements MessageListener, MessageDriv
     @Resource(name = "jms/someManagedReplyCF")
     private ConnectionFactory jmsConnectionFactory = null;
 
-    //get the implementation for the message processing
-    protected abstract MessageProcessorLocal getMessageProcessor();
 
     public void ejbCreate() {
         log.info("ejbCreate()");
@@ -65,10 +66,10 @@ public abstract class AbstractConsumeMDB implements MessageListener, MessageDriv
             jmsHelper = JMSHelper.createSender(jmsConnectionFactory);
 
             //JMS reply destination
-            if (null != jmsReplyDestinationName && !"".equals(jmsReplyDestinationName) &&
-                    null != jmsReplyDestinationType && !"".equals(jmsReplyDestinationType)) {
+            if (null != jmsReplyDefaultDestinationName && !"".equals(jmsReplyDefaultDestinationName) &&
+                    null != jmsReplyDefaultDestinationType && !"".equals(jmsReplyDefaultDestinationType)) {
                 try {
-                    jmsDefaultReplyTo = jmsHelper.lookupDestination(jmsReplyDestinationName, jmsReplyDestinationType);
+                    jmsDefaultReplyTo = jmsHelper.lookupDestination(jmsReplyDefaultDestinationName, jmsReplyDefaultDestinationType);
                 } catch (Exception e) {
                     log.error("Could not lookup/create the replyTo Destination...Check that the lookup info is accurate!", e);
                 }
@@ -105,7 +106,6 @@ public abstract class AbstractConsumeMDB implements MessageListener, MessageDriv
         try {
             if (null != msg) {
                 //processing the message
-                MessageProcessorLocal messageProcessor = getMessageProcessor();
                 if (null == messageProcessor)
                     throw new EJBException("Message Processor is null...unexpected.");
 

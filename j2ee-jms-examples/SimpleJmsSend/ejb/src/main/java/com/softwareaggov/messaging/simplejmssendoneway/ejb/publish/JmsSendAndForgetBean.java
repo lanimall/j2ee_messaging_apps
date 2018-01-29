@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
+import javax.ejb.*;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -17,10 +14,11 @@ import java.util.Map;
  * Created by fabien.sanglier on 6/28/16.
  */
 
-@Stateless(mappedName = "JmsSendAndForgetBean")
+@Stateless(name = "JmsSendAndForgetService")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(JmsPublisherLocal.class)
-public class JmsSendAndForgetBean extends JmsPublisherBase implements JmsPublisherLocal {
+@Remote(JmsPublisherRemote.class)
+public class JmsSendAndForgetBean extends JmsPublisherBase implements JmsPublisherLocal, JmsPublisherRemote {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetBean.class);
 
     @Resource(name = "jms/someManagedCF")

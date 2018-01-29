@@ -25,7 +25,7 @@ public class JmsSendAndForgetNonJCA extends BaseMessageProducer {
     private static final long serialVersionUID = 1L;
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetNonJCA.class);
 
-    @EJB(beanName = "JmsSendAndForgetNonJCATestBean")
+    @EJB(beanName = "JmsSendAndForgetNonJCATestService")
     private JmsPublisherLocal jmsSimplePublisher;
 
     @Override

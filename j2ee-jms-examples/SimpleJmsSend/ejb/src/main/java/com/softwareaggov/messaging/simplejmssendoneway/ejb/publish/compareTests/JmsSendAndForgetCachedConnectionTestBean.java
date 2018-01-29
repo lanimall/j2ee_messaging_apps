@@ -18,7 +18,7 @@ import javax.jms.Destination;
  * Created by fabien.sanglier on 6/28/16.
  */
 
-@Stateless(mappedName = "JmsSendAndForgetCachedConnectionTestBean")
+@Stateless(name = "JmsSendAndForgetCachedConnectionTestService")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(JmsPublisherLocal.class)
 public class JmsSendAndForgetCachedConnectionTestBean extends JmsSendAndForgetBean implements JmsPublisherLocal {

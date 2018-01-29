@@ -41,7 +41,7 @@
 
         <dependency>
             <groupId>com.softwareaggov.messaging</groupId>
-            <artifactId>j2ee-jms-examples-libs</artifactId>
+            <artifactId>libs</artifactId>
             <scope>provided</scope>
         </dependency>
 

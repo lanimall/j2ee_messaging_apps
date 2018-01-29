@@ -25,6 +25,94 @@
         </license>
     </licenses>
 
+    <properties>
+        <!-- Since the ear plugin is executed in the child ear pom,
+        the variable project.parent.artifactId will resolve to this pom's artifactId-->
+        <ear.build.name>${project.parent.artifactId}</ear.build.name>
+
+        <!-- in the case of websphere, all the RA activation specs are defined under a single ActivationSpec object that can be accessed via binding-->
+        <Consumer.ActivationSpec.BindingName>SimpleJmsConsumer</Consumer.ActivationSpec.BindingName>
+
+        <!-- JMS RA Activation Specs (unless missing something, in the case of jboss, RA settings need to be specified in the descriptor) -->
+        <Consumer.ActivationSpec.destinationJndiName>JMSSamples/SimpleQueue
+        </Consumer.ActivationSpec.destinationJndiName>
+        <Consumer.ActivationSpec.destinationType>javax.jms.Queue</Consumer.ActivationSpec.destinationType>
+        <Consumer.ActivationSpec.connectionFactoryJndiName>JBOSSSubQCF
+        </Consumer.ActivationSpec.connectionFactoryJndiName>
+        <Consumer.ActivationSpec.batchSize>1</Consumer.ActivationSpec.batchSize>
+        <Consumer.ActivationSpec.maxPoolSize>100</Consumer.ActivationSpec.maxPoolSize>
+        <Consumer.ActivationSpec.maxWaitTime>300</Consumer.ActivationSpec.maxWaitTime>
+        <Consumer.ActivationSpec.redeliveryAttempts>50</Consumer.ActivationSpec.redeliveryAttempts>
+        <Consumer.ActivationSpec.redeliveryInterval>1</Consumer.ActivationSpec.redeliveryInterval>
+        <Consumer.ActivationSpec.reconnectAttempts>50</Consumer.ActivationSpec.reconnectAttempts>
+        <Consumer.ActivationSpec.reconnectInterval>20</Consumer.ActivationSpec.reconnectInterval>
+
+        <!-- this is the reply connection factory (to be used in cass the consume shoudl reply...as defined in the env entries below) -->
+        <Consumer.ReplyConnectionFactory.BindingName>SimpleJmsSendConnectionFactory
+        </Consumer.ReplyConnectionFactory.BindingName>
+
+        <!-- Consumer Env values for behavior change-->
+        <Consumer.Env.jmsMessageEnableReply>true</Consumer.Env.jmsMessageEnableReply>
+        <Consumer.Env.jmsMessageReplyOverridesDefault>true</Consumer.Env.jmsMessageReplyOverridesDefault>
+        <Consumer.Env.jmsReplyDefaultDestinationName></Consumer.Env.jmsReplyDefaultDestinationName>
+        <Consumer.Env.jmsReplyDefaultDestinationType></Consumer.Env.jmsReplyDefaultDestinationType>
+
+        <!-- processor that should be called upon message consumption -->
+        <Consumer.Processors.BindingName>${ear.build.name}/session/MockSleepProcessor</Consumer.Processors.BindingName>
+
+        <!-- message processors defined -->
+        <Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>50
+        </Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>
+        <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>50
+        </Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>
+        <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>10
+        </Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>
+        <Consumer.Processors.SendAndForgetProcessor.EJB.BindingName>SimpleJmsSend/session/JmsSendAndForgetService
+        </Consumer.Processors.SendAndForgetProcessor.EJB.BindingName>
+        <Consumer.Processors.SendAndWaitProcessor.EJB.BindingName>SimpleJmsSend/session/JmsSendAndWaitService
+        </Consumer.Processors.SendAndWaitProcessor.EJB.BindingName>
+    </properties>
+    <profiles>
+        <profile>
+            <id>SimpleJmsConsume_consume_the_replies</id>
+            <properties>
+                <ear.build.name>${project.parent.artifactId}TheReply</ear.build.name>
+                <Consumer.ActivationSpec.BindingName>SimpleJmsConsumerReplyAsync</Consumer.ActivationSpec.BindingName>
+
+                <!-- JMS RA Activation Specs-->
+                <Consumer.ActivationSpec.destinationJndiName>JMSSamples/ReplyQueueAsync
+                </Consumer.ActivationSpec.destinationJndiName>
+
+                <!-- Consumer Env values for behavior change-->
+                <Consumer.Env.jmsMessageEnableReply>false</Consumer.Env.jmsMessageEnableReply>
+
+                <!-- processor that should be called upon message consumption -->
+                <Consumer.Processors.BindingName>${ear.build.name}/session/MockSleepProcessor
+                </Consumer.Processors.BindingName>
+                <Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>50
+                </Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>
+            </properties>
+        </profile>
+        <profile>
+            <id>SimpleJmsConsume_consume_driverqueue</id>
+            <properties>
+                <ear.build.name>${project.parent.artifactId}DriverQueue</ear.build.name>
+                <Consumer.ActivationSpec.BindingName>SimpleJmsConsumerDriverQueue</Consumer.ActivationSpec.BindingName>
+
+                <!-- JMS RA Activation Specs-->
+                <Consumer.ActivationSpec.destinationJndiName>JMSSamples/DriverQueue
+                </Consumer.ActivationSpec.destinationJndiName>
+
+                <!-- Consumer Env values for behavior change-->
+                <Consumer.Env.jmsMessageEnableReply>false</Consumer.Env.jmsMessageEnableReply>
+
+                <!-- processor that should be called upon message consumption -->
+                <Consumer.Processors.BindingName>${ear.build.name}/session/SendAndForgetProcessor
+                </Consumer.Processors.BindingName>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencyManagement>
         <dependencies>
             <!-- Define the version of the various modules so that we don't need to repeat ourselves in every module -->
@@ -52,7 +140,7 @@
 
             <dependency>
                 <groupId>com.softwareaggov.messaging</groupId>
-                <artifactId>j2ee-jms-examples-libs</artifactId>
+                <artifactId>libs</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

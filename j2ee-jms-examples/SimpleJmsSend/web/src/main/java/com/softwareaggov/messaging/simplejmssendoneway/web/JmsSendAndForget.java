@@ -28,7 +28,7 @@ public class JmsSendAndForget extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForget.class);
 
-    @EJB(beanName = "JmsSendAndForgetBean")
+    @EJB(beanName = "JmsSendAndForgetService")
     private JmsPublisherLocal jmsSimplePublisher;
 
     @Override

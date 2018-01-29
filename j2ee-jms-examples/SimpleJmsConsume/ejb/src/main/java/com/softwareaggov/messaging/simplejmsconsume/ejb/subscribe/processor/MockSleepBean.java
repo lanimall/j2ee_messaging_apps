@@ -19,7 +19,7 @@ import java.util.Map;
  * Created by fabien.sanglier on 6/23/16.
  */
 
-@Stateless
+@Stateless(name = "MockSleepProcessor")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(MessageProcessorLocal.class)
 public class MockSleepBean implements MessageProcessorLocal {

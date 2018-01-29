@@ -28,7 +28,7 @@ public class JmsSendAndWait extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
     private static Logger log = LoggerFactory.getLogger(JmsSendAndWait.class);
 
-    @EJB(beanName = "JmsSendAndWaitBean")
+    @EJB(beanName = "JmsSendAndWaitService")
     private JmsPublisherLocal jmsSimplePublisher;
 
     @Override

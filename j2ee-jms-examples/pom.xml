@@ -19,7 +19,7 @@
     <modules>
         <module>j2ee-jms-examples-server</module>
         <module>j2ee-jms-examples-client</module>
-        <module>j2ee-jms-examples-libs</module>
+        <module>libs</module>
         <module>SimpleJmsSend</module>
         <module>SimpleJmsConsume</module>
     </modules>

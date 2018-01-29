@@ -16,7 +16,7 @@ import java.util.Map;
  * Created by fabien.sanglier on 6/23/16.
  */
 
-@Stateless
+@Stateless(name = "NoopProcessor")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(MessageProcessorLocal.class)
 public class NoopBean implements MessageProcessorLocal {

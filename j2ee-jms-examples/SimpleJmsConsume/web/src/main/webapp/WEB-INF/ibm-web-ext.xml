@@ -6,7 +6,6 @@
         version="1.0">
 
     <reload-interval value="10"/>
-    <context-root uri="SimpleJmsConsume"/>
     <auto-encode-requests value="true"/>
     <auto-encode-responses value="false"/>
     <enable-directory-browsing value="false"/>

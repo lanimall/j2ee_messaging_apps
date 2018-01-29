@@ -26,6 +26,58 @@
         </license>
     </licenses>
 
+    <properties>
+        <!-- Since the ear plugin is executed in the child ear pom,
+        the variable project.parent.artifactId will resolve to this pom's artifactId-->
+        <ear.build.name>${project.parent.artifactId}</ear.build.name>
+        <JmsSend.Resources.ConnectionFactory.BindingName>SimpleJmsSendConnectionFactory
+        </JmsSend.Resources.ConnectionFactory.BindingName>
+        <JmsSend.Resources.Destination.BindingName>SimpleJmsSendDestination</JmsSend.Resources.Destination.BindingName>
+
+        <JmsSend.JmsSendAndForgetService.Env.jmsDeliveryMode>-1</JmsSend.JmsSendAndForgetService.Env.jmsDeliveryMode>
+        <JmsSend.JmsSendAndForgetService.Env.jmsPriority>-1</JmsSend.JmsSendAndForgetService.Env.jmsPriority>
+        <JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationName>JMSSamples/ReplyQueueAsync
+        </JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationName>
+        <JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationType>queue
+        </JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationType>
+
+        <JmsSend.JmsSendAndWaitService.Env.jmsDeliveryMode>-1</JmsSend.JmsSendAndWaitService.Env.jmsDeliveryMode>
+        <JmsSend.JmsSendAndWaitService.Env.jmsPriority>-1</JmsSend.JmsSendAndWaitService.Env.jmsPriority>
+        <JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationName>JMSSamples/ReplyQueueSync
+        </JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationName>
+        <JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationType>queue
+        </JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationType>
+        <JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis>10000
+        </JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>SimpleJmsSend_driverQueue</id>
+            <properties>
+                <ear.build.name>${project.parent.artifactId}DriverQueue</ear.build.name>
+                <JmsSend.Resources.ConnectionFactory.BindingName>SimpleJmsSendConnectionFactory
+                </JmsSend.Resources.ConnectionFactory.BindingName>
+                <JmsSend.Resources.Destination.BindingName>DriverQueueDestination
+                </JmsSend.Resources.Destination.BindingName>
+
+                <!-- No Reply defined for the driver-->
+                <JmsSend.JmsSendAndForgetService.Env.jmsDeliveryMode>-1
+                </JmsSend.JmsSendAndForgetService.Env.jmsDeliveryMode>
+                <JmsSend.JmsSendAndForgetService.Env.jmsPriority>-1</JmsSend.JmsSendAndForgetService.Env.jmsPriority>
+                <JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationName></JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationName>
+                <JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationType></JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationType>
+
+                <JmsSend.JmsSendAndWaitService.Env.jmsDeliveryMode>-1
+                </JmsSend.JmsSendAndWaitService.Env.jmsDeliveryMode>
+                <JmsSend.JmsSendAndWaitService.Env.jmsPriority>-1</JmsSend.JmsSendAndWaitService.Env.jmsPriority>
+                <JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationName></JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationName>
+                <JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationType></JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationType>
+                <JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis></JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencyManagement>
         <dependencies>
             <!-- Define the version of the various modules so that we don't need to repeat ourselves in every module -->
@@ -53,7 +105,7 @@
 
             <dependency>
                 <groupId>com.softwareaggov.messaging</groupId>
-                <artifactId>j2ee-jms-examples-libs</artifactId>
+                <artifactId>libs</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

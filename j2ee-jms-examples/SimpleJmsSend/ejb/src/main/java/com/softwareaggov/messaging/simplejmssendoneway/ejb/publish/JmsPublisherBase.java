@@ -21,7 +21,7 @@ import java.util.Map;
  * Simple JMS Publisher bean relying on the connection factory to create the JMS connection on each call
  * Created by fabien.sanglier on 6/15/16.
  */
-public abstract class JmsPublisherBase implements JmsPublisherLocal {
+public abstract class JmsPublisherBase implements JmsPublisherLocal, JmsPublisherRemote {
     private static Logger log = LoggerFactory.getLogger(JmsPublisherBase.class);
 
     @EJB

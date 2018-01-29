@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Created by fabien.sanglier on 10/12/17.
  */
-@Stateless(mappedName = "JmsSendAndForgetNonJCATestBean")
+@Stateless(name = "JmsSendAndForgetNonJCATestService")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(JmsPublisherLocal.class)
 public class JmsSendAndForgetNonJCATestBean implements JmsPublisherLocal {

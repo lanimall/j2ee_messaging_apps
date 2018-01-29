@@ -4,36 +4,47 @@
         xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-ejb-jar-bnd_1_1.xsd"
         version="1.1">
 
-    <session name="JmsSendAndForgetBean">
-        <resource-ref name="jms/someManagedCF" binding-name="SimpleJmsSendConnectionFactory"></resource-ref>
-        <resource-ref name="jms/someManagedDestination" binding-name="SimpleJmsSendDestination"></resource-ref>
-        <env-entry name="jmsDeliveryMode" value="-1"/>
-        <env-entry name="jmsPriority" value="-1"/>
-        <env-entry name="jmsReplyDestinationName" value=""/>
-        <env-entry name="jmsReplyDestinationType" value=""/>
+    <session name="JmsSendAndForgetService" simple-binding-name="${ear.build.name}/session/JmsSendAndForgetService">
+        <resource-ref name="jms/someManagedCF"
+                      binding-name="${JmsSend.Resources.ConnectionFactory.BindingName}"></resource-ref>
+        <resource-ref name="jms/someManagedDestination"
+                      binding-name="${JmsSend.Resources.Destination.BindingName}"></resource-ref>
+        <env-entry name="jmsDeliveryMode" value="${JmsSend.JmsSendAndForgetService.Env.jmsDeliveryMode}"/>
+        <env-entry name="jmsPriority" value="${JmsSend.JmsSendAndForgetService.Env.jmsPriority}"/>
+        <env-entry name="jmsReplyDestinationName"
+                   value="${JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationName}"/>
+        <env-entry name="jmsReplyDestinationType"
+                   value="${JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationType}"/>
     </session>
-    <session name="JmsSendAndWaitBean">
-        <resource-ref name="jms/someManagedCF" binding-name="SimpleJmsSendConnectionFactory"></resource-ref>
-        <resource-ref name="jms/someManagedDestination" binding-name="SimpleJmsSendDestination"></resource-ref>
-        <env-entry name="jmsDeliveryMode" value="-1"/>
-        <env-entry name="jmsPriority" value="-1"/>
-        <env-entry name="jmsReplyDestinationName" value=""/>
-        <env-entry name="jmsReplyDestinationType" value=""/>
-        <env-entry name="jmsResponseWaitMillis" value="10000"/>
+    <session name="JmsSendAndWaitService" simple-binding-name="${ear.build.name}/session/JmsSendAndWaitService">
+        <resource-ref name="jms/someManagedCF"
+                      binding-name="${JmsSend.Resources.ConnectionFactory.BindingName}"></resource-ref>
+        <resource-ref name="jms/someManagedDestination"
+                      binding-name="${JmsSend.Resources.Destination.BindingName}"></resource-ref>
+        <env-entry name="jmsDeliveryMode" value="${JmsSend.JmsSendAndWaitService.Env.jmsDeliveryMode}"/>
+        <env-entry name="jmsPriority" value="${JmsSend.JmsSendAndWaitService.Env.jmsPriority}"/>
+        <env-entry name="jmsReplyDestinationName" value="${JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationName}"/>
+        <env-entry name="jmsReplyDestinationType" value="${JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationType}"/>
+        <env-entry name="jmsResponseWaitMillis" value="${JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis}"/>
     </session>
-    <session name="JmsSendAndForgetCachedConnectionTestBean">
-        <resource-ref name="jms/someManagedCF" binding-name="SimpleJmsSendConnectionFactory"></resource-ref>
-        <resource-ref name="jms/someManagedDestination" binding-name="SimpleJmsSendDestination"></resource-ref>
+
+    <session name="JmsSendAndForgetCachedConnectionTestService"
+             simple-binding-name="${ear.build.name}/session/JmsSendAndForgetCachedConnectionTestService">
+        <resource-ref name="jms/someManagedCF"
+                      binding-name="${JmsSend.Resources.ConnectionFactory.BindingName}"></resource-ref>
+        <resource-ref name="jms/someManagedDestination"
+                      binding-name="${JmsSend.Resources.Destination.BindingName}"></resource-ref>
         <env-entry name="jmsDeliveryMode" value="-1"/>
         <env-entry name="jmsPriority" value="-1"/>
-        <env-entry name="jmsReplyDestinationName" value=""/>
-        <env-entry name="jmsReplyDestinationType" value=""/>
+        <env-entry name="jmsReplyDestinationName" value="JMSSamples/ReplyQueueAsync"/>
+        <env-entry name="jmsReplyDestinationType" value="queue"/>
     </session>
-    <session name="JmsSendAndForgetNonJCATestBean">
+    <session name="JmsSendAndForgetNonJCATestService"
+             simple-binding-name="${ear.build.name}/session/JmsSendAndForgetNonJCATestService">
         <env-entry name="jmsDeliveryMode" value="-1"/>
         <env-entry name="jmsPriority" value="-1"/>
-        <env-entry name="jmsReplyDestinationName" value=""/>
-        <env-entry name="jmsReplyDestinationType" value=""/>
+        <env-entry name="jmsReplyDestinationName" value="JMSSamples/ReplyQueueAsync"/>
+        <env-entry name="jmsReplyDestinationType" value="queue"/>
         <env-entry name="jms.jndi.contextfactory" value=""/>
         <env-entry name="jms.jndi.connection.url" value=""/>
         <env-entry name="jms.connectionfactory.name" value=""/>

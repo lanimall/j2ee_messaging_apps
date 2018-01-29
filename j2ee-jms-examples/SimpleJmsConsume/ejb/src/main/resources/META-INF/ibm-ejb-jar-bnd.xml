@@ -4,22 +4,42 @@
         xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-ejb-jar-bnd_1_1.xsd"
         version="1.1">
 
-    <message-driven name="SimpleConsumerBean">
-        <jca-adapter activation-spec-binding-name="SimpleJmsConsumer"/>
-        <resource-ref name="jms/someManagedReplyCF" binding-name="SimpleJmsSendConnectionFactory"></resource-ref>
-        <resource-ref name="jms/someManagedReplyTo" binding-name="SimpleJmsSendDestination"></resource-ref>
-        <env-entry name="jmsMessageEnableReply" value="true"/>
-        <env-entry name="jmsMessageReplyOverridesDefault" value="true"/>
-        <env-entry name="jmsReplyDestinationName" value=""/>
-        <env-entry name="jmsReplyDestinationType" value=""/>
+    <message-driven name="MessageConsumerService">
+        <jca-adapter activation-spec-binding-name="${Consumer.ActivationSpec.BindingName}"/>
+        <resource-ref name="jms/someManagedReplyCF"
+                      binding-name="${Consumer.ReplyConnectionFactory.BindingName}"></resource-ref>
+        <ejb-ref
+                name="com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.MessageConsumerServiceBean/messageProcessor"
+                binding-name="ejblocal:${Consumer.Processors.BindingName}">
+        </ejb-ref>
+        <env-entry name="jmsMessageEnableReply" value="${Consumer.Env.jmsMessageEnableReply}"/>
+        <env-entry name="jmsMessageReplyOverridesDefault" value="${Consumer.Env.jmsMessageReplyOverridesDefault}"/>
+        <env-entry name="jmsReplyDefaultDestinationName" value="${Consumer.Env.jmsReplyDefaultDestinationName}"/>
+        <env-entry name="jmsReplyDefaultDestinationType" value="${Consumer.Env.jmsReplyDefaultDestinationType}"/>
     </message-driven>
-    <session name="MockSleepBean">
-        <env-entry name="mockSleepTimeInMillis" value="0"/>
+    <session name="MockSleepProcessor" simple-binding-name="${ear.build.name}/session/MockSleepProcessor">
+        <env-entry name="mockSleepTimeInMillis"
+                   value="${Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis}"/>
     </session>
-    <session name="MockSleepAndExceptionsBean">
-        <env-entry name="mockSleepTimeInMillis" value="0"/>
-        <env-entry name="mockExceptionsCountInterval" value="0"/>
+    <session name="MockSleepAndExceptionsProcessor"
+             simple-binding-name="${ear.build.name}/session/MockSleepAndExceptionsProcessor">
+        <env-entry name="mockSleepTimeInMillis"
+                   value="${Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis}"/>
+        <env-entry name="mockExceptionsCountInterval"
+                   value="${Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval}"/>
     </session>
-    <session name="NoopBean">
+    <session name="NoopProcessor" simple-binding-name="${ear.build.name}/session/NoopProcessor">
+    </session>
+    <session name="SendAndForgetProcessor" simple-binding-name="${ear.build.name}/session/SendAndForgetProcessor">
+        <ejb-ref
+                name="com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.SendAndForgetBean/jmsMessagePublisher"
+                binding-name="${Consumer.Processors.SendAndForgetProcessor.EJB.BindingName}">
+        </ejb-ref>
+    </session>
+    <session name="SendAndWaitProcessor" simple-binding-name="${ear.build.name}/session/SendAndWaitProcessor">
+        <ejb-ref
+                name="com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.SendAndWaitBean/jmsMessagePublisher"
+                binding-name="${Consumer.Processors.SendAndWaitProcessor.EJB.BindingName}">
+        </ejb-ref>
     </session>
 </ejb-jar-bnd>

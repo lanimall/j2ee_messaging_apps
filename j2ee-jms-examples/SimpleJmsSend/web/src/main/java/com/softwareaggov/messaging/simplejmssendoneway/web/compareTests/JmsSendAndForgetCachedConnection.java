@@ -29,7 +29,7 @@ public class JmsSendAndForgetCachedConnection extends BaseMessageProducer {
     private static final long serialVersionUID = -8314702649252239L;
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetCachedConnection.class);
 
-    @EJB(beanName = "JmsSendAndForgetCachedConnectionTestBean")
+    @EJB(beanName = "JmsSendAndForgetCachedConnectionTestService")
     private JmsPublisherLocal jmsSimpleCachedPublisher;
 
     @Override

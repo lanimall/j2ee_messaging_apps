@@ -37,12 +37,15 @@
     </dependencies>
 
     <build>
-        <finalName>${project.parent.artifactId}</finalName>
+        <finalName>${ear.build.name}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
                 <configuration>
+                    <applicationName>${ear.build.name}</applicationName>
+                    <displayName>${ear.build.name}</displayName>
+
                     <!-- Tell Maven we are using Java EE 6 -->
                     <version>6</version>
                     <!-- Use Java EE ear libraries as needed. Java EE ear libraries
