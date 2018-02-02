@@ -10,154 +10,50 @@
 
     <jboss:enterprise-beans>
         <session>
-            <ejb-name>JmsSendAndForgetBean</ejb-name>
+            <ejb-name>JmsSendAndForgetService</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndForgetBean
             </ejb-class>
-            <resource-ref>
-                <res-ref-name>jms/someManagedCF</res-ref-name>
-                <res-type>javax.jms.QueueConnectionFactory</res-type>
-                <jndi-name>java:/jms/JmsQueueConnectionFactory</jndi-name>
-            </resource-ref>
-            <resource-ref>
-                <res-ref-name>jms/someManagedDestination</res-ref-name>
-                <res-type>com.sun.genericra.outbound.QueueProxy</res-type>
-                <jndi-name>java:/jms/JmsQueueProxy</jndi-name>
-            </resource-ref>
-            <env-entry>
-                <env-entry-name>jmsDeliveryMode</env-entry-name>
-                <env-entry-type>java.lang.Integer</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetBean.deliveryMode:-1}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsPriority</env-entry-name>
-                <env-entry-type>java.lang.Integer</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetBean.priority:-1}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationName</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetBean.replyDestinationName:}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationType</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetBean.replyDestinationType:}</env-entry-value>
-            </env-entry>
+            <!--<resource-ref>-->
+            <!--<res-ref-name>jms/someManagedCF</res-ref-name>-->
+            <!--<res-type>javax.jms.QueueConnectionFactory</res-type>-->
+            <!--<jndi-name>java:/jms/${JmsSend.Resources.ConnectionFactory.BindingName}</jndi-name>-->
+            <!--</resource-ref>-->
+            <!--<resource-ref>-->
+            <!--<res-ref-name>jms/someManagedDestination</res-ref-name>-->
+            <!--<res-type>com.sun.genericra.outbound.QueueProxy</res-type>-->
+            <!--<jndi-name>java:/jms/${JmsSend.Resources.Destination.BindingName}</jndi-name>-->
+            <!--</resource-ref>-->
         </session>
         <session>
-            <ejb-name>JmsSendAndWaitBean</ejb-name>
+            <ejb-name>JmsSendAndWaitService</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndWaitBean
             </ejb-class>
-            <resource-ref>
-                <res-ref-name>jms/someManagedCF</res-ref-name>
-                <res-type>javax.jms.QueueConnectionFactory</res-type>
-                <jndi-name>java:/jms/JmsQueueConnectionFactory</jndi-name>
-            </resource-ref>
-            <resource-ref>
-                <res-ref-name>jms/someManagedDestination</res-ref-name>
-                <res-type>com.sun.genericra.outbound.QueueProxy</res-type>
-                <jndi-name>java:/jms/JmsQueueProxy</jndi-name>
-            </resource-ref>
-            <env-entry>
-                <env-entry-name>jmsDeliveryMode</env-entry-name>
-                <env-entry-type>java.lang.Integer</env-entry-type>
-                <env-entry-value>${JmsSendAndWaitBean.deliveryMode:-1}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsPriority</env-entry-name>
-                <env-entry-type>java.lang.Integer</env-entry-type>
-                <env-entry-value>${JmsSendAndWaitBean.priority:-1}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationName</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndWaitBean.replyDestinationName:JMSSamples/JmsResponseQueue}
-                </env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationType</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndWaitBean.replyDestinationType:queue}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsResponseWaitMillis</env-entry-name>
-                <env-entry-type>java.lang.Long</env-entry-type>
-                <env-entry-value>${JmsSendAndWaitBean.jmsResponseWaitMillis:30000}</env-entry-value>
-            </env-entry>
+            <!--<resource-ref>-->
+            <!--<res-ref-name>jms/someManagedCF</res-ref-name>-->
+            <!--<res-type>javax.jms.QueueConnectionFactory</res-type>-->
+            <!--<jndi-name>java:/jms/${JmsSend.Resources.ConnectionFactory.BindingName}</jndi-name>-->
+            <!--</resource-ref>-->
+            <!--<resource-ref>-->
+            <!--<res-ref-name>jms/someManagedDestination</res-ref-name>-->
+            <!--<res-type>com.sun.genericra.outbound.QueueProxy</res-type>-->
+            <!--<jndi-name>java:/jms/${JmsSend.Resources.Destination.BindingName}</jndi-name>-->
+            <!--</resource-ref>-->
         </session>
         <session>
-            <ejb-name>JmsSendAndForgetCachedConnectionTestBean</ejb-name>
+            <ejb-name>JmsSendAndForgetCachedConnectionTestService</ejb-name>
             <ejb-class>
                 com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests.JmsSendAndForgetCachedConnectionTestBean
             </ejb-class>
-            <resource-ref>
-                <res-ref-name>jms/someManagedCF</res-ref-name>
-                <res-type>javax.jms.QueueConnectionFactory</res-type>
-                <jndi-name>java:/jms/JmsQueueConnectionFactory</jndi-name>
-            </resource-ref>
-            <resource-ref>
-                <res-ref-name>jms/someManagedDestination</res-ref-name>
-                <res-type>com.sun.genericra.outbound.QueueProxy</res-type>
-                <jndi-name>java:/jms/JmsQueueProxy</jndi-name>
-            </resource-ref>
-            <env-entry>
-                <env-entry-name>jmsDeliveryMode</env-entry-name>
-                <env-entry-type>java.lang.Integer</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetCachedConnectionTestBean.deliveryMode:-1}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsPriority</env-entry-name>
-                <env-entry-type>java.lang.Integer</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetCachedConnectionTestBean.priority:-1}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationName</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetCachedConnectionTestBean.replyDestinationName:}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationType</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetCachedConnectionTestBean.replyDestinationType:}</env-entry-value>
-            </env-entry>
-        </session>
-        <session>
-            <ejb-name>JmsSendAndForgetNonJCATestBean</ejb-name>
-            <ejb-class>
-                com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests.JmsSendAndForgetNonJCATestBean
-            </ejb-class>
-            <env-entry>
-                <env-entry-name>jms.jndi.contextfactory</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>com.pcbsys.nirvana.nSpace.NirvanaContextFactory</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jms.jndi.connection.url</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetNonJCATestBean.jndi.connection.url:localhost:9000}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jms.connectionfactory.name</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetNonJCATestBean.connectionfactory.name:JBOSSPublishQCF}
-                </env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jms.default.destination.name</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetNonJCATestBean.default.destination.name:JMSSamples/SimpleQueue}
-                </env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationName</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetNonJCATestBean.replyDestinationName:}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationType</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSendAndForgetNonJCATestBean.replyDestinationType:}</env-entry-value>
-            </env-entry>
+            <!--<resource-ref>-->
+            <!--<res-ref-name>jms/someManagedCF</res-ref-name>-->
+            <!--<res-type>javax.jms.QueueConnectionFactory</res-type>-->
+            <!--<jndi-name>java:/jms/${JmsSend.Resources.ConnectionFactory.BindingName}</jndi-name>-->
+            <!--</resource-ref>-->
+            <!--<resource-ref>-->
+            <!--<res-ref-name>jms/someManagedDestination</res-ref-name>-->
+            <!--<res-type>com.sun.genericra.outbound.QueueProxy</res-type>-->
+            <!--<jndi-name>java:/jms/${JmsSend.Resources.Destination.BindingName}</jndi-name>-->
+            <!--</resource-ref>-->
         </session>
     </jboss:enterprise-beans>
     <assembly-descriptor>

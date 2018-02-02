@@ -74,69 +74,12 @@
                     </activation-config-property-value>
                 </activation-config-property>
             </activation-config>
-            <ejb-ref>
-                <ejb-ref-name>ejb/MockSleepProcessor</ejb-ref-name>
-                <ejb-ref-type>Session</ejb-ref-type>
-                <ejb-link>MockSleepProcessor</ejb-link>
-                <injection-target>messageProcessor</injection-target>
-            </ejb-ref>
             <resource-ref>
-                <res-ref-name>jms/someReplyManagedCF</res-ref-name>
+                <res-ref-name>jms/someManagedReplyCF</res-ref-name>
                 <res-type>javax.jms.ConnectionFactory</res-type>
                 <jndi-name>java:/jms/${Consumer.ReplyConnectionFactory.BindingName}</jndi-name>
             </resource-ref>
-            <env-entry>
-                <env-entry-name>jmsMessageEnableReply</env-entry-name>
-                <env-entry-type>java.lang.Boolean</env-entry-type>
-                <env-entry-value>${Consumer.Env.jmsMessageEnableReply}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsMessageReplyOverridesDefault</env-entry-name>
-                <env-entry-type>java.lang.Boolean</env-entry-type>
-                <env-entry-value>${Consumer.Env.jmsMessageReplyOverridesDefault}
-                </env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDefaultDestinationName</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${Consumer.Env.jmsReplyDefaultDestinationName}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDefaultDestinationType</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${Consumer.Env.jmsReplyDefaultDestinationType}</env-entry-value>
-            </env-entry>
         </message-driven>
-        <session>
-            <ejb-name>MockSleepProcessor</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.MockSleepBean</ejb-class>
-            <env-entry>
-                <env-entry-name>mockSleepTimeInMillis</env-entry-name>
-                <env-entry-type>java.lang.Long</env-entry-type>
-                <env-entry-value>${Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis}</env-entry-value>
-            </env-entry>
-        </session>
-        <session>
-            <ejb-name>MockSleepAndExceptionsProcessor</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.MockSleepAndExceptionsBean
-            </ejb-class>
-            <env-entry>
-                <env-entry-name>mockSleepTimeInMillis</env-entry-name>
-                <env-entry-type>java.lang.Long</env-entry-type>
-                <env-entry-value>${Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis}
-                </env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>mockExceptionsCountInterval</env-entry-name>
-                <env-entry-type>java.lang.Long</env-entry-type>
-                <env-entry-value>${Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval}
-                </env-entry-value>
-            </env-entry>
-        </session>
-        <session>
-            <ejb-name>NoopProcessor</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.NoopBean</ejb-class>
-        </session>
     </jboss:enterprise-beans>
     <assembly-descriptor>
         <r:resource-adapter-binding>
