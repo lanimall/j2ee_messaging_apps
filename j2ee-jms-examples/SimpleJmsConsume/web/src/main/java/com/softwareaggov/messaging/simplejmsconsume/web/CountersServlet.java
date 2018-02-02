@@ -39,10 +39,10 @@ public class CountersServlet extends HttpServlet {
 
         String[] counterNames;
         if (null != counterName && !"".equals(counterName)) {
-            out.write("<h1>Printing specific counters</h1>");
+            out.write("<h1>" + req.getContextPath() + " - Printing specific counters</h1>");
             counterNames = new String[]{counterName};
         } else {
-            out.write("<h1>Printing all counters</h1>");
+            out.write("<h1>" + req.getContextPath() + " - Printing all counters</h1>");
             counterNames = messageProcessingCounter.getAllCounterNames();
         }
 
