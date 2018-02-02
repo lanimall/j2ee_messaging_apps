@@ -34,22 +34,19 @@
         <Consumer.ActivationSpec.BindingName>SimpleJmsConsumer</Consumer.ActivationSpec.BindingName>
 
         <!-- JMS RA Activation Specs (unless missing something, in the case of jboss, RA settings need to be specified in the descriptor) -->
-        <Consumer.ActivationSpec.destinationJndiName>JMSSamples/SimpleQueue
-        </Consumer.ActivationSpec.destinationJndiName>
+        <Consumer.ActivationSpec.destinationJndiName>JMSSamples/SimpleQueue</Consumer.ActivationSpec.destinationJndiName>
         <Consumer.ActivationSpec.destinationType>javax.jms.Queue</Consumer.ActivationSpec.destinationType>
-        <Consumer.ActivationSpec.connectionFactoryJndiName>JBOSSSubQCF
-        </Consumer.ActivationSpec.connectionFactoryJndiName>
+        <Consumer.ActivationSpec.connectionFactoryJndiName>JBOSSSubQCF</Consumer.ActivationSpec.connectionFactoryJndiName>
         <Consumer.ActivationSpec.batchSize>1</Consumer.ActivationSpec.batchSize>
         <Consumer.ActivationSpec.maxPoolSize>100</Consumer.ActivationSpec.maxPoolSize>
         <Consumer.ActivationSpec.maxWaitTime>300</Consumer.ActivationSpec.maxWaitTime>
-        <Consumer.ActivationSpec.redeliveryAttempts>50</Consumer.ActivationSpec.redeliveryAttempts>
-        <Consumer.ActivationSpec.redeliveryInterval>1</Consumer.ActivationSpec.redeliveryInterval>
-        <Consumer.ActivationSpec.reconnectAttempts>50</Consumer.ActivationSpec.reconnectAttempts>
-        <Consumer.ActivationSpec.reconnectInterval>20</Consumer.ActivationSpec.reconnectInterval>
+        <Consumer.ActivationSpec.redeliveryAttempts>0</Consumer.ActivationSpec.redeliveryAttempts>
+        <Consumer.ActivationSpec.redeliveryInterval>0</Consumer.ActivationSpec.redeliveryInterval>
+        <Consumer.ActivationSpec.reconnectAttempts>0</Consumer.ActivationSpec.reconnectAttempts>
+        <Consumer.ActivationSpec.reconnectInterval>0</Consumer.ActivationSpec.reconnectInterval>
 
-        <!-- this is the reply connection factory (to be used in cass the consume shoudl reply...as defined in the env entries below) -->
-        <Consumer.ReplyConnectionFactory.BindingName>SimpleJmsSendConnectionFactory
-        </Consumer.ReplyConnectionFactory.BindingName>
+        <!-- this is the reply connection factory (to be used in case the consume should reply...as defined in the env entries below) -->
+        <Consumer.ReplyConnectionFactory.BindingName>SimpleJmsSendConnectionFactory</Consumer.ReplyConnectionFactory.BindingName>
 
         <!-- Consumer Env values for behavior change-->
         <Consumer.Env.jmsMessageEnableReply>true</Consumer.Env.jmsMessageEnableReply>
@@ -58,19 +55,15 @@
         <Consumer.Env.jmsReplyDefaultDestinationType></Consumer.Env.jmsReplyDefaultDestinationType>
 
         <!-- processor that should be called upon message consumption -->
-        <Consumer.Processors.BindingName>${ear.build.name}/session/MockSleepProcessor</Consumer.Processors.BindingName>
+        <!--<Consumer.Processors.BindingName>${ear.build.name}/session/MockSleepProcessor</Consumer.Processors.BindingName>-->
+        <Consumer.Processors.BindingName>MockSleepProcessor</Consumer.Processors.BindingName>
 
         <!-- message processors defined -->
-        <Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>50
-        </Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>
-        <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>50
-        </Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>
-        <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>10
-        </Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>
-        <Consumer.Processors.SendAndForgetProcessor.EJB.BindingName>SimpleJmsSend/session/JmsSendAndForgetService
-        </Consumer.Processors.SendAndForgetProcessor.EJB.BindingName>
-        <Consumer.Processors.SendAndWaitProcessor.EJB.BindingName>SimpleJmsSend/session/JmsSendAndWaitService
-        </Consumer.Processors.SendAndWaitProcessor.EJB.BindingName>
+        <Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>50</Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>
+        <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>50</Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>
+        <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>10</Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>
+        <Consumer.Processors.SendAndForgetProcessor.EJB.BindingName>SimpleJmsSend/session/JmsSendAndForgetService</Consumer.Processors.SendAndForgetProcessor.EJB.BindingName>
+        <Consumer.Processors.SendAndWaitProcessor.EJB.BindingName>SimpleJmsSend/session/JmsSendAndWaitService</Consumer.Processors.SendAndWaitProcessor.EJB.BindingName>
     </properties>
     <profiles>
         <profile>
@@ -80,17 +73,10 @@
                 <Consumer.ActivationSpec.BindingName>SimpleJmsConsumerReplyAsync</Consumer.ActivationSpec.BindingName>
 
                 <!-- JMS RA Activation Specs-->
-                <Consumer.ActivationSpec.destinationJndiName>JMSSamples/ReplyQueueAsync
-                </Consumer.ActivationSpec.destinationJndiName>
+                <Consumer.ActivationSpec.destinationJndiName>JMSSamples/ReplyQueueAsync</Consumer.ActivationSpec.destinationJndiName>
 
                 <!-- Consumer Env values for behavior change-->
                 <Consumer.Env.jmsMessageEnableReply>false</Consumer.Env.jmsMessageEnableReply>
-
-                <!-- processor that should be called upon message consumption -->
-                <Consumer.Processors.BindingName>${ear.build.name}/session/MockSleepProcessor
-                </Consumer.Processors.BindingName>
-                <Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>50
-                </Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>
             </properties>
         </profile>
         <profile>
@@ -100,15 +86,14 @@
                 <Consumer.ActivationSpec.BindingName>SimpleJmsConsumerDriverQueue</Consumer.ActivationSpec.BindingName>
 
                 <!-- JMS RA Activation Specs-->
-                <Consumer.ActivationSpec.destinationJndiName>JMSSamples/DriverQueue
-                </Consumer.ActivationSpec.destinationJndiName>
+                <Consumer.ActivationSpec.destinationJndiName>JMSSamples/DriverQueue</Consumer.ActivationSpec.destinationJndiName>
 
                 <!-- Consumer Env values for behavior change-->
                 <Consumer.Env.jmsMessageEnableReply>false</Consumer.Env.jmsMessageEnableReply>
 
                 <!-- processor that should be called upon message consumption -->
-                <Consumer.Processors.BindingName>${ear.build.name}/session/SendAndForgetProcessor
-                </Consumer.Processors.BindingName>
+                <!--<Consumer.Processors.BindingName>${ear.build.name}/session/SendAndForgetProcessor</Consumer.Processors.BindingName>-->
+                <Consumer.Processors.BindingName>SendAndForgetProcessor</Consumer.Processors.BindingName>
             </properties>
         </profile>
     </profiles>
