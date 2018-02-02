@@ -37,7 +37,7 @@ public class JmsSendAndForget extends BaseMessageProducer {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
 
-        out.write("<h1>Sending JMS message To Queue</h1>");
+        out.write("<h1>" + req.getContextPath() + " - JMS Send And Forget</h1>");
         try {
             String response = jmsSimplePublisher.sendTextMessage(messagePayload, messageProperties);
 
