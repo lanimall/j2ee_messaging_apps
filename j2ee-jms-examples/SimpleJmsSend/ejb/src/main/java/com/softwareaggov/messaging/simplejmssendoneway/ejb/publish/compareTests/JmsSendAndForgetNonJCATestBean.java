@@ -6,7 +6,6 @@ import com.softwareaggov.messaging.simplejmssendoneway.ejb.utils.CounterLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.*;
@@ -58,6 +57,7 @@ public class JmsSendAndForgetNonJCATestBean implements JmsPublisherLocal {
 
     private ConnectionFactory connectionFactory;
     private Destination defaultDestination;
+    private volatile boolean init = false;
 
     public void ejbCreate() {
         log.info("ejbCreate()");
@@ -81,59 +81,50 @@ public class JmsSendAndForgetNonJCATestBean implements JmsPublisherLocal {
         return this.getClass().getSimpleName();
     }
 
-    @PostConstruct
-    protected void initialize() {
-        //JNDI params
-        if (null == jndiContextFactory)
-            throw new IllegalArgumentException("jms.jndi.contextfactory not defined.");
+    protected void initJMS() throws JMSException, NamingException {
+        if (!init) {
+            synchronized (this.getClass()) {
+                if (!init) {
+                    //JNDI params
+                    if (null == jndiContextFactory)
+                        throw new IllegalArgumentException("jms.jndi.contextfactory not defined.");
 
-        if (null == jndiConnectionUrl)
-            throw new IllegalArgumentException("jms.jndi.connection.url not defined.");
+                    if (null == jndiConnectionUrl)
+                        throw new IllegalArgumentException("jms.jndi.connection.url not defined.");
 
-        Hashtable<String, String> jndiEnv = new Hashtable<String, String>();
-        jndiEnv.put("java.naming.factory.initial", jndiContextFactory);
+                    Hashtable<String, String> jndiEnv = new Hashtable<String, String>();
+                    jndiEnv.put("java.naming.factory.initial", jndiContextFactory);
 
-        if (null != jndiConnectionUrl && !"".equals(jndiConnectionUrl)) {
-            //add the proptocol if not set -- default to nsp
-            if (-1 == jndiConnectionUrl.indexOf("://"))
-                jndiConnectionUrl = "nsp://" + jndiConnectionUrl;
+                    if (null != jndiConnectionUrl && !"".equals(jndiConnectionUrl)) {
+                        //add the proptocol if not set -- default to nsp
+                        if (-1 == jndiConnectionUrl.indexOf("://"))
+                            jndiConnectionUrl = "nsp://" + jndiConnectionUrl;
 
-            jndiEnv.put("java.naming.provider.url", jndiConnectionUrl);
-        }
+                        jndiEnv.put("java.naming.provider.url", jndiConnectionUrl);
+                    }
 
-        //JMS connection factory
-        if (null == jmsConnectionFactoryName)
-            throw new IllegalArgumentException("jms.connectionfactory.name not defined.");
+                    //JMS connection factory
+                    if (null == jmsConnectionFactoryName)
+                        throw new IllegalArgumentException("jms.connectionfactory.name not defined.");
 
-        try {
-            connectionFactory = (ConnectionFactory) JMSHelper.lookupJNDI(jndiEnv, jmsConnectionFactoryName);
-        } catch (NamingException e) {
-            throw new EJBException(e);
-        } catch (ClassCastException e) {
-            throw new EJBException("Unexpected connectionFactory object returned from JNDI", e);
-        }
+                    connectionFactory = (ConnectionFactory) JMSHelper.lookupJNDI(jndiEnv, jmsConnectionFactoryName);
 
-        //set the default destination only if it's not set already
-        if (null != jmsDefaultDestinationName) {
-            try {
-                defaultDestination = (Destination) JMSHelper.lookupJNDI(jndiEnv, jmsDefaultDestinationName);
-            } catch (NamingException e) {
-                throw new EJBException(e);
-            } catch (ClassCastException e) {
-                throw new EJBException("Unexpected destination object returned from JNDI", e);
-            }
-        }
+                    //set the default destination only if it's not set already
+                    if (null != jmsDefaultDestinationName) {
+                        defaultDestination = (Destination) JMSHelper.lookupJNDI(jndiEnv, jmsDefaultDestinationName);
+                    }
 
-        this.jmsHelper = JMSHelper.createSender(connectionFactory);
+                    this.jmsHelper = JMSHelper.createSender(connectionFactory);
 
-        //JMS reply destination
-        jmsReplyTo = null;
-        if (null != jmsReplyDestinationName && !"".equals(jmsReplyDestinationName) &&
-                null != jmsReplyDestinationType && !"".equals(jmsReplyDestinationType)) {
-            try {
-                jmsReplyTo = jmsHelper.lookupDestination(jmsReplyDestinationName, jmsReplyDestinationType);
-            } catch (Exception e) {
-                throw new EJBException(e);
+                    //JMS reply destination
+                    jmsReplyTo = null;
+                    if (null != jmsReplyDestinationName && !"".equals(jmsReplyDestinationName) &&
+                            null != jmsReplyDestinationType && !"".equals(jmsReplyDestinationType)) {
+                        jmsReplyTo = jmsHelper.lookupDestination(jmsReplyDestinationName, jmsReplyDestinationType);
+                    }
+
+                    init = true;
+                }
             }
         }
     }
@@ -149,6 +140,8 @@ public class JmsSendAndForgetNonJCATestBean implements JmsPublisherLocal {
             log.debug("in EJB: sendTextMessage");
 
         try {
+            initJMS();
+
             returnText = sendMessage(defaultDestination, msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, null, jmsReplyTo);
 
             //increment processing counter
@@ -159,7 +152,7 @@ public class JmsSendAndForgetNonJCATestBean implements JmsPublisherLocal {
             } else {
                 messageProcessingCounter.incrementAndGet(getBeanName() + "-responseNotNull");
             }
-        } catch (JMSException e) {
+        } catch (Exception e) {
             messageProcessingCounter.incrementAndGet(getBeanName() + "-errors");
             log.error("JMS Error occurred", e);
             throw new EJBException(e);
