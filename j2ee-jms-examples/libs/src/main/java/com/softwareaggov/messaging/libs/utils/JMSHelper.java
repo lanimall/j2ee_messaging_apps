@@ -23,14 +23,14 @@ public class JMSHelper {
         QUEUE,
         TOPIC;
 
-        static public DestinationType parse(String destinationTypeName) throws Exception {
+        static public DestinationType parse(String destinationTypeName) throws IllegalArgumentException {
             JMSHelper.DestinationType destinationTypeLocal = QUEUE;
             if ("topic".equalsIgnoreCase(destinationTypeName)) {
                 destinationTypeLocal = JMSHelper.DestinationType.TOPIC;
             } else if ("queue".equalsIgnoreCase(destinationTypeName)) {
                 destinationTypeLocal = JMSHelper.DestinationType.QUEUE;
             } else {
-                throw new Exception("value for destinationTypeName not valid - " + ((null != destinationTypeName) ? destinationTypeName : "null"));
+                throw new IllegalArgumentException("value for destinationTypeName not valid - " + ((null != destinationTypeName) ? destinationTypeName : "null"));
             }
             return destinationTypeLocal;
         }
@@ -206,7 +206,7 @@ public class JMSHelper {
         return lookupDestination(destinationName, DestinationType.QUEUE);
     }
 
-    public Destination lookupDestination(String destinationName, String destinationType) throws Exception {
+    public Destination lookupDestination(String destinationName, String destinationType) throws JMSException {
         return lookupDestination(destinationName, JMSHelper.DestinationType.parse(destinationType));
     }
 
