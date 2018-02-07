@@ -33,21 +33,26 @@
         <JmsSend.Resources.ConnectionFactory.BindingName>SimpleJmsSendConnectionFactory</JmsSend.Resources.ConnectionFactory.BindingName>
         <JmsSend.Resources.Destination.BindingName>SimpleJmsSendDestination</JmsSend.Resources.Destination.BindingName>
 
+        <JmsSend.JmsSendAndForgetService.Env.jmsSendEnabled>true</JmsSend.JmsSendAndForgetService.Env.jmsSendEnabled>
         <JmsSend.JmsSendAndForgetService.Env.jmsDeliveryMode>-1</JmsSend.JmsSendAndForgetService.Env.jmsDeliveryMode>
         <JmsSend.JmsSendAndForgetService.Env.jmsPriority>-1</JmsSend.JmsSendAndForgetService.Env.jmsPriority>
         <JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationName>JMSSamples/ReplyQueueAsync</JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationName>
         <JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationType>queue</JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationType>
 
+        <JmsSend.JmsSendAndWaitService.Env.jmsSendEnabled>true</JmsSend.JmsSendAndWaitService.Env.jmsSendEnabled>
         <JmsSend.JmsSendAndWaitService.Env.jmsDeliveryMode>-1</JmsSend.JmsSendAndWaitService.Env.jmsDeliveryMode>
         <JmsSend.JmsSendAndWaitService.Env.jmsPriority>-1</JmsSend.JmsSendAndWaitService.Env.jmsPriority>
         <JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationName>JMSSamples/ReplyQueueSync</JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationName>
         <JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationType>queue</JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationType>
         <JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis>10000</JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis>
 
+        <JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsSendEnabled>true</JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsSendEnabled>
         <JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsDeliveryMode>-1</JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsDeliveryMode>
         <JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsPriority>-1</JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsPriority>
         <JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationName>JMSSamples/ReplyQueueAsync</JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationName>
         <JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationType>queue</JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationType>
+
+        <JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSendEnabled>false</JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSendEnabled>
     </properties>
 
     <profiles>
@@ -59,6 +64,10 @@
                 <JmsSend.Resources.Destination.BindingName>DriverQueueDestination</JmsSend.Resources.Destination.BindingName>
 
                 <!-- Only specify properties here if different from defaults... -->
+                <JmsSend.JmsSendAndForgetService.Env.jmsSendEnabled>true</JmsSend.JmsSendAndForgetService.Env.jmsSendEnabled>
+                <JmsSend.JmsSendAndWaitService.Env.jmsSendEnabled>false</JmsSend.JmsSendAndWaitService.Env.jmsSendEnabled>
+                <JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsSendEnabled>false</JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsSendEnabled>
+                <JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSendEnabled>false</JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSendEnabled>
             </properties>
         </profile>
     </profiles>
