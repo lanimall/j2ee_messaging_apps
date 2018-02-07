@@ -28,6 +28,9 @@ public class JmsSendAndForgetNonJCATestBean implements JmsPublisherLocal {
     @EJB
     private CounterLocal messageProcessingCounter;
 
+    @Resource(name = "jmsSendEnabled")
+    private Boolean isEnabled = true;
+
     @Resource(name = "jms.jndi.contextfactory")
     private String jndiContextFactory = null;
 
@@ -75,6 +78,11 @@ public class JmsSendAndForgetNonJCATestBean implements JmsPublisherLocal {
         if (null != jmsHelper)
             jmsHelper.cleanup();
         jmsHelper = null;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
     }
 
     protected String getBeanName() {
