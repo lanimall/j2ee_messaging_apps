@@ -8,4 +8,6 @@ import java.util.Map;
  */
 public interface JmsPublisherLocal {
     String sendTextMessage(final String msgTextPayload, final Map<String, String> msgHeaderProperties) throws JMSException;
+
+    boolean isEnabled();
 }

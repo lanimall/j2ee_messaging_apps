@@ -9,5 +9,5 @@ import java.util.Map;
 public interface JmsPublisherRemote {
     String sendTextMessage(final String msgTextPayload, final Map<String, String> msgHeaderProperties) throws JMSException;
 
-    ;
+    boolean isEnabled();
 }
