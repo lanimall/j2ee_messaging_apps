@@ -37,6 +37,9 @@ public abstract class JmsPublisherBase implements JmsPublisherLocal, JmsPublishe
     @Resource(name = "jmsReplyDestinationType")
     private String jmsReplyDestinationType = null;
 
+    @Resource(name = "jmsSendEnabled")
+    private Boolean isEnabled;
+
     private volatile boolean init = false;
 
     protected transient JMSHelper jmsHelper = null;
@@ -69,6 +72,11 @@ public abstract class JmsPublisherBase implements JmsPublisherLocal, JmsPublishe
     abstract Destination getJmsDestination();
 
     abstract String sendMessage(Destination destination, final String payload, final Map<String, String> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException;
+
+    @Override
+    public boolean isEnabled() {
+        return (null != isEnabled) ? isEnabled : false;
+    }
 
     // Initializing resource outside the EJB creation to make sure these lookups get retried until they work
     // (eg. if UM is not available yet when EJB is created)
