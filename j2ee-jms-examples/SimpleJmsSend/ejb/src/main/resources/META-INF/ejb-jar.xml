@@ -13,7 +13,12 @@
             <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndForgetBean
             </ejb-class>
             <env-entry>
-                <env-entry-name>jmsDeliveryMode</env-entry-name>
+                <env-entry-name>jmsSendEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetService.Env.jmsSendEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+            <env-entry-name>jmsDeliveryMode</env-entry-name>
                 <env-entry-type>java.lang.Integer</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndForgetService.Env.jmsDeliveryMode}</env-entry-value>
             </env-entry>
@@ -48,7 +53,12 @@
             <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndWaitBean
             </ejb-class>
             <env-entry>
-                <env-entry-name>jmsDeliveryMode</env-entry-name>
+                <env-entry-name>jmsSendEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsSendEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+            <env-entry-name>jmsDeliveryMode</env-entry-name>
                 <env-entry-type>java.lang.Integer</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsDeliveryMode}</env-entry-value>
             </env-entry>
@@ -89,7 +99,12 @@
                 com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests.JmsSendAndForgetCachedConnectionTestBean
             </ejb-class>
             <env-entry>
-                <env-entry-name>jmsDeliveryMode</env-entry-name>
+                <env-entry-name>jmsSendEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsSendEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+            <env-entry-name>jmsDeliveryMode</env-entry-name>
                 <env-entry-type>java.lang.Integer</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsDeliveryMode}</env-entry-value>
             </env-entry>
@@ -124,6 +139,11 @@
             <ejb-class>
                 com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests.JmsSendAndForgetNonJCATestBean
             </ejb-class>
+            <env-entry>
+                <env-entry-name>jmsSendEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSendEnabled}</env-entry-value>
+            </env-entry>
             <env-entry>
                 <env-entry-name>jms.jndi.contextfactory</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
