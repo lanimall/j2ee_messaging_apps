@@ -6,12 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * <p>
@@ -29,21 +24,7 @@ public class JmsSendAndForgetNonJCA extends BaseMessageProducer {
     private JmsPublisherLocal jmsSimplePublisher;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        resp.setContentType("text/html");
-        PrintWriter out = resp.getWriter();
-
-        out.write("<h1>" + req.getContextPath() + " - Sending JMS message To Queue</h1>");
-        try {
-            String response = jmsSimplePublisher.sendTextMessage(messagePayload, messageProperties);
-
-            out.write("<p><b>messages sent successfully</b></p>");
-            out.write(String.format("<div><p>Response:</p><p>%s</p></div>", ((null != response) ? response : "null")));
-            out.close();
-        } catch (Throwable exc) {
-            log.error("Error Occurred", exc);
-            throw new ServletException(exc);
-        }
+    protected final JmsPublisherLocal getJmsPublisherLocal() {
+        return jmsSimplePublisher;
     }
 }
