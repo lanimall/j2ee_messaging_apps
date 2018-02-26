@@ -1,20 +1,21 @@
 messaging-samples
 =================
 
-Author: Fabien Sanglier
+Authors: 
+- [Fabien Sanglier](mailto:fabien.sanglier@softwareag.com)
 
-Source: <https://github.com/lanimall/messaging-samples>
+Source: <https://github.com/SoftwareAG/universalmessaging-samples>
 
 What is it?
 -----------
-A collection of some demo messaging apps.
+A collection of universal messaging apps.
 
 Content
 -------
 
-* [j2ee-jms-examples](j2ee-jms-examples)
+* [J2EE_SimplePubSub](J2EE_SimplePubSub)
   * Couple of simple JMS operations using J2EE and Resource Adapters.
 * [jca-jms-samples](jca-jms-samples)
-  * Same as j2ee-jms-examples (just an older iteration)
+  * An older iteration of the J2EE apps...will delete soon. Please look at J2EE_SimplePubSub instead.
 * [spring-jms-message-generator](spring-jms-message-generator)
-  * Couple of simple JMS operations using Spring
+  * Couple of simple JMS operations using Spring -- will cleanup soon.
