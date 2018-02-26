@@ -10,7 +10,7 @@
 	<url>https://github.com/lanimall/messaging-samples</url>
 
 	<modules>
-		<module>j2ee-jms-examples</module>
+		<module>J2EE_SimplePubSub</module>
 		<module>spring-jms-message-generator</module>
 	</modules>
 </project>
