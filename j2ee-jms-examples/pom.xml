@@ -4,11 +4,10 @@
     <name>j2ee-jms-examples</name>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.softwareaggov.messaging</groupId>
-    <artifactId>j2ee-jms-examples</artifactId>
+    <artifactId>J2EE_SimplePubSub</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <url>http://jboss.org/jbossas</url>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -84,62 +83,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <profiles>
-        <profile>
-            <id>jboss</id>
-            <properties>
-                <!-- JBoss dependency versions -->
-                <version.jboss.maven.plugin>7.4.Final</version.jboss.maven.plugin>
-
-                <version.jboss.as>7.3.0.Final-redhat-14</version.jboss.as>
-
-                <version.jboss.spec.javaee.6.0>3.0.2.Final-redhat-7</version.jboss.spec.javaee.6.0>
-
-                <deploy.target.ip>54.172.156.94</deploy.target.ip>
-                <deploy.target.port>9999</deploy.target.port>
-                <deploy.target.username>jbossadmin</deploy.target.username>
-                <deploy.target.password>admin123!</deploy.target.password>
-            </properties>
-            <dependencyManagement>
-                <dependencies>
-                    <!-- Define the version of JBoss' Java EE 6 APIs we want to import.
-                    Any dependencies from org.jboss.spec will have their version defined by this
-                    BOM -->
-                    <!-- JBoss distributes a complete set of Java EE 6 APIs including
-                        a Bill of Materials (BOM). A BOM specifies the versions of a "stack" (or
-                        a collection) of artifacts. We use this here so that we always get the correct
-                        versions of artifacts. Here we use the jboss-javaee-6.0 stack (you can
-                        read this as the JBoss stack of the Java EE 6 APIs). You can actually
-                        use this stack with any version of JBoss EAP that implements Java EE 6. -->
-                    <dependency>
-                        <groupId>org.jboss.spec</groupId>
-                        <artifactId>jboss-javaee-6.0</artifactId>
-                        <version>${version.jboss.spec.javaee.6.0}</version>
-                        <type>pom</type>
-                        <scope>import</scope>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <!-- The JBoss AS plugin deploys your ear to a local JBoss EAP container -->
-                        <!-- Due to Maven's lack of intelligence with EARs we need
-                            to configure the jboss-as maven plugin to skip deployment for all modules.
-                            We then enable it specifically in the ear module. -->
-                        <plugin>
-                            <groupId>org.jboss.as.plugins</groupId>
-                            <artifactId>jboss-as-maven-plugin</artifactId>
-                            <version>${version.jboss.maven.plugin}</version>
-                            <inherited>true</inherited>
-                            <configuration>
-                                <skip>true</skip>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
-    </profiles>
 </project>
