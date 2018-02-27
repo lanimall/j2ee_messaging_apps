@@ -58,7 +58,7 @@ public class SendAndForgetBean implements MessageProcessorLocal {
     @PostConstruct
     public void initialize() {
         final Properties jndiProperties = new Properties();
-        if (null != jndiInitialContextFactory && !"".equals(jndiInitialContextFactory))
+        if (null != jndiUrl && !"".equals(jndiUrl))
             jndiProperties.put(Context.PROVIDER_URL, jndiUrl);
 
         if (null != jndiInitialContextFactory && !"".equals(jndiInitialContextFactory))
