@@ -108,7 +108,7 @@
     <target name="assemble_defaults" description="Creates server jar" depends="clean_target_dir">
         <!-- default builds -->
         <antcall target="package_profiles">
-            <param name="mvn_profile" value=""/>
+            <param name="mvn_profile" value="${j2ee-jms-examples.deployment_target}"/>
         </antcall>
         <copy todir="${j2ee-jms-examples.target.dir}">
             <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
@@ -119,7 +119,7 @@
     <target name="assemble_all_apps" description="Creates server jar" depends="clean_target_dir, assemble_defaults">
         <!-- Another JMSSend for a different queue -->
         <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsSend_driverQueue"/>
+            <param name="mvn_profile" value="SimpleJmsSend_driverQueue,${j2ee-jms-examples.deployment_target}"/>
         </antcall>
         <copy todir="${j2ee-jms-examples.target.dir}">
             <fileset file="${j2ee-jms-examples.simpleJmsSend.dir}/ear/target/*.ear"/>
@@ -127,7 +127,7 @@
 
         <!-- Another JMS Comsume for a different queue -->
         <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_consume_the_replies"/>
+            <param name="mvn_profile" value="SimpleJmsConsume_consume_the_replies,${j2ee-jms-examples.deployment_target}"/>
         </antcall>
         <copy todir="${j2ee-jms-examples.target.dir}">
             <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
@@ -135,7 +135,7 @@
 
         <!-- Another JMS Comsume for a different queue -->
         <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_consume_driverqueue"/>
+            <param name="mvn_profile" value="SimpleJmsConsume_consume_driverqueue,${j2ee-jms-examples.deployment_target}"/>
         </antcall>
         <copy todir="${j2ee-jms-examples.target.dir}">
             <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
