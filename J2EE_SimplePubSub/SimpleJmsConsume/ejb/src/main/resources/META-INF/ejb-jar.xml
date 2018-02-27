@@ -78,10 +78,50 @@
         <session>
             <ejb-name>SendAndForgetProcessor</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.SendAndForgetBean</ejb-class>
+            <env-entry>
+                <env-entry-name>jndi.ejblookup.initialContextFactory</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${EJB.JndiLookup.InitialContextFactory}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jndi.ejblookup.urlPackagePrefix</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${EJB.JndiLookup.UrlPackagePrefix}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jndi.ejblookup.url</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jndi.ejblookup.bindingname</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.BindingName}</env-entry-value>
+            </env-entry>
         </session>
         <session>
             <ejb-name>SendAndWaitProcessor</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.SendAndWaitBean</ejb-class>
+            <env-entry>
+                <env-entry-name>jndi.ejblookup.initialContextFactory</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${EJB.JndiLookup.InitialContextFactory}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jndi.ejblookup.urlPackagePrefix</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${EJB.JndiLookup.UrlPackagePrefix}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jndi.ejblookup.url</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jndi.ejblookup.bindingname</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.BindingName}</env-entry-value>
+            </env-entry>
         </session>
     </enterprise-beans>
 </ejb-jar>
