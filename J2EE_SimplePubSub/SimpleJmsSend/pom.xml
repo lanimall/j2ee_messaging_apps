@@ -52,6 +52,16 @@
         <JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationName>JMSSamples/ReplyQueueAsync</JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationName>
         <JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationType>queue</JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationType>
 
+        <JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsSendEnabled>true</JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsSendEnabled>
+        <JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsDeliveryMode>-1</JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsDeliveryMode>
+        <JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsPriority>-1</JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsPriority>
+        <JmsSend.JmsSendAndForgetNonJCATestBean.jndi.initialContext>com.pcbsys.nirvana.nSpace.NirvanaContextFactory</JmsSend.JmsSendAndForgetNonJCATestBean.jndi.initialContext>
+        <JmsSend.JmsSendAndForgetNonJCATestBean.jndi.connection.url>localhost:9000</JmsSend.JmsSendAndForgetNonJCATestBean.jndi.connection.url>
+        <JmsSend.JmsSendAndForgetNonJCATestBean.connectionfactory.name>JBOSSPublishQCF</JmsSend.JmsSendAndForgetNonJCATestBean.connectionfactory.name>
+        <JmsSend.JmsSendAndForgetNonJCATestBean.default.destination.name>JMSSamples/SimpleQueue</JmsSend.JmsSendAndForgetNonJCATestBean.default.destination.name>
+        <JmsSend.JmsSendAndForgetNonJCATestBean.replyDestinationName>queue</JmsSend.JmsSendAndForgetNonJCATestBean.replyDestinationName>
+        <JmsSend.JmsSendAndForgetNonJCATestBean.replyDestinationType></JmsSend.JmsSendAndForgetNonJCATestBean.replyDestinationType>
+
         <JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSendEnabled>false</JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSendEnabled>
     </properties>
 
@@ -65,6 +75,8 @@
 
                 <!-- Only specify properties here if different from defaults... -->
                 <JmsSend.JmsSendAndForgetService.Env.jmsSendEnabled>true</JmsSend.JmsSendAndForgetService.Env.jmsSendEnabled>
+                <JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationName>JMSSamples/ReplyQueueAsync</JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationName>
+
                 <JmsSend.JmsSendAndWaitService.Env.jmsSendEnabled>false</JmsSend.JmsSendAndWaitService.Env.jmsSendEnabled>
                 <JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsSendEnabled>false</JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsSendEnabled>
                 <JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSendEnabled>false</JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSendEnabled>
