@@ -62,9 +62,16 @@
         <Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>50</Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>
         <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>50</Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>
         <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>10</Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>
-        <Consumer.Processors.SendAndForgetProcessor.EJB.BindingName>SimpleJmsSend/session/JmsSendAndForgetService</Consumer.Processors.SendAndForgetProcessor.EJB.BindingName>
-        <Consumer.Processors.SendAndWaitProcessor.EJB.BindingName>SimpleJmsSend/session/JmsSendAndWaitService</Consumer.Processors.SendAndWaitProcessor.EJB.BindingName>
+
+        <!-- linked remote EJBs to send message -->
+        <Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.BindingName>
+            ejb/SimpleJmsSend/SimpleJmsSend-ejb.jar/JmsSendAndForgetService#com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote
+        </Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.BindingName>
+        <Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.BindingName>
+            ejb/SimpleJmsSend/SimpleJmsSend-ejb.jar/JmsSendAndWaitService#com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote
+        </Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.BindingName>
     </properties>
+
     <profiles>
         <profile>
             <id>SimpleJmsConsume_consume_the_replies</id>
@@ -94,6 +101,30 @@
                 <!-- processor that should be called upon message consumption -->
                 <!--<Consumer.Processors.BindingName>${ear.build.name}/session/SendAndForgetProcessor</Consumer.Processors.BindingName>-->
                 <Consumer.Processors.BindingName>SendAndForgetProcessor</Consumer.Processors.BindingName>
+            </properties>
+        </profile>
+        <profile>
+            <id>deployment_websphere</id>
+            <properties>
+                <EJB.JndiLookup.InitialContextFactory>com.ibm.websphere.naming.WsnInitialContextFactory</EJB.JndiLookup.InitialContextFactory>
+                <EJB.JndiLookup.UrlPackagePrefix></EJB.JndiLookup.UrlPackagePrefix>
+
+                <!-- URLs for EJB bindings...Leaving it blank default to local, which is fine in most cases here
+                     for ejb local lookup, it's "iiop://localhost"
+                     for ejb remote lookup, it's "corbaloc:iiop:localhost:2809"
+                -->
+                <Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url>
+                <Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url>
+            </properties>
+        </profile>
+        <profile>
+            <id>deployment_jboss</id>
+            <properties>
+                <!--<EJB.JndiLookup.InitialContextFactory>org.jboss.naming.remote.client.InitialContextFactory</EJB.JndiLookup.InitialContextFactory>-->
+                <EJB.JndiLookup.InitialContextFactory></EJB.JndiLookup.InitialContextFactory>
+                <EJB.JndiLookup.UrlPackagePrefix>org.jboss.ejb.client.naming</EJB.JndiLookup.UrlPackagePrefix>
+                <Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url>
+                <Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url>
             </properties>
         </profile>
     </profiles>
