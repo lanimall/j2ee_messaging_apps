@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
@@ -27,28 +28,49 @@ import java.util.*;
 public class SendAndWaitBean implements MessageProcessorLocal {
     private static Logger log = LoggerFactory.getLogger(SendAndWaitBean.class);
 
-//    @EJB(beanName = "JmsSendAndWaitService", beanInterface = JmsPublisherRemote.class)
-//    private JmsPublisherRemote jmsMessagePublisher;
-
-    // This will be injected dynamically by jndi lookup
+    // This will be injected dynamically by jndi lookup...
+    // the reason is that we don't want the deployment to fail if the jmsMessagePublisher is not set AND this bean is not used in the runtime path
     private JmsPublisherRemote jmsMessagePublisher;
 
-    final String appName = "SimpleJmsSend";
-    final String moduleName = "SimpleJmsSend-ejb";
-    final String beanName = "JmsSendAndWaitService";
-    final String viewClassName = JmsPublisherRemote.class.getName();
+    //generally global based on target deployment
+    @Resource(name = "jndi.ejblookup.initialContextFactory")
+    private String jndiInitialContextFactory;
+
+    @Resource(name = "jndi.ejblookup.urlPackagePrefix")
+    private String jndiUrlPackagePrefix;
+
+    //generally based on where to access the beans
+    @Resource(name = "jndi.ejblookup.url")
+    private String jndiUrl;
+
+    @Resource(name = "jndi.ejblookup.bindingname")
+    private String jndiEjbLookupBindingName;
+
+//    final String appName = "SimpleJmsSend";
+//    final String moduleName = "SimpleJmsSend-ejb";
+//    final String beanName = "JmsSendAndWaitService";
+//    final String viewClassName = JmsPublisherRemote.class.getName();
 
     @PostConstruct
     public void initialize() {
         final Properties jndiProperties = new Properties();
-        jndiProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
+
+        if (null != jndiInitialContextFactory && !"".equals(jndiInitialContextFactory))
+            jndiProperties.put(Context.PROVIDER_URL, jndiUrl);
+
+        if (null != jndiInitialContextFactory && !"".equals(jndiInitialContextFactory))
+            jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, jndiInitialContextFactory);
+
+        if (null != jndiUrlPackagePrefix && !"".equals(jndiUrlPackagePrefix))
+            jndiProperties.put(Context.URL_PKG_PREFIXES, jndiUrlPackagePrefix);
 
         // create the context
         final Context context;
         try {
             context = new InitialContext(jndiProperties);
-            jmsMessagePublisher = (JmsPublisherRemote) context.lookup("ejb:" + appName + "/" + moduleName + "/" + beanName + "!" + viewClassName);
+            jmsMessagePublisher = (JmsPublisherRemote) context.lookup(jndiEjbLookupBindingName);
         } catch (NamingException e) {
+            log.error("Could not lookup the EJB with URL:" + jndiEjbLookupBindingName, e);
             e.printStackTrace();
         }
     }
@@ -76,7 +98,7 @@ public class SendAndWaitBean implements MessageProcessorLocal {
                         textReturned, null
                 );
             } else {
-                return null;
+                throw new RuntimeException("jmsMessagePublisher is null...cannot do anything");
             }
         } else {
             throw new RuntimeException("Received non-text message");
