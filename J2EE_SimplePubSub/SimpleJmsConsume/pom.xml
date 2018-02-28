@@ -26,86 +26,60 @@
     </licenses>
 
     <properties>
-        <!-- Since the ear plugin is executed in the child ear pom,
-        the variable project.parent.artifactId will resolve to this pom's artifactId-->
-        <ear.build.name>${project.parent.artifactId}</ear.build.name>
-
-        <!-- in the case of websphere, all the RA activation specs are defined under a single ActivationSpec object that can be accessed via binding-->
-        <Consumer.ActivationSpec.BindingName>SimpleJmsConsumer</Consumer.ActivationSpec.BindingName>
-
-        <!-- JMS RA Activation Specs (unless missing something, in the case of jboss, RA settings need to be specified in the descriptor) -->
-        <Consumer.ActivationSpec.destinationJndiName>JMSSamples/SimpleQueue</Consumer.ActivationSpec.destinationJndiName>
-        <Consumer.ActivationSpec.destinationType>javax.jms.Queue</Consumer.ActivationSpec.destinationType>
-        <Consumer.ActivationSpec.connectionFactoryJndiName>JBOSSSubQCF</Consumer.ActivationSpec.connectionFactoryJndiName>
-        <Consumer.ActivationSpec.batchSize>1</Consumer.ActivationSpec.batchSize>
-        <Consumer.ActivationSpec.maxPoolSize>100</Consumer.ActivationSpec.maxPoolSize>
-        <Consumer.ActivationSpec.maxWaitTime>300</Consumer.ActivationSpec.maxWaitTime>
-        <Consumer.ActivationSpec.redeliveryAttempts>0</Consumer.ActivationSpec.redeliveryAttempts>
-        <Consumer.ActivationSpec.redeliveryInterval>0</Consumer.ActivationSpec.redeliveryInterval>
-        <Consumer.ActivationSpec.reconnectAttempts>0</Consumer.ActivationSpec.reconnectAttempts>
-        <Consumer.ActivationSpec.reconnectInterval>0</Consumer.ActivationSpec.reconnectInterval>
-
-        <!-- this is the reply connection factory (to be used in case the consume should reply...as defined in the env entries below) -->
-        <Consumer.ReplyConnectionFactory.BindingName>SimpleJmsSendConnectionFactory</Consumer.ReplyConnectionFactory.BindingName>
-
-        <!-- Consumer Env values for behavior change-->
-        <Consumer.Env.jmsMessageEnableReply>true</Consumer.Env.jmsMessageEnableReply>
-        <Consumer.Env.jmsMessageReplyOverridesDefault>true</Consumer.Env.jmsMessageReplyOverridesDefault>
-        <Consumer.Env.jmsReplyDefaultDestinationName></Consumer.Env.jmsReplyDefaultDestinationName>
-        <Consumer.Env.jmsReplyDefaultDestinationType></Consumer.Env.jmsReplyDefaultDestinationType>
-
-        <!-- processor that should be called upon message consumption (via local EJB link) -->
-        <Consumer.Processors.BindingName>MockSleepProcessor</Consumer.Processors.BindingName>
-
-        <!-- message processors definitions -->
-        <Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>50</Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>
-        <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>50</Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>
-        <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>10</Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>
-
-        <Consumer.Processors.MessageCloneProcessor.Env.msgPayloadOverride></Consumer.Processors.MessageCloneProcessor.Env.msgPayloadOverride>
-        <Consumer.Processors.MessageCloneProcessor.Env.msgPropertiesOverride></Consumer.Processors.MessageCloneProcessor.Env.msgPropertiesOverride>
-        <Consumer.Processors.MessageCloneProcessor.Env.isOverwriteAllProperties>false</Consumer.Processors.MessageCloneProcessor.Env.isOverwriteAllProperties>
-
-        <Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.BindingName>
-            ejb/SimpleJmsSend/SimpleJmsSend-ejb.jar/JmsSendAndForgetService#com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote
-        </Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.BindingName>
-        <Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url>
-
-        <Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.BindingName>
-            ejb/SimpleJmsSend/SimpleJmsSend-ejb.jar/JmsSendAndWaitService#com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote
-        </Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.BindingName>
-        <Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url>
+        <build.properties>${project.basedir}/../build.properties</build.properties>
+        <EJB.JndiLookup.InitialContextFactory></EJB.JndiLookup.InitialContextFactory>
+        <EJB.JndiLookup.UrlPackagePrefix></EJB.JndiLookup.UrlPackagePrefix>
+        <EJB.JndiLookup.Url.ejblocal></EJB.JndiLookup.Url.ejblocal>
+        <EJB.JndiLookup.Url.ejbremote></EJB.JndiLookup.Url.ejbremote>
     </properties>
 
     <profiles>
         <profile>
-            <id>SimpleJmsConsume_consume_the_replies</id>
+            <id>SimpleJmsConsume_noreply</id>
             <properties>
-                <ear.build.name>${project.parent.artifactId}TheReply</ear.build.name>
-                <Consumer.ActivationSpec.BindingName>SimpleJmsConsumerReplyAsync</Consumer.ActivationSpec.BindingName>
-
-                <!-- JMS RA Activation Specs-->
-                <Consumer.ActivationSpec.destinationJndiName>JMSSamples/ReplyQueueAsync</Consumer.ActivationSpec.destinationJndiName>
-
-                <!-- Consumer Env values for behavior change-->
-                <Consumer.Env.jmsMessageEnableReply>false</Consumer.Env.jmsMessageEnableReply>
+                <build.properties>${project.basedir}/../build.noreply.properties</build.properties>
             </properties>
         </profile>
         <profile>
-            <id>SimpleJmsConsume_consume_driverqueue</id>
+            <id>SimpleJmsConsume_clonenreply</id>
             <properties>
-                <ear.build.name>${project.parent.artifactId}DriverQueue</ear.build.name>
-                <Consumer.ActivationSpec.BindingName>SimpleJmsConsumerDriverQueue</Consumer.ActivationSpec.BindingName>
-
-                <!-- JMS RA Activation Specs-->
-                <Consumer.ActivationSpec.destinationJndiName>JMSSamples/DriverQueue</Consumer.ActivationSpec.destinationJndiName>
-
-                <!-- Consumer Env values for behavior change-->
-                <Consumer.Env.jmsMessageEnableReply>false</Consumer.Env.jmsMessageEnableReply>
-
-                <!-- processor that should be called upon message consumption -->
-                <!--<Consumer.Processors.BindingName>${ear.build.name}/session/SendAndForgetProcessor</Consumer.Processors.BindingName>-->
-                <Consumer.Processors.BindingName>SendAndForgetProcessor</Consumer.Processors.BindingName>
+                <build.properties>${project.basedir}/../build.clonenreply.properties</build.properties>
+            </properties>
+        </profile>
+        <profile>
+            <id>SimpleJmsConsume_overridenreply</id>
+            <properties>
+                <build.properties>${project.basedir}/../build.overridenreply.properties</build.properties>
+            </properties>
+        </profile>
+        <profile>
+            <id>SimpleJmsConsume_replyqueue</id>
+            <properties>
+                <build.properties>${project.basedir}/../build.replyqueue.properties</build.properties>
+            </properties>
+        </profile>
+        <profile>
+            <id>SimpleJmsConsume_driverqueue</id>
+            <properties>
+                <build.properties>${project.basedir}/../build.driverqueue.properties</build.properties>
+            </properties>
+        </profile>
+        <profile>
+            <id>SimpleJmsConsume_customer1.clonenreply</id>
+            <properties>
+                <build.properties>${project.basedir}/../build.customer1.clonenreply.properties</build.properties>
+            </properties>
+        </profile>
+        <profile>
+            <id>SimpleJmsConsume_customer1.replyqueue</id>
+            <properties>
+                <build.properties>${project.basedir}/../build.customer1.replyqueue.properties</build.properties>
+            </properties>
+        </profile>
+        <profile>
+            <id>SimpleJmsConsume_customer1.driverqueue</id>
+            <properties>
+                <build.properties>${project.basedir}/../build.customer1.driverqueue.properties</build.properties>
             </properties>
         </profile>
         <profile>
@@ -113,13 +87,8 @@
             <properties>
                 <EJB.JndiLookup.InitialContextFactory>com.ibm.websphere.naming.WsnInitialContextFactory</EJB.JndiLookup.InitialContextFactory>
                 <EJB.JndiLookup.UrlPackagePrefix></EJB.JndiLookup.UrlPackagePrefix>
-
-                <!-- URLs for EJB bindings...Leaving it blank default to local, which is fine in most cases here
-                     for ejb local lookup, it's "iiop://localhost"
-                     for ejb remote lookup, it's "corbaloc:iiop:localhost:2809"
-                -->
-                <Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url>
-                <Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url>
+                <EJB.JndiLookup.Url.ejblocal>iiop://localhost</EJB.JndiLookup.Url.ejblocal>
+                <EJB.JndiLookup.Url.ejbremote>corbaloc:iiop:localhost:2809</EJB.JndiLookup.Url.ejbremote>
             </properties>
         </profile>
         <profile>
@@ -128,8 +97,8 @@
                 <!--<EJB.JndiLookup.InitialContextFactory>org.jboss.naming.remote.client.InitialContextFactory</EJB.JndiLookup.InitialContextFactory>-->
                 <EJB.JndiLookup.InitialContextFactory></EJB.JndiLookup.InitialContextFactory>
                 <EJB.JndiLookup.UrlPackagePrefix>org.jboss.ejb.client.naming</EJB.JndiLookup.UrlPackagePrefix>
-                <Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url>
-                <Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url>
+                <EJB.JndiLookup.Url.ejblocal></EJB.JndiLookup.Url.ejblocal>
+                <EJB.JndiLookup.Url.ejbremote></EJB.JndiLookup.Url.ejbremote>
             </properties>
         </profile>
     </profiles>
@@ -184,17 +153,10 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-ear-plugin</artifactId>
-                    <version>${version.ear.plugin}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-ejb-plugin</artifactId>
-                    <version>${version.ejb.plugin}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>${version.war.plugin}</version>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>properties-maven-plugin</artifactId>
+                    <version>1.0.0</version>
+                    <inherited>false</inherited>
                 </plugin>
             </plugins>
         </pluginManagement>
