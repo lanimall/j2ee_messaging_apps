@@ -40,12 +40,12 @@
             <resource-ref>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
                 <res-type>javax.jms.QueueConnectionFactory</res-type>
-                <lookup-name>java:/jms/${JmsSend.Resources.ConnectionFactory.BindingName}</lookup-name>
+                <lookup-name>java:/jms/${JmsSend.JmsSendAndForgetService.Resources.ConnectionFactory.BindingName}</lookup-name>
             </resource-ref>
             <resource-ref>
                 <res-ref-name>jms/someManagedDestination</res-ref-name>
                 <res-type>javax.jms.Destination</res-type>
-                <lookup-name>java:/jms/${JmsSend.Resources.Destination.BindingName}</lookup-name>
+                <lookup-name>java:/jms/${JmsSend.JmsSendAndForgetService.Resources.Destination.BindingName}</lookup-name>
             </resource-ref>
         </session>
         <session>
@@ -85,12 +85,12 @@
             <resource-ref>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
                 <res-type>javax.jms.QueueConnectionFactory</res-type>
-                <lookup-name>java:/jms/${JmsSend.Resources.ConnectionFactory.BindingName}</lookup-name>
+                <lookup-name>java:/jms/${JmsSend.JmsSendAndWaitService.Resources.ConnectionFactory.BindingName}</lookup-name>
             </resource-ref>
             <resource-ref>
                 <res-ref-name>jms/someManagedDestination</res-ref-name>
                 <res-type>javax.jms.Destination</res-type>
-                <lookup-name>java:/jms/${JmsSend.Resources.Destination.BindingName}</lookup-name>
+                <lookup-name>java:/jms/${JmsSend.JmsSendAndWaitService.Resources.Destination.BindingName}</lookup-name>
             </resource-ref>
         </session>
         <session>
@@ -126,12 +126,12 @@
             <resource-ref>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
                 <res-type>javax.jms.QueueConnectionFactory</res-type>
-                <lookup-name>java:/jms/${JmsSend.Resources.ConnectionFactory.BindingName}</lookup-name>
+                <lookup-name>java:/jms/${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.ConnectionFactory.BindingName}</lookup-name>
             </resource-ref>
             <resource-ref>
                 <res-ref-name>jms/someManagedDestination</res-ref-name>
                 <res-type>javax.jms.Destination</res-type>
-                <lookup-name>java:/jms/${JmsSend.Resources.Destination.BindingName}</lookup-name>
+                <lookup-name>java:/jms/${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.Destination.BindingName}</lookup-name>
             </resource-ref>
         </session>
         <session>
