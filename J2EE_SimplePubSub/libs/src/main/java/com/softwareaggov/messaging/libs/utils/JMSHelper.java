@@ -7,10 +7,8 @@ import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 public class JMSHelper {
     private static Logger log = LoggerFactory.getLogger(JMSHelper.class);
@@ -297,5 +295,38 @@ public class JMSHelper {
 
     public static String generateCorrelationID() {
         return UUID.randomUUID().toString();
+    }
+
+    public static Object getMessagePayload(Message msg) throws JMSException {
+        String messagePayload = null;
+        if (null != msg) {
+            if (msg instanceof TextMessage) {
+                messagePayload = ((TextMessage) msg).getText();
+            } else if (msg instanceof MapMessage) {
+                throw new UnsupportedOperationException("Not implemented yet");
+            } else if (msg instanceof BytesMessage) {
+                throw new UnsupportedOperationException("Not implemented yet");
+            } else if (msg instanceof ObjectMessage) {
+                throw new UnsupportedOperationException("Not implemented yet");
+            } else if (msg instanceof StreamMessage) {
+                throw new UnsupportedOperationException("Not implemented yet");
+            }
+        }
+
+        return messagePayload;
+    }
+
+    public static Map<String, Object> getMessageProperties(Message msg) throws JMSException {
+        Map<String, Object> props = null;
+        if (null != msg) {
+            props = new HashMap();
+            Enumeration txtMsgPropertiesEnum = msg.getPropertyNames();
+            while (txtMsgPropertiesEnum.hasMoreElements()) {
+                String propName = (String) txtMsgPropertiesEnum.nextElement();
+                props.put(propName, msg.getObjectProperty(propName));
+            }
+        }
+
+        return props;
     }
 }
