@@ -117,7 +117,7 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
 
         if (null != msg) {
             String postProcessingPayload = null;
-            Map<String, String> postProcessingHeaderProperties = null;
+            Map<String, Object> postProcessingHeaderProperties = null;
 
             try {
                 //processing the message
@@ -125,7 +125,7 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                     throw new IllegalArgumentException("Message Processor is null...unexpected.");
 
                 //process the message
-                Map.Entry<String, Map<String, String>> result = messageProcessor.processMessage(msg);
+                Map.Entry<String, Map<String, Object>> result = messageProcessor.processMessage(msg);
 
                 if (null != result) {
                     postProcessingPayload = result.getKey();
@@ -136,8 +136,8 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                 if (log.isDebugEnabled()) {
                     String postProcessingHeaders = null;
                     if (null != postProcessingHeaderProperties) {
-                        for (Map.Entry<String, String> header : postProcessingHeaderProperties.entrySet()) {
-                            postProcessingHeaders += String.format("[%s,%s]", header.getKey(), header.getValue());
+                        for (Map.Entry<String, Object> header : postProcessingHeaderProperties.entrySet()) {
+                            postProcessingHeaders += String.format("[%s,%s]", header.getKey(), (null != header.getValue()) ? header.getValue().toString() : "null");
                         }
                     }
                     log.debug("Payload: {}, Headers: {}",

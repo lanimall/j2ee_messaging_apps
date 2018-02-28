@@ -9,5 +9,5 @@ import java.util.Map;
  */
 
 public interface MessageProcessor {
-    Map.Entry<String, Map<String, String>> processMessage(Message message) throws JMSException;
+    Map.Entry<String, Map<String, Object>> processMessage(Message message) throws JMSException;
 }

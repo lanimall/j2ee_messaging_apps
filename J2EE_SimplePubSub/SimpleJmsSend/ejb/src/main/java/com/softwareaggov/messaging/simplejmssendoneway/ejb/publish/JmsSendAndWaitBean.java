@@ -41,7 +41,7 @@ public class JmsSendAndWaitBean extends JmsPublisherBase implements JmsPublisher
     }
 
     @Override
-    protected String sendMessage(Destination destination, String payload, Map<String, String> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+    protected String sendMessage(Destination destination, String payload, Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
         return jmsHelper.sendTextMessageAndWait(destination, payload, headerProperties, deliveryMode, priority, replyTo, jmsResponseWaitMillis);
     }
 }

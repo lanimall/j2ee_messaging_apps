@@ -45,10 +45,10 @@ public class BaseJmsProcessor implements MessageProcessor {
     }
 
     @Override
-    public Map.Entry<String, Map<String, String>> processMessage(Message msg) throws JMSException {
+    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
         //post processing
         String postProcessingPayload = null;
-        Map<String, String> postProcessingHeaderProperties = null;
+        Map<String, Object> postProcessingHeaderProperties = null;
 
         if (log.isDebugEnabled())
             log.debug("processMessage() start");
@@ -58,7 +58,7 @@ public class BaseJmsProcessor implements MessageProcessor {
         try {
             if (null != msg) {
                 //processing the message
-                Map.Entry<String, Map<String, String>> processorResult = null;
+                Map.Entry<String, Map<String, Object>> processorResult = null;
                 if (null != messageProcessor) {
                     processorResult = messageProcessor.processMessage(msg);
                     incrementCounter("processed");
@@ -73,8 +73,8 @@ public class BaseJmsProcessor implements MessageProcessor {
                 if (log.isDebugEnabled()) {
                     String postProcessingHeaders = null;
                     if (null != postProcessingHeaderProperties) {
-                        for (Map.Entry<String, String> header : postProcessingHeaderProperties.entrySet()) {
-                            postProcessingHeaders += String.format("[%s,%s]", header.getKey(), header.getValue());
+                        for (Map.Entry<String, Object> header : postProcessingHeaderProperties.entrySet()) {
+                            postProcessingHeaders += String.format("[%s,%s]", header.getKey(), (null != header.getValue()) ? header.getValue().toString() : "null");
                         }
                     }
                     log.debug("Payload: {}, Headers: {}",
@@ -104,7 +104,7 @@ public class BaseJmsProcessor implements MessageProcessor {
             throw e;
         }
 
-        return new AbstractMap.SimpleImmutableEntry<String, Map<String, String>>(
+        return new AbstractMap.SimpleImmutableEntry<String, Map<String, Object>>(
                 postProcessingPayload, postProcessingHeaderProperties
         );
     }

@@ -48,11 +48,11 @@ public class JMSHelper {
         return connectionFactory;
     }
 
-    public String sendTextMessage(Destination destination, final String payload, final Map<String, String> headerProperties) throws JMSException {
+    public String sendTextMessage(Destination destination, final String payload, final Map<String, Object> headerProperties) throws JMSException {
         return sendTextMessage(destination, payload, headerProperties, DeliveryMode.PERSISTENT, 4, null, null);
     }
 
-    public String sendTextMessage(Destination destination, final String payload, final Map<String, String> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+    public String sendTextMessage(Destination destination, final String payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
         Connection connection = null;
         Session session = null;
         MessageProducer producer = null;
@@ -88,8 +88,8 @@ public class JMSHelper {
                 msg.setJMSCorrelationID(correlationID);
 
             if (null != headerProperties) {
-                for (Entry<String, String> entry : headerProperties.entrySet()) {
-                    msg.setStringProperty(entry.getKey(), entry.getValue());
+                for (Entry<String, Object> entry : headerProperties.entrySet()) {
+                    msg.setObjectProperty(entry.getKey(), entry.getValue());
                 }
             }
 
@@ -111,7 +111,7 @@ public class JMSHelper {
         }
     }
 
-    public String sendTextMessageAndWait(Destination destination, final String payload, final Map<String, String> headerProperties, Integer deliveryMode, Integer priority, Destination replyTo, Long replyWaitTimeoutMs) throws JMSException {
+    public String sendTextMessageAndWait(Destination destination, final String payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, Destination replyTo, Long replyWaitTimeoutMs) throws JMSException {
         Connection connection = null;
         Session session = null;
         MessageProducer producer = null;
@@ -149,8 +149,8 @@ public class JMSHelper {
                 msg.setJMSReplyTo(replyTo);
 
             if (null != headerProperties) {
-                for (Entry<String, String> entry : headerProperties.entrySet()) {
-                    msg.setStringProperty(entry.getKey(), entry.getValue());
+                for (Entry<String, Object> entry : headerProperties.entrySet()) {
+                    msg.setObjectProperty(entry.getKey(), entry.getValue());
                 }
             }
 

@@ -13,9 +13,9 @@ import java.util.Map;
 
 public class NoopProcessor implements MessageProcessor {
     @Override
-    public Map.Entry<String, Map<String, String>> processMessage(Message msg) throws JMSException {
+    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
         String payloadResult = String.format("Mock message processing - doing nothing");
-        return new AbstractMap.SimpleImmutableEntry<String, Map<String, String>>(
+        return new AbstractMap.SimpleImmutableEntry<String, Map<String, Object>>(
                 payloadResult, null
         );
     }

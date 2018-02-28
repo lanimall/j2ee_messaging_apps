@@ -36,7 +36,7 @@ public class MockSleepBean implements MessageProcessorLocal {
     }
 
     @Override
-    public Map.Entry<String, Map<String, String>> processMessage(Message msg) throws JMSException {
+    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
         return processor.processMessage(msg);
     }
 }

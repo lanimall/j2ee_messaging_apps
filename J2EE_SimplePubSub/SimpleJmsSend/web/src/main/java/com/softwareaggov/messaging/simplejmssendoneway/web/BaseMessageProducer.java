@@ -34,7 +34,7 @@ public abstract class BaseMessageProducer extends HttpServlet {
 
     protected Random rdm;
     protected String messagePayload;
-    protected Map<String, String> messageProperties;
+    protected Map<String, Object> messageProperties;
 
     protected abstract JmsPublisherLocal getJmsPublisherLocal();
 

@@ -24,8 +24,8 @@ public class MockSleepProcessor implements MessageProcessor {
     }
 
     @Override
-    public Map.Entry<String, Map<String, String>> processMessage(Message msg) throws JMSException {
-        Map.Entry<String, Map<String, String>> processingResult = null;
+    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
+        Map.Entry<String, Map<String, Object>> processingResult = null;
         String payloadResult = null;
 
         if (null != mockSleepTimeInMillis && mockSleepTimeInMillis > 0) {
@@ -40,7 +40,7 @@ public class MockSleepProcessor implements MessageProcessor {
         payloadResult = String.format("Mock message processing - slept for %d ms", mockSleepTimeInMillis);
 
         //create the processingResult pair
-        processingResult = new AbstractMap.SimpleImmutableEntry<String, Map<String, String>>(
+        processingResult = new AbstractMap.SimpleImmutableEntry<String, Map<String, Object>>(
                 payloadResult, null
         );
 

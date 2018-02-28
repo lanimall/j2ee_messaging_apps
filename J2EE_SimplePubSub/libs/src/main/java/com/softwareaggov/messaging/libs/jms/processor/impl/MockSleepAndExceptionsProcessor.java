@@ -26,8 +26,8 @@ public class MockSleepAndExceptionsProcessor extends MockSleepProcessor implemen
     }
 
     @Override
-    public Map.Entry<String, Map<String, String>> processMessage(Message msg) throws JMSException {
-        Map.Entry<String, Map<String, String>> processingResult = super.processMessage(msg);
+    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
+        Map.Entry<String, Map<String, Object>> processingResult = super.processMessage(msg);
 
         if (null == messageProcessingCounter)
             throw new JMSException("Cannot do anything without a counter");

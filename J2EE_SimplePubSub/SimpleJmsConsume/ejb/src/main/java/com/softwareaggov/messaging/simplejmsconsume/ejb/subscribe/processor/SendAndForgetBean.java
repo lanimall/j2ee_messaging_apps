@@ -79,7 +79,7 @@ public class SendAndForgetBean implements MessageProcessorLocal {
     }
 
     @Override
-    public Map.Entry<String, Map<String, String>> processMessage(Message msg) throws JMSException {
+    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
         if (msg instanceof TextMessage) {
 
             TextMessage txtMsg = (TextMessage) msg;
@@ -96,7 +96,7 @@ public class SendAndForgetBean implements MessageProcessorLocal {
                 //send the send and wait message
                 String textReturned = jmsMessagePublisher.sendTextMessage(txtMsg.getText(), Collections.unmodifiableMap(props));
 
-                return new AbstractMap.SimpleImmutableEntry<String, Map<String, String>>(
+                return new AbstractMap.SimpleImmutableEntry<String, Map<String, Object>>(
                         textReturned, null
                 );
             } else {
