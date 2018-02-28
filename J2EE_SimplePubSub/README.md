@@ -24,7 +24,7 @@ Content
   * Ability to perform some mock processing (eg. sleep time, mock exceptions at intervals, etc...),
   * Ability to call remote EJBs in the SimpleJmsSend application in order to chain message processing with extra message sending,
   * Ability to reply to another queue if the "replyTo" field is specified in the message (or if a default "replyTo" is set)
-* j2ee-jms-examples-libs
+* libs
   * Shared library that contains global code and especially the custom-built JMSHelper that encapsulate simple JMS contructs
   * A simple counter (accessible via servlet) is also made available to track various metrics (message sent, message consumed, processing success, processing errors, etc...)
   
