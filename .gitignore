@@ -1,5 +1,6 @@
 .DS_Store
 *.log
+*build.customer*
 
 # Compiled source #
 ###################
