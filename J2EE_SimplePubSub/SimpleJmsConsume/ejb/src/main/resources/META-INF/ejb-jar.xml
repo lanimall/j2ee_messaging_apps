@@ -76,9 +76,24 @@
             <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.MessageCloneBean
             </ejb-class>
             <env-entry>
+                <env-entry-name>overwritePayloadEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${Consumer.Processors.MessageCloneProcessor.Env.overwritePayloadEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
                 <env-entry-name>msgPayloadOverride</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
                 <env-entry-value>${Consumer.Processors.MessageCloneProcessor.Env.msgPayloadOverride}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>msgPayloadOverrideFilePath</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${Consumer.Processors.MessageCloneProcessor.Env.msgPayloadOverrideFilePath}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>overwritePropertiesEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${Consumer.Processors.MessageCloneProcessor.Env.overwritePropertiesEnabled}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>msgPropertiesOverride</env-entry-name>
@@ -86,13 +101,13 @@
                 <env-entry-value>${Consumer.Processors.MessageCloneProcessor.Env.msgPropertiesOverride}</env-entry-value>
             </env-entry>
             <env-entry>
-                <env-entry-name>isOverwriteAllProperties</env-entry-name>
+                <env-entry-name>mergePropertiesEnabled</env-entry-name>
                 <env-entry-type>java.lang.Boolean</env-entry-type>
-                <env-entry-value>${Consumer.Processors.MessageCloneProcessor.Env.isOverwriteAllProperties}</env-entry-value>
+                <env-entry-value>${Consumer.Processors.MessageCloneProcessor.Env.mergePropertiesEnabled}</env-entry-value>
             </env-entry>
         </session>
         <session>
-        <ejb-name>NoopProcessor</ejb-name>
+            <ejb-name>NoopProcessor</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.NoopBean</ejb-class>
         </session>
         <session>
@@ -101,12 +116,12 @@
             <env-entry>
                 <env-entry-name>jndi.ejblookup.initialContextFactory</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${EJB.JndiLookup.InitialContextFactory}</env-entry-value>
+                <env-entry-value>${Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.InitialContextFactory}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jndi.ejblookup.urlPackagePrefix</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${EJB.JndiLookup.UrlPackagePrefix}</env-entry-value>
+                <env-entry-value>${Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.UrlPackagePrefix}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jndi.ejblookup.url</env-entry-name>
@@ -125,12 +140,12 @@
             <env-entry>
                 <env-entry-name>jndi.ejblookup.initialContextFactory</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${EJB.JndiLookup.InitialContextFactory}</env-entry-value>
+                <env-entry-value>${Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.InitialContextFactory}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jndi.ejblookup.urlPackagePrefix</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${EJB.JndiLookup.UrlPackagePrefix}</env-entry-value>
+                <env-entry-value>${Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.UrlPackagePrefix}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jndi.ejblookup.url</env-entry-name>
