@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
  * Created by fabien.sanglier on 6/23/16.
  */
 
-@Stateless(name = "MockSleepProcessor")
+@Stateless(name = "MessageCloneProcessor")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(MessageProcessorLocal.class)
 public class MessageCloneBean implements MessageProcessorLocal {
@@ -36,8 +36,8 @@ public class MessageCloneBean implements MessageProcessorLocal {
     @Resource(name = "msgPropertiesOverride")
     private String msgPropertiesOverride;
 
-    @Resource(name = "msgPayloadOverride")
-    private Boolean overwriteAllProperties;
+    @Resource(name = "isOverwriteAllProperties")
+    private Boolean isOverwriteAllProperties;
 
     private MessageProcessor processor;
 
@@ -60,7 +60,7 @@ public class MessageCloneBean implements MessageProcessorLocal {
             }
         }
 
-        processor = new MessageCloneProcessor(msgPayloadOverride, props, overwriteAllProperties);
+        processor = new MessageCloneProcessor(msgPayloadOverride, props, isOverwriteAllProperties);
     }
 
     @Override

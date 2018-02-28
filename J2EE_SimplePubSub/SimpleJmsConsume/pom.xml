@@ -54,22 +54,27 @@
         <Consumer.Env.jmsReplyDefaultDestinationName></Consumer.Env.jmsReplyDefaultDestinationName>
         <Consumer.Env.jmsReplyDefaultDestinationType></Consumer.Env.jmsReplyDefaultDestinationType>
 
-        <!-- processor that should be called upon message consumption -->
-        <!--<Consumer.Processors.BindingName>${ear.build.name}/session/MockSleepProcessor</Consumer.Processors.BindingName>-->
+        <!-- processor that should be called upon message consumption (via local EJB link) -->
         <Consumer.Processors.BindingName>MockSleepProcessor</Consumer.Processors.BindingName>
 
-        <!-- message processors defined -->
+        <!-- message processors definitions -->
         <Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>50</Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis>
         <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>50</Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockSleepTimeInMillis>
         <Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>10</Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval>
 
-        <!-- linked remote EJBs to send message -->
+        <Consumer.Processors.MessageCloneProcessor.Env.msgPayloadOverride></Consumer.Processors.MessageCloneProcessor.Env.msgPayloadOverride>
+        <Consumer.Processors.MessageCloneProcessor.Env.msgPropertiesOverride></Consumer.Processors.MessageCloneProcessor.Env.msgPropertiesOverride>
+        <Consumer.Processors.MessageCloneProcessor.Env.isOverwriteAllProperties>false</Consumer.Processors.MessageCloneProcessor.Env.isOverwriteAllProperties>
+
         <Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.BindingName>
             ejb/SimpleJmsSend/SimpleJmsSend-ejb.jar/JmsSendAndForgetService#com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote
         </Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.BindingName>
+        <Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndForgetProcessor.EJB.JndiLookup.Url>
+
         <Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.BindingName>
             ejb/SimpleJmsSend/SimpleJmsSend-ejb.jar/JmsSendAndWaitService#com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote
         </Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.BindingName>
+        <Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url></Consumer.Processors.SendAndWaitProcessor.EJB.JndiLookup.Url>
     </properties>
 
     <profiles>

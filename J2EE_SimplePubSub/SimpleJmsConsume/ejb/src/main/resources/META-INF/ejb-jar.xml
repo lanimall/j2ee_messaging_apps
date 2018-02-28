@@ -72,7 +72,27 @@
             </env-entry>
         </session>
         <session>
-            <ejb-name>NoopProcessor</ejb-name>
+            <ejb-name>MessageCloneProcessor</ejb-name>
+            <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.MessageCloneBean
+            </ejb-class>
+            <env-entry>
+                <env-entry-name>msgPayloadOverride</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${Consumer.Processors.MessageCloneProcessor.Env.msgPayloadOverride}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>msgPropertiesOverride</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${Consumer.Processors.MessageCloneProcessor.Env.msgPropertiesOverride}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>isOverwriteAllProperties</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${Consumer.Processors.MessageCloneProcessor.Env.isOverwriteAllProperties}</env-entry-value>
+            </env-entry>
+        </session>
+        <session>
+        <ejb-name>NoopProcessor</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.NoopBean</ejb-class>
         </session>
         <session>

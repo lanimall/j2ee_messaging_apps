@@ -36,20 +36,19 @@ public class MessageCloneProcessor implements MessageProcessor {
         Object payloadResult = null;
 
         //copy the properties from the incoming message
-        Map<String, Object> props = null;
-        if (overwriteAllProperties) {
-            if (null != msgPropertiesOverride && msgPropertiesOverride.size() > 0) {
-                props = new HashMap();
-                for (String propName : msgPropertiesOverride.keySet()) {
-                    props.put(propName, msgPropertiesOverride.get(propName));
-                }
-            }
-        } else {
+        Map<String, Object> props = new HashMap();
+
+        //create a property merge between the msg properties and the properties passed in the msgPropertiesOverride (which should override the message properties)
+        if (!overwriteAllProperties) {
             Enumeration txtMsgPropertiesEnum = msg.getPropertyNames();
             while (txtMsgPropertiesEnum.hasMoreElements()) {
                 String propName = (String) txtMsgPropertiesEnum.nextElement();
                 props.put(propName, msg.getObjectProperty(propName));
             }
+        }
+        //if the map msgPropertiesOverride is set, override the message props
+        if (null != msgPropertiesOverride && msgPropertiesOverride.size() > 0) {
+            props.putAll(msgPropertiesOverride);
         }
 
         if (msg instanceof TextMessage) {
