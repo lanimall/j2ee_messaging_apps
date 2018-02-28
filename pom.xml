@@ -11,6 +11,5 @@
 
 	<modules>
 		<module>J2EE_SimplePubSub</module>
-		<module>spring-jms-message-generator</module>
 	</modules>
 </project>
