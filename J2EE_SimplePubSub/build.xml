@@ -1,4 +1,4 @@
-<project name="J2EE JMS Examples" default="build" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="J2EE JMS Examples" default="assemble_all_apps" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
     <description>build file</description>
 
     <property file="build.properties"/>
@@ -45,6 +45,7 @@
         <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
             <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
             <arg value="clean"/>
+            <arg value="-P ${mvn_profile}"/>
         </artifact:mvn>
 
         <!--<delete includeemptydirs="true" failonerror="false">-->
@@ -117,7 +118,7 @@
     </target>
 
     <target name="assemble_all_apps" description="Creates server jar" depends="clean_target_dir, assemble_defaults">
-        <!-- Another JMSSend for a different queue -->
+        <!-- Some other JMS Send for a different queues or use cases -->
         <antcall target="package_profiles">
             <param name="mvn_profile" value="SimpleJmsSend_driverQueue,${j2ee-jms-examples.deployment_target}"/>
         </antcall>
@@ -125,17 +126,71 @@
             <fileset file="${j2ee-jms-examples.simpleJmsSend.dir}/ear/target/*.ear"/>
         </copy>
 
-        <!-- Another JMS Comsume for a different queue -->
+        <!-- Some other JMS Consume for a different queues or use cases -->
         <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_consume_the_replies,${j2ee-jms-examples.deployment_target}"/>
+            <param name="mvn_profile" value="SimpleJmsConsume_noreply,${j2ee-jms-examples.deployment_target}"/>
         </antcall>
         <copy todir="${j2ee-jms-examples.target.dir}">
             <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
         </copy>
 
-        <!-- Another JMS Comsume for a different queue -->
         <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_consume_driverqueue,${j2ee-jms-examples.deployment_target}"/>
+            <param name="mvn_profile" value="SimpleJmsConsume_clonenreply,${j2ee-jms-examples.deployment_target}"/>
+        </antcall>
+        <copy todir="${j2ee-jms-examples.target.dir}">
+            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
+        </copy>
+
+        <antcall target="package_profiles">
+            <param name="mvn_profile" value="SimpleJmsConsume_overridenreply,${j2ee-jms-examples.deployment_target}"/>
+        </antcall>
+        <copy todir="${j2ee-jms-examples.target.dir}">
+            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
+        </copy>
+
+        <antcall target="package_profiles">
+            <param name="mvn_profile" value="SimpleJmsConsume_replyqueue,${j2ee-jms-examples.deployment_target}"/>
+        </antcall>
+        <copy todir="${j2ee-jms-examples.target.dir}">
+            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
+        </copy>
+
+        <antcall target="package_profiles">
+            <param name="mvn_profile" value="SimpleJmsConsume_driverqueue,${j2ee-jms-examples.deployment_target}"/>
+        </antcall>
+        <copy todir="${j2ee-jms-examples.target.dir}">
+            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
+        </copy>
+
+        <echo message="Build execution completed for runtime and server. The binaries are placed at - ${j2ee-jms-examples.target.dir}"/>
+    </target>
+
+    <target name="assemble_all_customer_apps" description="Creates server jar" depends="clean_target_dir">
+        <!-- Some other JMS Send for a different queues or use cases -->
+        <antcall target="package_profiles">
+            <param name="mvn_profile" value="SimpleJmsSend_customer1,${j2ee-jms-examples.deployment_target}"/>
+        </antcall>
+        <copy todir="${j2ee-jms-examples.target.dir}">
+            <fileset file="${j2ee-jms-examples.simpleJmsSend.dir}/ear/target/*.ear"/>
+        </copy>
+
+        <!-- Some other JMS Send for a different queues or use cases -->
+        <antcall target="package_profiles">
+            <param name="mvn_profile" value="SimpleJmsConsume_customer1.driverqueue,${j2ee-jms-examples.deployment_target}"/>
+        </antcall>
+        <copy todir="${j2ee-jms-examples.target.dir}">
+            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
+        </copy>
+
+        <antcall target="package_profiles">
+            <param name="mvn_profile" value="SimpleJmsConsume_customer1.clonenreply,${j2ee-jms-examples.deployment_target}"/>
+        </antcall>
+        <copy todir="${j2ee-jms-examples.target.dir}">
+            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
+        </copy>
+
+        <antcall target="package_profiles">
+            <param name="mvn_profile" value="SimpleJmsConsume_customer1.replyqueue,${j2ee-jms-examples.deployment_target}"/>
         </antcall>
         <copy todir="${j2ee-jms-examples.target.dir}">
             <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
