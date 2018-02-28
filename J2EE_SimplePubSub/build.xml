@@ -183,7 +183,7 @@
         </copy>
 
         <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_customer1.clonenreply,${j2ee-jms-examples.deployment_target}"/>
+            <param name="mvn_profile" value="SimpleJmsConsume_customer1.overridenreply,${j2ee-jms-examples.deployment_target}"/>
         </antcall>
         <copy todir="${j2ee-jms-examples.target.dir}">
             <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
