@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <name>j2ee-jms-examples</name>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.softwareaggov.messaging</groupId>
     <artifactId>J2EE_SimplePubSub</artifactId>
@@ -16,8 +15,6 @@
         </license>
     </licenses>
     <modules>
-        <module>j2ee-jms-examples-server</module>
-        <module>j2ee-jms-examples-client</module>
         <module>libs</module>
         <module>SimpleJmsSend</module>
         <module>SimpleJmsConsume</module>
