@@ -120,6 +120,23 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
             Map<String, Object> postProcessingHeaderProperties = null;
 
             try {
+                if (log.isDebugEnabled()) {
+                    Map<String, Object> preProcessingHeaders = JMSHelper.getMessageProperties(msg);
+                    Object preProcessingPayload = JMSHelper.getMessagePayload(msg);
+
+                    //transform the property map into a string
+                    String preProcessingHeadersStr = "";
+                    if (null != preProcessingHeaders) {
+                        for (Map.Entry<String, Object> header : preProcessingHeaders.entrySet()) {
+                            preProcessingHeadersStr += String.format("[%s,%s]", header.getKey(), (null != header.getValue()) ? header.getValue().toString() : "null");
+                        }
+                    }
+
+                    log.debug("Pre-Processing Message - \nPayload: {}, \nHeaders: {}",
+                            ((null != preProcessingPayload) ? preProcessingPayload.toString() : "null"),
+                            ((null != preProcessingHeadersStr) ? preProcessingHeadersStr : "null"));
+                }
+
                 //processing the message
                 if (null == messageProcessor)
                     throw new IllegalArgumentException("Message Processor is null...unexpected.");
@@ -134,15 +151,16 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
 
                 //would do something with the payload and header...in the meantime, print them if debug is enabled
                 if (log.isDebugEnabled()) {
-                    String postProcessingHeaders = null;
+                    //transform the property map into a string
+                    String postProcessingHeadersStr = "";
                     if (null != postProcessingHeaderProperties) {
                         for (Map.Entry<String, Object> header : postProcessingHeaderProperties.entrySet()) {
-                            postProcessingHeaders += String.format("[%s,%s]", header.getKey(), (null != header.getValue()) ? header.getValue().toString() : "null");
+                            postProcessingHeadersStr += String.format("[%s,%s]", header.getKey(), (null != header.getValue()) ? header.getValue().toString() : "null");
                         }
                     }
-                    log.debug("Payload: {}, Headers: {}",
-                            ((null != postProcessingPayload) ? postProcessingPayload : "null"),
-                            ((null != postProcessingHeaders) ? postProcessingHeaders : "null"));
+                    log.debug("Post-Processing Ouput - \nPayload: {}, \nHeaders: {}",
+                            ((null != postProcessingPayload) ? postProcessingPayload.toString() : "null"),
+                            ((null != postProcessingHeadersStr) ? postProcessingHeadersStr : "null"));
                 }
 
                 messageProcessingCounter.incrementAndGet(getBeanName() + "-processingSuccess");
