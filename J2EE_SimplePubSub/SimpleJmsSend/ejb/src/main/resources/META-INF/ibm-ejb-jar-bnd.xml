@@ -4,26 +4,28 @@
         xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-ejb-jar-bnd_1_1.xsd"
         version="1.1">
 
-    <session name="JmsSendAndForgetService" simple-binding-name="ejb/${ear.build.name}/session/JmsSendAndForgetService">
+    <!--<session name="JmsSendAndForgetService" simple-binding-name="ejb/${ear.build.name}/session/JmsSendAndForgetService">-->
+    <session name="JmsSendAndForgetService">
         <resource-ref name="jms/someManagedCF"
-                      binding-name="${JmsSend.Resources.ConnectionFactory.BindingName}"></resource-ref>
+                      binding-name="${JmsSend.JmsSendAndForgetService.Resources.ConnectionFactory.BindingName}"></resource-ref>
         <resource-ref name="jms/someManagedDestination"
-                      binding-name="${JmsSend.Resources.Destination.BindingName}"></resource-ref>
+                      binding-name="${JmsSend.JmsSendAndForgetService.Resources.Destination.BindingName}"></resource-ref>
     </session>
-    <session name="JmsSendAndWaitService" simple-binding-name="ejb/${ear.build.name}/session/JmsSendAndWaitService">
+    <!--<session name="JmsSendAndWaitService" simple-binding-name="ejb/${ear.build.name}/session/JmsSendAndWaitService">-->
+    <session name="JmsSendAndWaitService">
         <resource-ref name="jms/someManagedCF"
-                      binding-name="${JmsSend.Resources.ConnectionFactory.BindingName}"></resource-ref>
+                      binding-name="${JmsSend.JmsSendAndWaitService.Resources.ConnectionFactory.BindingName}"></resource-ref>
         <resource-ref name="jms/someManagedDestination"
-                      binding-name="${JmsSend.Resources.Destination.BindingName}"></resource-ref>
+                      binding-name="${JmsSend.JmsSendAndWaitService.Resources.Destination.BindingName}"></resource-ref>
     </session>
 
-    <session name="JmsSendAndForgetCachedConnectionTestService" simple-binding-name="ejb/${ear.build.name}/session/JmsSendAndForgetCachedConnectionTestService">
+    <!--<session name="JmsSendAndForgetCachedConnectionTestService" simple-binding-name="ejb/${ear.build.name}/session/JmsSendAndForgetCachedConnectionTestService">-->
+    <session name="JmsSendAndForgetCachedConnectionTestService">
         <resource-ref name="jms/someManagedCF"
-                      binding-name="${JmsSend.Resources.ConnectionFactory.BindingName}"></resource-ref>
+                      binding-name="${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.ConnectionFactory.BindingName}"></resource-ref>
         <resource-ref name="jms/someManagedDestination"
-                      binding-name="${JmsSend.Resources.Destination.BindingName}"></resource-ref>
+                      binding-name="${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.Destination.BindingName}"></resource-ref>
     </session>
-    <session name="JmsSendAndForgetNonJCATestService"
-             simple-binding-name="ejb/${ear.build.name}/session/JmsSendAndForgetNonJCATestService">
-    </session>
+    <!--<session name="JmsSendAndForgetNonJCATestService" simple-binding-name="ejb/${ear.build.name}/session/JmsSendAndForgetNonJCATestService">-->
+    <!--</session>-->
 </ejb-jar-bnd>
