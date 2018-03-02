@@ -57,24 +57,26 @@ public class SendAndForgetBean implements MessageProcessorLocal {
 
     @PostConstruct
     public void initialize() {
-        final Properties jndiProperties = new Properties();
-        if (null != jndiUrl && !"".equals(jndiUrl))
-            jndiProperties.put(Context.PROVIDER_URL, jndiUrl);
+        if (null != jndiEjbLookupBindingName && !"".equals(jndiEjbLookupBindingName)) {
+            final Properties jndiProperties = new Properties();
+            if (null != jndiUrl && !"".equals(jndiUrl))
+                jndiProperties.put(Context.PROVIDER_URL, jndiUrl);
 
-        if (null != jndiInitialContextFactory && !"".equals(jndiInitialContextFactory))
-            jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, jndiInitialContextFactory);
+            if (null != jndiInitialContextFactory && !"".equals(jndiInitialContextFactory))
+                jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, jndiInitialContextFactory);
 
-        if (null != jndiUrlPackagePrefix && !"".equals(jndiUrlPackagePrefix))
-            jndiProperties.put(Context.URL_PKG_PREFIXES, jndiUrlPackagePrefix);
+            if (null != jndiUrlPackagePrefix && !"".equals(jndiUrlPackagePrefix))
+                jndiProperties.put(Context.URL_PKG_PREFIXES, jndiUrlPackagePrefix);
 
-        // create the context
-        final Context context;
-        try {
-            context = new InitialContext(jndiProperties);
-            jmsMessagePublisher = (JmsPublisherRemote) context.lookup(jndiEjbLookupBindingName);
-        } catch (NamingException e) {
-            log.error("Could not lookup the EJB with URL:" + jndiEjbLookupBindingName, e);
-            e.printStackTrace();
+            // create the context
+            final Context context;
+            try {
+                context = new InitialContext(jndiProperties);
+                jmsMessagePublisher = (JmsPublisherRemote) context.lookup(jndiEjbLookupBindingName);
+            } catch (NamingException e) {
+                log.error("Could not lookup the EJB with URL:" + jndiEjbLookupBindingName, e);
+                e.printStackTrace();
+            }
         }
     }
 
