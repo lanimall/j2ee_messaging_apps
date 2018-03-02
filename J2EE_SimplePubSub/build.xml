@@ -1,13 +1,14 @@
-<project name="J2EE JMS Examples" default="assemble_all_apps" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="J2EE JMS Examples" default="assemble" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
     <description>build file</description>
 
     <property file="build.properties"/>
 
     <property environment="env"/>
 
-    <path id="classpath">
-        <fileset dir="${j2ee-jms-examples.lib.dir}" includes="**/*.jar"/>
-    </path>
+    <target name="init.ant.contrib">
+        <path id="ant.contrib.classpath" path="${j2ee-jms-examples.lib.dir}/ant-contrib.jar"/>
+        <taskdef classpathref="ant.contrib.classpath" resource="net/sf/antcontrib/antlib.xml"/>
+    </target>
 
     <!-- Maven task Initialization -->
     <target name="init.maven">
@@ -36,12 +37,29 @@
     </target>
 
     <!-- Initialization -->
-    <target name="init" description="Generic initialization steps for the project">
-        <mkdir dir="${j2ee-jms-examples.target.dir}"/>
+    <target name="init" description="Generic initialization steps for the project" depends="init.ant.contrib,init.maven">
+    <mkdir dir="${j2ee-jms-examples.target.dir}"/>
+    </target>
+
+    <target name="clean_target_dir" description="Cleaning target dist dir">
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${j2ee-jms-examples.target.dir}" includes="*.ear"/>
+        </delete>
+
+        <echo message="Cleaning completed fortarget dist dir"/>
+    </target>
+
+    <!-- update pom version based on the build property version -->
+    <target name="version" description="Update the versions on the maven submodules" depends="init">
+    <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
+            <jvmarg value="-DnewVersion=${j2ee-jms-examples.version}"/>
+            <arg value="versions:set"/>
+        </artifact:mvn>
     </target>
 
     <!-- Clean runtime -->
-    <target name="clean" description="Cleaning all projects" depends="init.maven, init">
+    <target name="clean" description="Cleaning all projects" depends="init">
         <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
             <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
             <arg value="clean"/>
@@ -55,147 +73,91 @@
         <echo message="Cleaning completed for all projects"/>
     </target>
 
-    <target name="clean_target_dir" description="Cleaning target dist dir">
-        <delete includeemptydirs="true" failonerror="false">
-            <fileset dir="${j2ee-jms-examples.target.dir}" includes="*.ear"/>
-        </delete>
-
-        <echo message="Cleaning completed fortarget dist dir"/>
-    </target>
-
-    <!-- update pom version based on the build property version -->
-    <target name="version" description="Update the versions on the maven submodules" depends="init.maven">
-        <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
-            <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
-            <jvmarg value="-DnewVersion=${j2ee-jms-examples.version}"/>
-            <arg value="versions:set"/>
-        </artifact:mvn>
-    </target>
-
     <!-- Compile and build runtime -->
-    <target name="package_apps" description="Compiles the sources and creates runtime jar" depends="clean, init">
+    <target name="package_defaults" description="Compiles the sources and creates runtime jar" depends="init,clean">
         <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
             <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
             <arg value="package"/>
             <arg value="-DskipTests"/>
+            <arg value="-P ${j2ee-jms-examples.deployment_target}"/>
         </artifact:mvn>
     </target>
 
-    <target name="package_profiles" description="Compiles the sources and creates runtime jar" depends="clean, init">
+    <target name="package_profiles" description="Compiles the sources and creates runtime jar" depends="init,clean">
         <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
             <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
             <arg value="package"/>
             <arg value="-DskipTests"/>
+            <arg value="-P ${j2ee-jms-examples.deployment_target}"/>
             <arg value="-P ${mvn_profile}"/>
         </artifact:mvn>
     </target>
 
-    <!--<target name="docker.build" description="Build the docker image" depends="package_all">-->
-    <!--<artifact:mvn pom="${j2ee-jms-examples.server.dir}/pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">-->
-    <!--<jvmarg value="-Dmaven.multiModuleProjectDirectory" />-->
-    <!--<arg value="docker:build" />-->
-    <!--<arg value="-DskipTests" />-->
-    <!--</artifact:mvn>-->
-    <!--</target>-->
+    <target name="copy.ear.simpleJmsConsume" description="Capy ear to dist folder">
+        <echo>In copy.ear.simpleJmsConsume</echo>
 
-    <!--<target name="docker.push" description="Deploy the docker image to docker-hub" depends="docker.build">-->
-    <!--<artifact:mvn pom="${j2ee-jms-examples.server.dir}/pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">-->
-    <!--<jvmarg value="-Dmaven.multiModuleProjectDirectory" />-->
-    <!--<arg value="docker:push" />-->
-    <!--<arg value="-DskipTests" />-->
-    <!--</artifact:mvn>-->
-    <!--</target>-->
-
-    <target name="assemble_defaults" description="Creates server jar" depends="clean_target_dir">
-        <!-- default builds -->
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
         <copy todir="${j2ee-jms-examples.target.dir}">
             <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
+        </copy>
+    </target>
+
+    <target name="copy.ear.simpleJmsSend" description="Capy ear to dist folder">
+        <echo>In copy.ear.simpleJmsSend</echo>
+
+        <copy todir="${j2ee-jms-examples.target.dir}">
             <fileset file="${j2ee-jms-examples.simpleJmsSend.dir}/ear/target/*.ear"/>
         </copy>
     </target>
 
-    <target name="assemble_all_apps" description="Creates server jar" depends="clean_target_dir, assemble_defaults">
-        <!-- Some other JMS Send for a different queues or use cases -->
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsSend_driverQueue,${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsSend.dir}/ear/target/*.ear"/>
-        </copy>
+    <target name="assemble" description="Creates server jar" depends="init,clean_target_dir">
+        <for list="${j2ee-jms-examples.deployment_profiles}" param="profile">
+            <sequential>
+                <trycatch reference="exception_ref">
+                    <try>
+                        <echo message="@{profile}"/>
 
-        <!-- Some other JMS Consume for a different queues or use cases -->
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_noreply,${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
-        </copy>
+                        <if>
+                            <or>
+                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsConsume.dir}_default" trim="true"/>
+                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsConsume.dir}-default" trim="true"/>
+                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsConsume.dir}" trim="true"/>
+                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsSend.dir}_default" trim="true"/>
+                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsSend.dir}-default" trim="true"/>
+                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsSend.dir}" trim="true"/>
+                            </or>
+                            <then>
+                                <echo>Building defaults</echo>
+                                <antcall target="package_defaults">
+                                    <param name="mvn_profile" value="@{profile}"/>
+                                </antcall>
+                            </then>
+                            <else>
+                                <echo>Building profile @{profile}</echo>
+                                <antcall target="package_profiles">
+                                    <param name="mvn_profile" value="@{profile}"/>
+                                </antcall>
+                            </else>
+                        </if>
 
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_clonenreply,${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
-        </copy>
+                        <if>
+                            <contains string="@{profile}" substring="${j2ee-jms-examples.simpleJmsSend.dir}" casesensitive="false"/>
+                            <then>
+                                <antcall target="copy.ear.simpleJmsSend"/>
+                            </then>
+                        </if>
 
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_overridenreply,${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
-        </copy>
-
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_replyqueue,${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
-        </copy>
-
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_driverqueue,${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
-        </copy>
-
-        <echo message="Build execution completed for runtime and server. The binaries are placed at - ${j2ee-jms-examples.target.dir}"/>
-    </target>
-
-    <target name="assemble_all_customer_apps" description="Creates server jar" depends="clean_target_dir">
-        <!-- Some other JMS Send for a different queues or use cases -->
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsSend_customer1,${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsSend.dir}/ear/target/*.ear"/>
-        </copy>
-
-        <!-- Some other JMS Send for a different queues or use cases -->
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_customer1.driverqueue,${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
-        </copy>
-
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_customer1.overridenreply,${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
-        </copy>
-
-        <antcall target="package_profiles">
-            <param name="mvn_profile" value="SimpleJmsConsume_customer1.replyqueue,${j2ee-jms-examples.deployment_target}"/>
-        </antcall>
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
-        </copy>
-
-        <echo message="Build execution completed for runtime and server. The binaries are placed at - ${j2ee-jms-examples.target.dir}"/>
+                        <if>
+                            <contains string="@{profile}" substring="${j2ee-jms-examples.simpleJmsConsume.dir}" casesensitive="false"/>
+                            <then>
+                                <antcall target="copy.ear.simpleJmsConsume"/>
+                            </then>
+                        </if>
+                    </try>
+                    <catch>
+                        <echo message="Build for profile '@{profile}' failed"/>
+                    </catch>
+                </trycatch>
+            </sequential>
+        </for>
     </target>
 </project>
