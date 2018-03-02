@@ -13,47 +13,47 @@
             <ejb-name>JmsSendAndForgetService</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndForgetBean
             </ejb-class>
-            <!--<resource-ref>-->
-            <!--<res-ref-name>jms/someManagedCF</res-ref-name>-->
-            <!--<res-type>javax.jms.QueueConnectionFactory</res-type>-->
-            <!--<jndi-name>java:/jms/${JmsSend.Resources.ConnectionFactory.BindingName}</jndi-name>-->
-            <!--</resource-ref>-->
-            <!--<resource-ref>-->
-            <!--<res-ref-name>jms/someManagedDestination</res-ref-name>-->
-            <!--<res-type>com.sun.genericra.outbound.QueueProxy</res-type>-->
-            <!--<jndi-name>java:/jms/${JmsSend.Resources.Destination.BindingName}</jndi-name>-->
-            <!--</resource-ref>-->
+            <resource-ref>
+                <res-ref-name>jms/someManagedCF</res-ref-name>
+                <res-type>javax.jms.QueueConnectionFactory</res-type>
+                <jndi-name>java:/jms/${JmsSend.JmsSendAndForgetService.Resources.ConnectionFactory.BindingName}</jndi-name>
+            </resource-ref>
+            <resource-ref>
+                <res-ref-name>jms/someManagedDestination</res-ref-name>
+                <res-type>com.sun.genericra.outbound.QueueProxy</res-type>
+                <jndi-name>java:/jms/${JmsSend.JmsSendAndForgetService.Resources.Destination.BindingName}</jndi-name>
+            </resource-ref>
         </session>
         <session>
             <ejb-name>JmsSendAndWaitService</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndWaitBean
             </ejb-class>
-            <!--<resource-ref>-->
-            <!--<res-ref-name>jms/someManagedCF</res-ref-name>-->
-            <!--<res-type>javax.jms.QueueConnectionFactory</res-type>-->
-            <!--<jndi-name>java:/jms/${JmsSend.Resources.ConnectionFactory.BindingName}</jndi-name>-->
-            <!--</resource-ref>-->
-            <!--<resource-ref>-->
-            <!--<res-ref-name>jms/someManagedDestination</res-ref-name>-->
-            <!--<res-type>com.sun.genericra.outbound.QueueProxy</res-type>-->
-            <!--<jndi-name>java:/jms/${JmsSend.Resources.Destination.BindingName}</jndi-name>-->
-            <!--</resource-ref>-->
+            <resource-ref>
+                <res-ref-name>jms/someManagedCF</res-ref-name>
+                <res-type>javax.jms.QueueConnectionFactory</res-type>
+                <jndi-name>java:/jms/${JmsSend.JmsSendAndWaitService.Resources.ConnectionFactory.BindingName}</jndi-name>
+            </resource-ref>
+            <resource-ref>
+                <res-ref-name>jms/someManagedDestination</res-ref-name>
+                <res-type>com.sun.genericra.outbound.QueueProxy</res-type>
+                <jndi-name>java:/jms/${JmsSend.JmsSendAndWaitService.Resources.Destination.BindingName}</jndi-name>
+            </resource-ref>
         </session>
         <session>
             <ejb-name>JmsSendAndForgetCachedConnectionTestService</ejb-name>
             <ejb-class>
                 com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests.JmsSendAndForgetCachedConnectionTestBean
             </ejb-class>
-            <!--<resource-ref>-->
-            <!--<res-ref-name>jms/someManagedCF</res-ref-name>-->
-            <!--<res-type>javax.jms.QueueConnectionFactory</res-type>-->
-            <!--<jndi-name>java:/jms/${JmsSend.Resources.ConnectionFactory.BindingName}</jndi-name>-->
-            <!--</resource-ref>-->
-            <!--<resource-ref>-->
-            <!--<res-ref-name>jms/someManagedDestination</res-ref-name>-->
-            <!--<res-type>com.sun.genericra.outbound.QueueProxy</res-type>-->
-            <!--<jndi-name>java:/jms/${JmsSend.Resources.Destination.BindingName}</jndi-name>-->
-            <!--</resource-ref>-->
+            <resource-ref>
+                <res-ref-name>jms/someManagedCF</res-ref-name>
+                <res-type>javax.jms.QueueConnectionFactory</res-type>
+                <jndi-name>java:/jms/${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.ConnectionFactory.BindingName}</jndi-name>
+            </resource-ref>
+            <resource-ref>
+                <res-ref-name>jms/someManagedDestination</res-ref-name>
+                <res-type>com.sun.genericra.outbound.QueueProxy</res-type>
+                <jndi-name>java:/jms/${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.Destination.BindingName}</jndi-name>
+            </resource-ref>
         </session>
     </jboss:enterprise-beans>
     <assembly-descriptor>

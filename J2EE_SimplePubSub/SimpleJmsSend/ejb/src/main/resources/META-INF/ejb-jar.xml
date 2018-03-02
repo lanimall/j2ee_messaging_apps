@@ -38,14 +38,14 @@
                 <env-entry-value>${JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationType}</env-entry-value>
             </env-entry>
             <resource-ref>
+                <description>The JCA Managed Connection Factory for Message Publish</description>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
-                <res-type>javax.jms.QueueConnectionFactory</res-type>
-                <lookup-name>java:/jms/${JmsSend.JmsSendAndForgetService.Resources.ConnectionFactory.BindingName}</lookup-name>
+                <res-type>javax.jms.ConnectionFactory</res-type>
             </resource-ref>
             <resource-ref>
+                <description>The JCA Managed Admin Object for Message Destination</description>
                 <res-ref-name>jms/someManagedDestination</res-ref-name>
                 <res-type>javax.jms.Destination</res-type>
-                <lookup-name>java:/jms/${JmsSend.JmsSendAndForgetService.Resources.Destination.BindingName}</lookup-name>
             </resource-ref>
         </session>
         <session>
@@ -83,14 +83,14 @@
                 <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis}</env-entry-value>
             </env-entry>
             <resource-ref>
+                <description>The JCA Managed Connection Factory for Message Publish</description>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
-                <res-type>javax.jms.QueueConnectionFactory</res-type>
-                <lookup-name>java:/jms/${JmsSend.JmsSendAndWaitService.Resources.ConnectionFactory.BindingName}</lookup-name>
+                <res-type>javax.jms.ConnectionFactory</res-type>
             </resource-ref>
             <resource-ref>
+                <description>The JCA Managed Admin Object for Message Destination</description>
                 <res-ref-name>jms/someManagedDestination</res-ref-name>
                 <res-type>javax.jms.Destination</res-type>
-                <lookup-name>java:/jms/${JmsSend.JmsSendAndWaitService.Resources.Destination.BindingName}</lookup-name>
             </resource-ref>
         </session>
         <session>
@@ -124,14 +124,14 @@
                 <env-entry-value>${JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationType}</env-entry-value>
             </env-entry>
             <resource-ref>
+                <description>The JCA Managed Connection Factory for Message Publish</description>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
-                <res-type>javax.jms.QueueConnectionFactory</res-type>
-                <lookup-name>java:/jms/${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.ConnectionFactory.BindingName}</lookup-name>
+                <res-type>javax.jms.ConnectionFactory</res-type>
             </resource-ref>
             <resource-ref>
+                <description>The JCA Managed Admin Object for Message Destination</description>
                 <res-ref-name>jms/someManagedDestination</res-ref-name>
                 <res-type>javax.jms.Destination</res-type>
-                <lookup-name>java:/jms/${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.Destination.BindingName}</lookup-name>
             </resource-ref>
         </session>
         <session>
