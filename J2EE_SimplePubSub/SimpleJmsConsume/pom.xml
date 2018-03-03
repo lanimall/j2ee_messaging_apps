@@ -35,51 +35,16 @@
 
     <profiles>
         <profile>
-            <id>SimpleJmsConsume_noreply</id>
+            <id>deployment_jboss</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
-                <build.properties>${project.basedir}/../build.noreply.properties</build.properties>
-            </properties>
-        </profile>
-        <profile>
-            <id>SimpleJmsConsume_clonenreply</id>
-            <properties>
-                <build.properties>${project.basedir}/../build.clonenreply.properties</build.properties>
-            </properties>
-        </profile>
-        <profile>
-            <id>SimpleJmsConsume_overridenreply</id>
-            <properties>
-                <build.properties>${project.basedir}/../build.overridenreply.properties</build.properties>
-            </properties>
-        </profile>
-        <profile>
-            <id>SimpleJmsConsume_replyqueue</id>
-            <properties>
-                <build.properties>${project.basedir}/../build.replyqueue.properties</build.properties>
-            </properties>
-        </profile>
-        <profile>
-            <id>SimpleJmsConsume_driverqueue</id>
-            <properties>
-                <build.properties>${project.basedir}/../build.driverqueue.properties</build.properties>
-            </properties>
-        </profile>
-        <profile>
-            <id>SimpleJmsConsume_customer1.overridenreply</id>
-            <properties>
-                <build.properties>${project.basedir}/../build.customer1.overridenreply.properties</build.properties>
-            </properties>
-        </profile>
-        <profile>
-            <id>SimpleJmsConsume_customer1.replyqueue</id>
-            <properties>
-                <build.properties>${project.basedir}/../build.customer1.replyqueue.properties</build.properties>
-            </properties>
-        </profile>
-        <profile>
-            <id>SimpleJmsConsume_customer1.driverqueue</id>
-            <properties>
-                <build.properties>${project.basedir}/../build.customer1.driverqueue.properties</build.properties>
+                <!--<EJB.JndiLookup.InitialContextFactory>org.jboss.naming.remote.client.InitialContextFactory</EJB.JndiLookup.InitialContextFactory>-->
+                <EJB.JndiLookup.InitialContextFactory></EJB.JndiLookup.InitialContextFactory>
+                <EJB.JndiLookup.UrlPackagePrefix>org.jboss.ejb.client.naming</EJB.JndiLookup.UrlPackagePrefix>
+                <EJB.JndiLookup.Url.ejblocal></EJB.JndiLookup.Url.ejblocal>
+                <EJB.JndiLookup.Url.ejbremote></EJB.JndiLookup.Url.ejbremote>
             </properties>
         </profile>
         <profile>
@@ -89,16 +54,6 @@
                 <EJB.JndiLookup.UrlPackagePrefix></EJB.JndiLookup.UrlPackagePrefix>
                 <EJB.JndiLookup.Url.ejblocal>iiop://localhost</EJB.JndiLookup.Url.ejblocal>
                 <EJB.JndiLookup.Url.ejbremote>corbaloc:iiop:localhost:2809</EJB.JndiLookup.Url.ejbremote>
-            </properties>
-        </profile>
-        <profile>
-            <id>deployment_jboss</id>
-            <properties>
-                <!--<EJB.JndiLookup.InitialContextFactory>org.jboss.naming.remote.client.InitialContextFactory</EJB.JndiLookup.InitialContextFactory>-->
-                <EJB.JndiLookup.InitialContextFactory></EJB.JndiLookup.InitialContextFactory>
-                <EJB.JndiLookup.UrlPackagePrefix>org.jboss.ejb.client.naming</EJB.JndiLookup.UrlPackagePrefix>
-                <EJB.JndiLookup.Url.ejblocal></EJB.JndiLookup.Url.ejblocal>
-                <EJB.JndiLookup.Url.ejbremote></EJB.JndiLookup.Url.ejbremote>
             </properties>
         </profile>
     </profiles>

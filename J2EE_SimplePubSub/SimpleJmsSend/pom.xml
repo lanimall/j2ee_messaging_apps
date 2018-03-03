@@ -37,12 +37,6 @@
                 <build.properties>${project.basedir}/../build.driverQueue.properties</build.properties>
             </properties>
         </profile>
-        <profile>
-            <id>SimpleJmsSend_customer1</id>
-            <properties>
-                <build.properties>${project.basedir}/../build.customer1.properties</build.properties>
-            </properties>
-        </profile>
     </profiles>
 
     <dependencyManagement>
