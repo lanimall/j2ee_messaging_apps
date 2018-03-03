@@ -38,7 +38,7 @@
 
     <!-- Initialization -->
     <target name="init" description="Generic initialization steps for the project" depends="init.ant.contrib,init.maven">
-    <mkdir dir="${j2ee-jms-examples.target.dir}"/>
+        <mkdir dir="${j2ee-jms-examples.target.dir}"/>
     </target>
 
     <target name="clean_target_dir" description="Cleaning target dist dir">
@@ -49,15 +49,6 @@
         <echo message="Cleaning completed fortarget dist dir"/>
     </target>
 
-    <!-- update pom version based on the build property version -->
-    <target name="version" description="Update the versions on the maven submodules" depends="init">
-    <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
-            <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
-            <jvmarg value="-DnewVersion=${j2ee-jms-examples.version}"/>
-            <arg value="versions:set"/>
-        </artifact:mvn>
-    </target>
-
     <!-- Clean runtime -->
     <target name="clean" description="Cleaning all projects" depends="init">
         <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
@@ -65,48 +56,51 @@
             <arg value="clean"/>
             <arg value="-P ${mvn_profile}"/>
         </artifact:mvn>
-
-        <!--<delete includeemptydirs="true" failonerror="false">-->
-        <!--<fileset dir="${j2ee-jms-examples.target.dir}" includes="*.ear" />-->
-        <!--</delete>-->
-
         <echo message="Cleaning completed for all projects"/>
     </target>
 
-    <!-- Compile and build runtime -->
-    <target name="package_defaults" description="Compiles the sources and creates runtime jar" depends="init,clean">
+    <target name="package" description="Compiles the sources and creates runtime jar" depends="init,clean">
+        <property name="regex" value="^([^_-]*)[_-]?(.*)$"/>
+
+        <propertyregex
+                property="app.name"
+                input="${profile}"
+                regexp="${regex}"
+                select="\1"
+                casesensitive="false"/>
+
+        <propertyregex
+                property="build.name"
+                input="${profile}"
+                regexp="${regex}"
+                select="\2"
+                casesensitive="false"/>
+
+        <echo>app.name = ${app.name}</echo>
+        <echo>build.name = ${build.name}</echo>
+
+        <if>
+            <or>
+                <equals arg1="${build.name}" arg2="" trim="true"/>
+                <equals arg1="${build.name}" arg2="default" trim="true"/>
+            </or>
+            <then>
+                <property name="property.file.name" value="build.properties"/>
+            </then>
+            <else>
+                <property name="property.file.name" value="build.${build.name}.properties"/>
+            </else>
+        </if>
+
+        <echo>Building with properties in: ${basedir}/${app.name}/${property.file.name}</echo>
+
         <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
             <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
             <arg value="package"/>
             <arg value="-DskipTests"/>
+            <arg value="-Dbuild.properties=${basedir}/${app.name}/${property.file.name}"/>
             <arg value="-P ${j2ee-jms-examples.deployment_target}"/>
         </artifact:mvn>
-    </target>
-
-    <target name="package_profiles" description="Compiles the sources and creates runtime jar" depends="init,clean">
-        <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
-            <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
-            <arg value="package"/>
-            <arg value="-DskipTests"/>
-            <arg value="-P ${j2ee-jms-examples.deployment_target}"/>
-            <arg value="-P ${mvn_profile}"/>
-        </artifact:mvn>
-    </target>
-
-    <target name="copy.ear.simpleJmsConsume" description="Capy ear to dist folder">
-        <echo>In copy.ear.simpleJmsConsume</echo>
-
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
-        </copy>
-    </target>
-
-    <target name="copy.ear.simpleJmsSend" description="Capy ear to dist folder">
-        <echo>In copy.ear.simpleJmsSend</echo>
-
-        <copy todir="${j2ee-jms-examples.target.dir}">
-            <fileset file="${j2ee-jms-examples.simpleJmsSend.dir}/ear/target/*.ear"/>
-        </copy>
     </target>
 
     <target name="assemble" description="Creates server jar" depends="init,clean_target_dir">
@@ -115,41 +109,26 @@
                 <trycatch reference="exception_ref">
                     <try>
                         <echo message="@{profile}"/>
-
-                        <if>
-                            <or>
-                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsConsume.dir}_default" trim="true"/>
-                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsConsume.dir}-default" trim="true"/>
-                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsConsume.dir}" trim="true"/>
-                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsSend.dir}_default" trim="true"/>
-                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsSend.dir}-default" trim="true"/>
-                                <equals arg1="@{profile}" arg2="${j2ee-jms-examples.simpleJmsSend.dir}" trim="true"/>
-                            </or>
-                            <then>
-                                <echo>Building defaults</echo>
-                                <antcall target="package_defaults">
-                                    <param name="mvn_profile" value="@{profile}"/>
-                                </antcall>
-                            </then>
-                            <else>
-                                <echo>Building profile @{profile}</echo>
-                                <antcall target="package_profiles">
-                                    <param name="mvn_profile" value="@{profile}"/>
-                                </antcall>
-                            </else>
-                        </if>
+                        <echo>Building profile @{profile}</echo>
+                        <antcall target="package">
+                            <param name="profile" value="@{profile}"/>
+                        </antcall>
 
                         <if>
                             <contains string="@{profile}" substring="${j2ee-jms-examples.simpleJmsSend.dir}" casesensitive="false"/>
                             <then>
-                                <antcall target="copy.ear.simpleJmsSend"/>
+                                <copy todir="${j2ee-jms-examples.target.dir}">
+                                    <fileset file="${j2ee-jms-examples.simpleJmsSend.dir}/ear/target/*.ear"/>
+                                </copy>
                             </then>
                         </if>
 
                         <if>
                             <contains string="@{profile}" substring="${j2ee-jms-examples.simpleJmsConsume.dir}" casesensitive="false"/>
                             <then>
-                                <antcall target="copy.ear.simpleJmsConsume"/>
+                                <copy todir="${j2ee-jms-examples.target.dir}">
+                                    <fileset file="${j2ee-jms-examples.simpleJmsConsume.dir}/ear/target/*.ear"/>
+                                </copy>
                             </then>
                         </if>
                     </try>
