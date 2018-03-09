@@ -1,6 +1,7 @@
 package com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor;
 
 import com.softwareaggov.messaging.libs.jms.processor.MessageProcessor;
+import com.softwareaggov.messaging.libs.jms.processor.ProcessorOutput;
 import com.softwareaggov.messaging.libs.jms.processor.impl.MessageCloneProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +124,7 @@ public class MessageCloneBean implements MessageProcessorLocal {
     }
 
     @Override
-    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
+    public ProcessorOutput processMessage(Message msg) throws JMSException {
         return processor.processMessage(msg);
     }
 }

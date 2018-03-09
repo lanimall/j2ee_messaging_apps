@@ -1,6 +1,7 @@
 package com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor;
 
 import com.softwareaggov.messaging.libs.jms.processor.MessageProcessor;
+import com.softwareaggov.messaging.libs.jms.processor.ProcessorOutput;
 import com.softwareaggov.messaging.libs.jms.processor.impl.MockSleepProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import java.util.Map;
 
 /**
  * Created by fabien.sanglier on 6/23/16.
@@ -32,11 +32,11 @@ public class MockSleepBean implements MessageProcessorLocal {
 
     @PostConstruct
     public void initialize() {
-        processor = new MockSleepProcessor(mockSleepTimeInMillis);
+        processor = new MockSleepProcessor(mockSleepTimeInMillis, true);
     }
 
     @Override
-    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
+    public ProcessorOutput processMessage(Message msg) throws JMSException {
         return processor.processMessage(msg);
     }
 }

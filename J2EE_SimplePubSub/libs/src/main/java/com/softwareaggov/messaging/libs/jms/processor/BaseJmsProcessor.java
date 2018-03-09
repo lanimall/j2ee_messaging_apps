@@ -1,15 +1,14 @@
 package com.softwareaggov.messaging.libs.jms.processor;
 
+import com.softwareaggov.messaging.libs.jms.processor.impl.ProcessorOutputImpl;
 import com.softwareaggov.messaging.libs.utils.Counter;
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import java.util.AbstractMap;
 import java.util.Map;
 
 /**
@@ -45,10 +44,11 @@ public class BaseJmsProcessor implements MessageProcessor {
     }
 
     @Override
-    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
+    public ProcessorOutput processMessage(Message msg) throws JMSException {
         //post processing
-        String postProcessingPayload = null;
-        Map<String, Object> postProcessingHeaderProperties = null;
+        Object postProcessingPayload = null;
+        Map<JMSHelper.JMSHeadersType, Object> postProcessingJMSHeaderProperties = null;
+        Map<String, Object> postProcessingCustomProperties = null;
 
         if (log.isDebugEnabled())
             log.debug("processMessage() start");
@@ -58,41 +58,51 @@ public class BaseJmsProcessor implements MessageProcessor {
         try {
             if (null != msg) {
                 //processing the message
-                Map.Entry<String, Map<String, Object>> processorResult = null;
+                ProcessorOutput processorResult = null;
                 if (null != messageProcessor) {
                     processorResult = messageProcessor.processMessage(msg);
                     incrementCounter("processed");
                 }
 
                 if (null != processorResult) {
-                    postProcessingPayload = processorResult.getKey();
-                    postProcessingHeaderProperties = processorResult.getValue();
+                    postProcessingPayload = processorResult.getMessagePayload();
+                    postProcessingJMSHeaderProperties = processorResult.getJMSHeaderProperties();
+                    postProcessingCustomProperties = processorResult.getMessageProperties();
                 }
 
                 //would do something with the payload and header...in the meantime, print them if debug is enabled
                 if (log.isDebugEnabled()) {
-                    String postProcessingHeaders = null;
-                    if (null != postProcessingHeaderProperties) {
-                        for (Map.Entry<String, Object> header : postProcessingHeaderProperties.entrySet()) {
-                            postProcessingHeaders += String.format("[%s,%s]", header.getKey(), (null != header.getValue()) ? header.getValue().toString() : "null");
+                    String postProcessingCustomHeaders = null;
+                    String postProcessingJMSHeaders = null;
+
+                    if (null != postProcessingJMSHeaderProperties) {
+                        for (Map.Entry<JMSHelper.JMSHeadersType, Object> header : postProcessingJMSHeaderProperties.entrySet()) {
+                            postProcessingJMSHeaders += String.format("[%s,%s]", header.getKey(), (null != header.getValue()) ? header.getValue().toString() : "null");
                         }
                     }
-                    log.debug("Payload: {}, Headers: {}",
+
+                    if (null != postProcessingCustomProperties) {
+                        for (Map.Entry<String, Object> header : postProcessingCustomProperties.entrySet()) {
+                            postProcessingCustomHeaders += String.format("[%s,%s]", header.getKey(), (null != header.getValue()) ? header.getValue().toString() : "null");
+                        }
+                    }
+
+                    log.debug("Payload: {}, \nJMS Headers: {}, \nCustom Properties: {}",
                             ((null != postProcessingPayload) ? postProcessingPayload : "null"),
-                            ((null != postProcessingHeaders) ? postProcessingHeaders : "null"));
+                            ((null != postProcessingJMSHeaders) ? postProcessingJMSHeaders : "null"),
+                            ((null != postProcessingCustomHeaders) ? postProcessingCustomHeaders : "null"));
                 }
 
                 //get the replyTo if it's set, and if it is, reply
-                Destination replyTo = msg.getJMSReplyTo();
+                Object replyTo = postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_REPLYTO);
                 if (null != replyTo && null != jmsHelper) {
-                    int deliveryMode = msg.getJMSDeliveryMode();
-                    int priority = msg.getJMSPriority();
-
-                    //get MessageID from message, and set the reply correlationID with it
-                    String correlationId = msg.getJMSMessageID();
+                    // Get correlationID from message if set.
+                    // If not set, then get the MessageID from message, and set the reply correlationID with it
+                    if (null == postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_CORRELATIONID))
+                        postProcessingJMSHeaderProperties.put(JMSHelper.JMSHeadersType.JMS_CORRELATIONID, postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_MESSAGEID));
 
                     //send reply
-                    jmsHelper.sendTextMessage(replyTo, postProcessingPayload, postProcessingHeaderProperties, deliveryMode, priority, correlationId, null);
+                    jmsHelper.sendTextMessage(postProcessingPayload, postProcessingJMSHeaderProperties, postProcessingCustomProperties);
                     incrementCounter("replied");
                 }
             } else {
@@ -104,8 +114,10 @@ public class BaseJmsProcessor implements MessageProcessor {
             throw e;
         }
 
-        return new AbstractMap.SimpleImmutableEntry<String, Map<String, Object>>(
-                postProcessingPayload, postProcessingHeaderProperties
+        return new ProcessorOutputImpl(
+                postProcessingPayload,
+                postProcessingJMSHeaderProperties,
+                postProcessingCustomProperties
         );
     }
 }

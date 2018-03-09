@@ -1,5 +1,7 @@
 package com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor;
 
+import com.softwareaggov.messaging.libs.jms.processor.ProcessorOutput;
+import com.softwareaggov.messaging.libs.jms.processor.impl.ProcessorOutputImpl;
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +18,10 @@ import javax.jms.TextMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * Created by fabien.sanglier on 6/23/16.
@@ -81,7 +86,7 @@ public class SendAndForgetBean implements MessageProcessorLocal {
     }
 
     @Override
-    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
+    public ProcessorOutput processMessage(Message msg) throws JMSException {
         if (msg instanceof TextMessage) {
 
             TextMessage txtMsg = (TextMessage) msg;
@@ -98,8 +103,11 @@ public class SendAndForgetBean implements MessageProcessorLocal {
                 //send the send and wait message
                 String textReturned = jmsMessagePublisher.sendTextMessage(txtMsg.getText(), Collections.unmodifiableMap(props));
 
-                return new AbstractMap.SimpleImmutableEntry<String, Map<String, Object>>(
-                        textReturned, null
+                // Packaging the payload + properties into processorOutput object
+                return new ProcessorOutputImpl(
+                        textReturned,
+                        null,
+                        Collections.unmodifiableMap(props)
                 );
             } else {
                 throw new RuntimeException("jmsMessagePublisher is null...cannot do anything");

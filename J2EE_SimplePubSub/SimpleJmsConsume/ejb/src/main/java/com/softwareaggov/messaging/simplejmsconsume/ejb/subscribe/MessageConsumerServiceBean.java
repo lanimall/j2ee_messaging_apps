@@ -1,5 +1,6 @@
 package com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe;
 
+import com.softwareaggov.messaging.libs.jms.processor.ProcessorOutput;
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.MessageProcessorLocal;
 import com.softwareaggov.messaging.simplejmsconsume.ejb.utils.CounterLocal;
@@ -116,25 +117,21 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
         messageProcessingCounter.incrementAndGet(getBeanName() + "-messageConsumed");
 
         if (null != msg) {
-            String postProcessingPayload = null;
-            Map<String, Object> postProcessingHeaderProperties = null;
+            //post processing
+            Object postProcessingPayload = null;
+            Map<JMSHelper.JMSHeadersType, Object> postProcessingJMSHeaderProperties = null;
+            Map<String, Object> postProcessingCustomProperties = null;
 
             try {
                 if (log.isDebugEnabled()) {
-                    Map<String, Object> preProcessingHeaders = JMSHelper.getMessageProperties(msg);
                     Object preProcessingPayload = JMSHelper.getMessagePayload(msg);
+                    String preProcessingJMSHeaderPropertiesStr = JMSHelper.getMessageJMSHeaderPropsAsString(msg, ",");
+                    String preProcessingCustomPropertiesStr = JMSHelper.getMessagePropertiesAsString(msg, ",");
 
-                    //transform the property map into a string
-                    String preProcessingHeadersStr = "";
-                    if (null != preProcessingHeaders) {
-                        for (Map.Entry<String, Object> header : preProcessingHeaders.entrySet()) {
-                            preProcessingHeadersStr += String.format("[%s,%s]", header.getKey(), (null != header.getValue()) ? header.getValue().toString() : "null");
-                        }
-                    }
-
-                    log.debug("Pre-Processing Message - \nPayload: {}, \nHeaders: {}",
-                            ((null != preProcessingPayload) ? preProcessingPayload.toString() : "null"),
-                            ((null != preProcessingHeadersStr) ? preProcessingHeadersStr : "null"));
+                    log.debug("Received message before any processing: {}, \nJMS Headers: {}, \nCustom Properties: {}",
+                            ((null != preProcessingPayload) ? preProcessingPayload : "null"),
+                            ((null != preProcessingJMSHeaderPropertiesStr) ? preProcessingJMSHeaderPropertiesStr : "null"),
+                            ((null != preProcessingCustomPropertiesStr) ? preProcessingCustomPropertiesStr : "null"));
                 }
 
                 //processing the message
@@ -142,25 +139,12 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                     throw new IllegalArgumentException("Message Processor is null...unexpected.");
 
                 //process the message
-                Map.Entry<String, Map<String, Object>> result = messageProcessor.processMessage(msg);
+                ProcessorOutput processorResult = messageProcessor.processMessage(msg);
 
-                if (null != result) {
-                    postProcessingPayload = result.getKey();
-                    postProcessingHeaderProperties = result.getValue();
-                }
-
-                //would do something with the payload and header...in the meantime, print them if debug is enabled
-                if (log.isDebugEnabled()) {
-                    //transform the property map into a string
-                    String postProcessingHeadersStr = "";
-                    if (null != postProcessingHeaderProperties) {
-                        for (Map.Entry<String, Object> header : postProcessingHeaderProperties.entrySet()) {
-                            postProcessingHeadersStr += String.format("[%s,%s]", header.getKey(), (null != header.getValue()) ? header.getValue().toString() : "null");
-                        }
-                    }
-                    log.debug("Post-Processing Ouput - \nPayload: {}, \nHeaders: {}",
-                            ((null != postProcessingPayload) ? postProcessingPayload.toString() : "null"),
-                            ((null != postProcessingHeadersStr) ? postProcessingHeadersStr : "null"));
+                if (null != processorResult) {
+                    postProcessingPayload = processorResult.getMessagePayload();
+                    postProcessingJMSHeaderProperties = processorResult.getJMSHeaderProperties();
+                    postProcessingCustomProperties = processorResult.getMessageProperties();
                 }
 
                 messageProcessingCounter.incrementAndGet(getBeanName() + "-processingSuccess");
@@ -169,7 +153,7 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                 throw new EJBException(e);
             }
 
-            if (jmsMessageEnableReply) {
+            if (jmsMessageEnableReply && null != postProcessingJMSHeaderProperties) {
                 try {
                     initJMSReply();
 
@@ -177,7 +161,9 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                     //otherwise, force to using the default always
                     Destination replyTo = null;
                     if (jmsMessageReplyOverridesDefault) {
-                        replyTo = msg.getJMSReplyTo();
+                        if (null != postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_REPLYTO))
+                            replyTo = (Destination) postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_REPLYTO);
+
                         if (null == replyTo)
                             replyTo = jmsDefaultReplyTo;
                     } else {
@@ -186,17 +172,16 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
 
                     //if replyTo is set, reply
                     if (null != replyTo) {
-                        int deliveryMode = msg.getJMSDeliveryMode();
-                        int priority = msg.getJMSPriority();
+                        //set the destination to the replyTo
+                        postProcessingJMSHeaderProperties.put(JMSHelper.JMSHeadersType.JMS_DESTINATION, replyTo);
 
                         // Get correlationID from message if set.
                         // If not set, then get the MessageID from message, and set the reply correlationID with it
-                        String correlationId = msg.getJMSCorrelationID();
-                        if (null == correlationId || "".equals(correlationId))
-                            correlationId = msg.getJMSMessageID();
+                        if (null == postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_CORRELATIONID))
+                            postProcessingJMSHeaderProperties.put(JMSHelper.JMSHeadersType.JMS_CORRELATIONID, postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_MESSAGEID));
 
                         //send reply
-                        jmsHelper.sendTextMessage(replyTo, postProcessingPayload, postProcessingHeaderProperties, deliveryMode, priority, correlationId, null);
+                        jmsHelper.sendTextMessage(postProcessingPayload, postProcessingJMSHeaderProperties, postProcessingCustomProperties);
                         messageProcessingCounter.incrementAndGet(getBeanName() + "-replySuccess");
                     } else {
                         messageProcessingCounter.incrementAndGet(getBeanName() + "-replyNullDestination");

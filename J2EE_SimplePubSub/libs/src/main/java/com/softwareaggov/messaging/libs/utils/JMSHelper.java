@@ -34,6 +34,20 @@ public class JMSHelper {
         }
     }
 
+    static public enum JMSHeadersType {
+        JMS_PAYLOAD,
+        JMS_MESSAGEID,
+        JMS_CORRELATIONID,
+        JMS_DELIVERYMODE,
+        JMS_PRIORITY,
+        JMS_DESTINATION,
+        JMS_TIMESTAMP,
+        JMS_EXPIRATION,
+        JMS_TYPE,
+        JMS_REPLYTO,
+        JMS_REDELIVERED;
+    }
+
     private JMSHelper(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
@@ -46,47 +60,69 @@ public class JMSHelper {
         return connectionFactory;
     }
 
-    public String sendTextMessage(Destination destination, final String payload, final Map<String, Object> headerProperties) throws JMSException {
-        return sendTextMessage(destination, payload, headerProperties, DeliveryMode.PERSISTENT, 4, null, null);
+    public String sendTextMessage(final Object payload, Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties) throws JMSException {
+        return sendTextMessage(payload, jmsProperties, customProperties, false, Session.AUTO_ACKNOWLEDGE);
     }
 
-    public String sendTextMessage(Destination destination, final String payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+    public String sendTextMessage(final Object payload, final Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties, boolean sessionTransacted, int sessionAcknowledgeMode) throws JMSException {
         Connection connection = null;
         Session session = null;
         MessageProducer producer = null;
         try {
-            if (null == connectionFactory)
+            if (null == connectionFactory) {
                 throw new JMSException("connection factory is null...can't do anything...");
+            }
 
+            if (sessionAcknowledgeMode != Session.AUTO_ACKNOWLEDGE && sessionAcknowledgeMode != Session.CLIENT_ACKNOWLEDGE && sessionAcknowledgeMode != Session.DUPS_OK_ACKNOWLEDGE) {
+                throw new JMSException("invalid ack mode...can't do anything...");
+            }
+
+            if (log.isDebugEnabled()) {
+                String msgJMSHeaderPropertiesStr = JMSHelper.getMessageJMSHeaderPropsAsString(jmsProperties, ",");
+                String msgCustomPropertiesStr = JMSHelper.getMessagePropertiesAsString(customProperties, ",");
+
+                log.debug("Message data to send: {}, \nJMS Headers: {}, \nCustom Properties: {}",
+                        ((null != payload) ? payload : "null"),
+                        ((null != msgJMSHeaderPropertiesStr) ? msgJMSHeaderPropertiesStr : "null"),
+                        ((null != msgCustomPropertiesStr) ? msgCustomPropertiesStr : "null"));
+            }
+
+            //create connection and session
             connection = connectionFactory.createConnection(); // Create connection
-            boolean transacted = false;
-            session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE); // Create Session
+            session = connection.createSession(sessionTransacted, sessionAcknowledgeMode); // Create Session
 
-            if (null == destination)
+            if (null == jmsProperties.get(JMSHeadersType.JMS_DESTINATION))
                 throw new JMSException("Destination is null...can't do anything...");
 
             // Create Message Producer
-            producer = session.createProducer(destination);
+            producer = session.createProducer((Destination) jmsProperties.get(JMSHeadersType.JMS_DESTINATION));
 
-            if (null != deliveryMode && deliveryMode >= 0)
-                producer.setDeliveryMode(deliveryMode);
+            if (null != jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE)) {
+                int jmsDeliveryMode = (int) jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE);
+                if (jmsDeliveryMode == DeliveryMode.NON_PERSISTENT || jmsDeliveryMode == DeliveryMode.PERSISTENT)
+                    producer.setDeliveryMode(jmsDeliveryMode);
+            }
 
-            if (null != priority && priority >= 0)
-                producer.setPriority(priority);
+            if (null != jmsProperties.get(JMSHeadersType.JMS_PRIORITY)) {
+                int jmsPriority = (int) jmsProperties.get(JMSHeadersType.JMS_PRIORITY);
+                if (jmsPriority >= 0)
+                    producer.setPriority(jmsPriority);
+            }
 
             // Create Message
             TextMessage msg = session.createTextMessage();
             if (null != payload)
-                msg.setText(payload);
+                msg.setText((String) payload); // TODO: temporary...here we need to support more types!!!!
 
-            if (null != replyTo)
-                msg.setJMSReplyTo(replyTo);
+            if (null != jmsProperties.get(JMSHeadersType.JMS_REPLYTO))
+                msg.setJMSReplyTo((Destination) jmsProperties.get(JMSHeadersType.JMS_REPLYTO));
 
-            if (null != correlationID)
-                msg.setJMSCorrelationID(correlationID);
+            if (null != jmsProperties.get(JMSHeadersType.JMS_CORRELATIONID))
+                msg.setJMSCorrelationID((String) jmsProperties.get(JMSHeadersType.JMS_CORRELATIONID));
 
-            if (null != headerProperties) {
-                for (Entry<String, Object> entry : headerProperties.entrySet()) {
+            //add the custom properties
+            if (null != customProperties) {
+                for (Entry<String, Object> entry : customProperties.entrySet()) {
                     msg.setObjectProperty(entry.getKey(), entry.getValue());
                 }
             }
@@ -109,7 +145,11 @@ public class JMSHelper {
         }
     }
 
-    public String sendTextMessageAndWait(Destination destination, final String payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, Destination replyTo, Long replyWaitTimeoutMs) throws JMSException {
+    public String sendTextMessageAndWait(final Object payload, final Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties, Long replyWaitTimeoutMs) throws JMSException {
+        return sendTextMessageAndWait(payload, jmsProperties, customProperties, replyWaitTimeoutMs, false, Session.AUTO_ACKNOWLEDGE);
+    }
+
+    public String sendTextMessageAndWait(final Object payload, final Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties, Long replyWaitTimeoutMs, final boolean sessionTransacted, final int sessionAcknowledgeMode) throws JMSException {
         Connection connection = null;
         Session session = null;
         MessageProducer producer = null;
@@ -119,35 +159,58 @@ public class JMSHelper {
             if (null == connectionFactory)
                 throw new JMSException("connection factory is null...can't do anything...");
 
-            connection = connectionFactory.createConnection(); // Create connection
-            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE); // Create Session
+            if (sessionAcknowledgeMode != Session.AUTO_ACKNOWLEDGE && sessionAcknowledgeMode != Session.CLIENT_ACKNOWLEDGE && sessionAcknowledgeMode != Session.DUPS_OK_ACKNOWLEDGE) {
+                throw new JMSException("invalid ack mode...can't do anything...");
+            }
 
-            if (null == destination)
+            if (log.isDebugEnabled()) {
+                String msgJMSHeaderPropertiesStr = JMSHelper.getMessageJMSHeaderPropsAsString(jmsProperties, ",");
+                String msgCustomPropertiesStr = JMSHelper.getMessagePropertiesAsString(customProperties, ",");
+
+                log.debug("Message data to send: {}, \nJMS Headers: {}, \nCustom Properties: {}",
+                        ((null != payload) ? payload : "null"),
+                        ((null != msgJMSHeaderPropertiesStr) ? msgJMSHeaderPropertiesStr : "null"),
+                        ((null != msgCustomPropertiesStr) ? msgCustomPropertiesStr : "null"));
+            }
+
+            //create connection and session
+            connection = connectionFactory.createConnection(); // Create connection
+            session = connection.createSession(sessionTransacted, sessionAcknowledgeMode); // Create Session
+
+            Object targetDestination = jmsProperties.get(JMSHeadersType.JMS_DESTINATION);
+            if (null == targetDestination)
                 throw new JMSException("Destination is null...can't do anything...");
 
             //here, we could fall back on creating a temp response queue if reply is not specified...likely a good thing to try
-            if (null == replyTo)
+            Object replyToDestination = jmsProperties.get(JMSHeadersType.JMS_REPLYTO);
+            if (null == replyToDestination)
                 throw new JMSException("ReplyTo Destination is null...can't do anything...");
 
             // Create Message Producer
-            producer = session.createProducer(destination);
-            if (null != deliveryMode && deliveryMode >= 0)
-                producer.setDeliveryMode(deliveryMode);
+            producer = session.createProducer((Destination) targetDestination);
 
-            if (null != priority && priority >= 0)
-                producer.setPriority(priority);
+            if (null != jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE)) {
+                int jmsDeliveryMode = (int) jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE);
+                if (jmsDeliveryMode == DeliveryMode.NON_PERSISTENT || jmsDeliveryMode == DeliveryMode.PERSISTENT)
+                    producer.setDeliveryMode(jmsDeliveryMode);
+            }
+
+            if (null != jmsProperties.get(JMSHeadersType.JMS_PRIORITY)) {
+                int jmsPriority = (int) jmsProperties.get(JMSHeadersType.JMS_PRIORITY);
+                if (jmsPriority >= 0)
+                    producer.setPriority(jmsPriority);
+            }
 
             // Create Message
             TextMessage msg = session.createTextMessage();
-
             if (null != payload)
-                msg.setText(payload);
+                msg.setText((String) payload); // TODO: temporary...here we need to support more types!!!!
 
-            if (null != replyTo)
-                msg.setJMSReplyTo(replyTo);
+            if (null != replyToDestination)
+                msg.setJMSReplyTo((Destination) replyToDestination);
 
-            if (null != headerProperties) {
-                for (Entry<String, Object> entry : headerProperties.entrySet()) {
+            if (null != customProperties) {
+                for (Entry<String, Object> entry : customProperties.entrySet()) {
                     msg.setObjectProperty(entry.getKey(), entry.getValue());
                 }
             }
@@ -162,7 +225,7 @@ public class JMSHelper {
             String selector = String.format("JMSCorrelationID='%s'", msg.getJMSMessageID());
 
             //create a consumer with the selector
-            responseConsumer = session.createConsumer(replyTo, selector);
+            responseConsumer = session.createConsumer((Destination) replyToDestination, selector);
 
             // Start the connection
             connection.start();
@@ -328,5 +391,79 @@ public class JMSHelper {
         }
 
         return props;
+    }
+
+    public static String getMessagePropertiesAsString(Message msg, String delimiter) throws JMSException {
+        return getMessagePropertiesAsString(JMSHelper.getMessageProperties(msg), delimiter);
+    }
+
+    public static String getMessagePropertiesAsString(Map<String, Object> messageProperties, String delimiter) throws JMSException {
+        String messagePropertiesStr = "";
+
+        //transform the property map into a string
+        if (null != messageProperties) {
+            for (Map.Entry<String, Object> header : messageProperties.entrySet()) {
+                messagePropertiesStr += String.format("[%s%s%s]", header.getKey(), (null != delimiter) ? delimiter : ",", (null != header.getValue()) ? header.getValue().toString() : "null");
+            }
+        }
+
+        return messagePropertiesStr;
+    }
+
+    public static Map<JMSHeadersType, Object> getMessageJMSHeaderPropsAsMap(Message msg) throws JMSException {
+        Map<JMSHeadersType, Object> jmsHeaderProps = null;
+        if (null != msg) {
+            jmsHeaderProps = new HashMap<JMSHeadersType, Object>();
+
+            if (null != msg.getJMSMessageID() && !"".equals(msg.getJMSMessageID()))
+                jmsHeaderProps.put(JMSHeadersType.JMS_MESSAGEID, msg.getJMSMessageID());
+
+            if (null != msg.getJMSCorrelationID() && !"".equals(msg.getJMSCorrelationID()))
+                jmsHeaderProps.put(JMSHeadersType.JMS_CORRELATIONID, msg.getJMSCorrelationID());
+
+            if (null != msg.getJMSDestination())
+                jmsHeaderProps.put(JMSHeadersType.JMS_DESTINATION, msg.getJMSDestination());
+
+            if (null != msg.getJMSReplyTo())
+                jmsHeaderProps.put(JMSHeadersType.JMS_REPLYTO, msg.getJMSReplyTo());
+
+            if (null != msg.getJMSType() && !"".equals(msg.getJMSType()))
+                jmsHeaderProps.put(JMSHeadersType.JMS_TYPE, msg.getJMSType());
+
+            jmsHeaderProps.put(JMSHeadersType.JMS_REDELIVERED, msg.getJMSRedelivered());
+            jmsHeaderProps.put(JMSHeadersType.JMS_TIMESTAMP, msg.getJMSTimestamp());
+            jmsHeaderProps.put(JMSHeadersType.JMS_EXPIRATION, msg.getJMSExpiration());
+            jmsHeaderProps.put(JMSHeadersType.JMS_DELIVERYMODE, msg.getJMSDeliveryMode());
+            jmsHeaderProps.put(JMSHeadersType.JMS_PRIORITY, msg.getJMSPriority());
+        }
+
+        return jmsHeaderProps;
+    }
+
+    public static Map<JMSHeadersType, Object> getMessageJMSHeaderPropsAsMap(final Destination destination, final Integer deliveryMode, final Integer priority, final String correlationID, final Destination replyTo) throws JMSException {
+        Map<JMSHeadersType, Object> jmsHeaderProps = new HashMap<JMSHeadersType, Object>();
+        jmsHeaderProps.put(JMSHeadersType.JMS_CORRELATIONID, correlationID);
+        jmsHeaderProps.put(JMSHeadersType.JMS_DELIVERYMODE, deliveryMode);
+        jmsHeaderProps.put(JMSHeadersType.JMS_PRIORITY, priority);
+        jmsHeaderProps.put(JMSHeadersType.JMS_DESTINATION, destination);
+        jmsHeaderProps.put(JMSHeadersType.JMS_REPLYTO, replyTo);
+
+        return jmsHeaderProps;
+    }
+
+    public static String getMessageJMSHeaderPropsAsString(Message msg, String delimiter) throws JMSException {
+        return getMessageJMSHeaderPropsAsString(JMSHelper.getMessageJMSHeaderPropsAsMap(msg), delimiter);
+    }
+
+    public static String getMessageJMSHeaderPropsAsString(Map<JMSHeadersType, Object> messageJMSHeaderProps, String delimiter) throws JMSException {
+        String messageJMSHeaderPropsStr = "";
+        //transform the property map into a string
+        if (null != messageJMSHeaderProps) {
+            for (Map.Entry<JMSHeadersType, Object> header : messageJMSHeaderProps.entrySet()) {
+                messageJMSHeaderPropsStr += String.format("[%s%s%s]", header.getKey(), (null != delimiter) ? delimiter : ",", (null != header.getValue()) ? header.getValue().toString() : "null");
+            }
+        }
+
+        return messageJMSHeaderPropsStr;
     }
 }

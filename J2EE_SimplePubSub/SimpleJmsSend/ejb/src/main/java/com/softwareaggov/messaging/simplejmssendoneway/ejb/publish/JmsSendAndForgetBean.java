@@ -1,5 +1,6 @@
 package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish;
 
+import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,8 @@ public class JmsSendAndForgetBean extends JmsPublisherBase implements JmsPublish
     }
 
     @Override
-    protected String sendMessage(Destination destination, final String payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
-        return jmsHelper.sendTextMessage(destination, payload, headerProperties, deliveryMode, priority, correlationID, replyTo);
+    protected String sendMessage(Destination destination, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+        Map<JMSHelper.JMSHeadersType, Object> jmsProperties = JMSHelper.getMessageJMSHeaderPropsAsMap(destination, deliveryMode, priority, correlationID, replyTo);
+        return jmsHelper.sendTextMessage(payload, jmsProperties, headerProperties);
     }
 }

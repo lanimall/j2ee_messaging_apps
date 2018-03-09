@@ -1,14 +1,13 @@
 package com.softwareaggov.messaging.libs.jms.processor.impl;
 
 import com.softwareaggov.messaging.libs.jms.processor.MessageProcessor;
+import com.softwareaggov.messaging.libs.jms.processor.ProcessorOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJBException;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import java.util.AbstractMap;
-import java.util.Map;
 
 /**
  * Created by fabien.sanglier on 6/23/16.
@@ -18,18 +17,22 @@ public class MockSleepProcessor implements MessageProcessor {
     private static Logger log = LoggerFactory.getLogger(MockSleepProcessor.class);
 
     private final Long mockSleepTimeInMillis;
+    private MessageCloneProcessor messageCloneProcessor;
 
-    public MockSleepProcessor(Long mockSleepTimeInMillis) {
+    public MockSleepProcessor(Long mockSleepTimeInMillis, boolean cloneProperties) {
         this.mockSleepTimeInMillis = mockSleepTimeInMillis;
+        if (cloneProperties)
+            messageCloneProcessor = new MessageCloneProcessor();
     }
 
     @Override
-    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
-        Map.Entry<String, Map<String, Object>> processingResult = null;
-        String payloadResult = null;
+    public ProcessorOutput processMessage(Message msg) throws JMSException {
+        ProcessorOutput processingResult;
 
+        String payload = null;
         if (null != mockSleepTimeInMillis && mockSleepTimeInMillis > 0) {
-            log.debug("Sleeping " + mockSleepTimeInMillis + " to mock processing time...");
+            payload = String.format("Sleeping %d ms to mock processing time...", mockSleepTimeInMillis);
+            log.debug(payload);
             try {
                 Thread.sleep(mockSleepTimeInMillis);
             } catch (InterruptedException e) {
@@ -37,12 +40,15 @@ public class MockSleepProcessor implements MessageProcessor {
             }
         }
 
-        payloadResult = String.format("Mock message processing - slept for %d ms", mockSleepTimeInMillis);
-
-        //create the processingResult pair
-        processingResult = new AbstractMap.SimpleImmutableEntry<String, Map<String, Object>>(
-                payloadResult, null
-        );
+        if (null != messageCloneProcessor) {
+            processingResult = messageCloneProcessor.processMessage(msg);
+        } else {
+            processingResult = new ProcessorOutputImpl(
+                    payload,
+                    null,
+                    null
+            );
+        }
 
         return processingResult;
     }

@@ -7,7 +7,8 @@ import java.util.Map;
  * Created by fabien.sanglier on 6/15/16.
  */
 public interface JmsPublisherLocal {
-    String sendTextMessage(final String msgTextPayload, final Map<String, Object> msgHeaderProperties) throws JMSException;
+    //TODO: should change the method return to ProcessorOutput interface instead of a simple text...
+    String sendTextMessage(final Object msgTextPayload, final Map<String, Object> msgHeaderProperties) throws JMSException;
 
     boolean isEnabled();
 }

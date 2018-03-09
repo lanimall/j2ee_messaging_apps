@@ -1,13 +1,13 @@
 package com.softwareaggov.messaging.libs.jms.processor.impl;
 
 import com.softwareaggov.messaging.libs.jms.processor.MessageProcessor;
+import com.softwareaggov.messaging.libs.jms.processor.ProcessorOutput;
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,36 +41,40 @@ public class MessageCloneProcessor implements MessageProcessor {
     }
 
     @Override
-    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
-        Map.Entry<String, Map<String, Object>> processingResult = null;
-        Object payloadResult = null;
+    public ProcessorOutput processMessage(Message msg) throws JMSException {
+        ProcessorOutput processingResult = null;
+        Object msgPayload;
+        Map<JMSHelper.JMSHeadersType, Object> msgJMSHeaderProperties;
+        Map<String, Object> msgCustomProperties;
 
-        //copy the properties from the incoming message
-        Map<String, Object> props = new HashMap();
+        //get the JMS properties from the incoming message
+        msgJMSHeaderProperties = JMSHelper.getMessageJMSHeaderPropsAsMap(msg);
 
+        //custom properties from the incoming message
         //if the map msgPropertiesOverride is set, override the message props
         if (!overwritePropertiesEnabled || overwritePropertiesEnabled && mergePropertyEnabled) {
-            props = JMSHelper.getMessageProperties(msg);
+            msgCustomProperties = JMSHelper.getMessageProperties(msg);
         } else {
-            props = new HashMap();
+            msgCustomProperties = new HashMap();
         }
 
         //create a property merge between the msg properties and the properties passed in the msgPropertiesOverride (which should override the message properties)
         if (overwritePropertiesEnabled) {
             if (null != msgPropertiesOverride && msgPropertiesOverride.size() > 0)
-                props.putAll(msgPropertiesOverride);
+                msgCustomProperties.putAll(msgPropertiesOverride);
         }
 
         //copy the payload from the incoming message
-        payloadResult = JMSHelper.getMessagePayload(msg);
+        msgPayload = JMSHelper.getMessagePayload(msg);
         if (overwritePayloadEnabled) {
-            payloadResult = msgPayloadOverride;
+            msgPayload = msgPayloadOverride;
         }
 
-        // Packaging the payload + properties into an immutablke map
-        // For now, only Text message payload is supported...
-        processingResult = new AbstractMap.SimpleImmutableEntry<String, Map<String, Object>>(
-                (String) payloadResult, props
+        // Packaging the payload + properties into processorOutput object
+        processingResult = new ProcessorOutputImpl(
+                msgPayload,
+                msgJMSHeaderProperties,
+                msgCustomProperties
         );
 
         return processingResult;

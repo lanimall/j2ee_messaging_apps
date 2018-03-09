@@ -71,7 +71,7 @@ public abstract class JmsPublisherBase implements JmsPublisherLocal, JmsPublishe
 
     abstract Destination getJmsDestination();
 
-    abstract String sendMessage(Destination destination, final String payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException;
+    abstract String sendMessage(Destination destination, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException;
 
     @Override
     public boolean isEnabled() {
@@ -104,7 +104,7 @@ public abstract class JmsPublisherBase implements JmsPublisherLocal, JmsPublishe
         }
     }
 
-    public String sendTextMessage(final String msgTextPayload, final Map<String, Object> msgHeaderProperties) throws JMSException {
+    public String sendTextMessage(final Object msgTextPayload, final Map<String, Object> msgHeaderProperties) throws JMSException {
         String returnText = "";
         if (log.isDebugEnabled())
             log.debug("in EJB: sendTextMessage");

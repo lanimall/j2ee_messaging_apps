@@ -1,6 +1,7 @@
 package com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor;
 
 import com.softwareaggov.messaging.libs.jms.processor.MessageProcessor;
+import com.softwareaggov.messaging.libs.jms.processor.ProcessorOutput;
 import com.softwareaggov.messaging.libs.jms.processor.impl.MockSleepAndExceptionsProcessor;
 import com.softwareaggov.messaging.simplejmsconsume.ejb.utils.CounterLocal;
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import java.util.Map;
 
 /**
  * Created by fabien.sanglier on 6/23/16.
@@ -39,11 +39,12 @@ public class MockSleepAndExceptionsBean extends MockSleepBean implements Message
         processor = new MockSleepAndExceptionsProcessor(
                 mockSleepTimeInMillis,
                 mockExceptionsCountInterval,
-                messageProcessingCounter);
+                messageProcessingCounter,
+                true);
     }
 
     @Override
-    public Map.Entry<String, Map<String, Object>> processMessage(Message msg) throws JMSException {
+    public ProcessorOutput processMessage(Message msg) throws JMSException {
         return processor.processMessage(msg);
     }
 }

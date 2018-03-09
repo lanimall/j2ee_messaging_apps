@@ -137,12 +137,13 @@ public class JmsSendAndForgetNonJCATestBean implements JmsPublisherLocal {
         }
     }
 
-    protected String sendMessage(Destination destination, final String payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
-        return jmsHelper.sendTextMessage(destination, payload, headerProperties, deliveryMode, priority, correlationID, replyTo);
+    protected String sendMessage(Destination destination, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+        Map<JMSHelper.JMSHeadersType, Object> jmsProperties = JMSHelper.getMessageJMSHeaderPropsAsMap(destination, deliveryMode, priority, correlationID, replyTo);
+        return jmsHelper.sendTextMessage(payload, jmsProperties, headerProperties);
     }
 
     @TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
-    public String sendTextMessage(final String msgTextPayload, final Map<String, Object> msgHeaderProperties) {
+    public String sendTextMessage(final Object msgTextPayload, final Map<String, Object> msgHeaderProperties) {
         String returnText = "";
         if (log.isDebugEnabled())
             log.debug("in EJB: sendTextMessage");
