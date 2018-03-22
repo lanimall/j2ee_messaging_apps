@@ -149,6 +149,7 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
 
                 messageProcessingCounter.incrementAndGet(getBeanName() + "-processingSuccess");
             } catch (Exception e) {
+                log.error("Exception occurred", e);
                 messageProcessingCounter.incrementAndGet(getBeanName() + "-processingErrors");
                 throw new EJBException(e);
             }
@@ -187,6 +188,7 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                         messageProcessingCounter.incrementAndGet(getBeanName() + "-replyNullDestination");
                     }
                 } catch (Exception e) {
+                    log.error("Exception occurred", e);
                     messageProcessingCounter.incrementAndGet(getBeanName() + "-replyErrors");
                     throw new EJBException(e);
                 }

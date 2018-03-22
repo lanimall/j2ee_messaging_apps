@@ -108,10 +108,10 @@ public class SendAndWaitBean implements MessageProcessorLocal {
                         Collections.unmodifiableMap(props)
                 );
             } else {
-                throw new RuntimeException("jmsMessagePublisher is null...cannot do anything");
+                throw new IllegalArgumentException("jmsMessagePublisher is null...cannot do anything");
             }
         } else {
-            throw new RuntimeException("Received non-text message");
+            throw new IllegalArgumentException("Received non-text message");
         }
     }
 }

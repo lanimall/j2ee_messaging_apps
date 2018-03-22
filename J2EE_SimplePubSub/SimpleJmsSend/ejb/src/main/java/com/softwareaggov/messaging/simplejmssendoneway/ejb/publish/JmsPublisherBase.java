@@ -123,9 +123,10 @@ public abstract class JmsPublisherBase implements JmsPublisherLocal, JmsPublishe
             } else {
                 messageProcessingCounter.incrementAndGet(getBeanName() + "-responseNotNull");
             }
-        } catch (JMSException e) {
+        } catch (Exception e) {
+            log.error("Exception occurred", e);
             messageProcessingCounter.incrementAndGet(getBeanName() + "-errors");
-            throw e;
+            throw new EJBException(e);
         }
 
         return returnText;
