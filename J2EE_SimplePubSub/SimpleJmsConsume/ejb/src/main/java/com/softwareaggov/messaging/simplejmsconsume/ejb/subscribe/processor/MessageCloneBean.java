@@ -13,7 +13,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -71,11 +70,22 @@ public class MessageCloneBean implements MessageProcessorLocal {
 
                 if (null != inputStream) {
                     StringBuilder textBuilder = new StringBuilder();
-                    try (Reader reader = new BufferedReader(new InputStreamReader
-                            (inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
+                    Reader reader = null;
+                    try {
+                        reader = new BufferedReader(new InputStreamReader
+                                (inputStream, Charset.forName("UTF-8")));
                         int c = 0;
                         while ((c = reader.read()) != -1) {
                             textBuilder.append((char) c);
+                        }
+                    } finally {
+                        if (null != reader) {
+                            try {
+                                reader.close();
+                            } catch (IOException e) {
+                                throw new EJBException("Could not close the reader", e);
+                            }
+                            reader = null;
                         }
                     }
 
@@ -98,7 +108,7 @@ public class MessageCloneBean implements MessageProcessorLocal {
         }
 
         //need to parse message properties from a string into a map, following format: key1=val1;key2=val2;key3=val3
-        Map<String, Object> props = new HashMap<>();
+        Map<String, Object> props = new HashMap();
         if (null != msgPropertiesOverride && !"".equals(msgPropertiesOverride)) {
             StringTokenizer st = new StringTokenizer(msgPropertiesOverride, PROPS_DELIM, false);
 

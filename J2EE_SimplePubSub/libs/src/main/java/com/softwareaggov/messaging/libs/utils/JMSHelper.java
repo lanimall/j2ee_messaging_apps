@@ -98,13 +98,13 @@ public class JMSHelper {
             producer = session.createProducer((Destination) jmsProperties.get(JMSHeadersType.JMS_DESTINATION));
 
             if (null != jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE)) {
-                int jmsDeliveryMode = (int) jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE);
+                int jmsDeliveryMode = (Integer) jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE);
                 if (jmsDeliveryMode == DeliveryMode.NON_PERSISTENT || jmsDeliveryMode == DeliveryMode.PERSISTENT)
                     producer.setDeliveryMode(jmsDeliveryMode);
             }
 
             if (null != jmsProperties.get(JMSHeadersType.JMS_PRIORITY)) {
-                int jmsPriority = (int) jmsProperties.get(JMSHeadersType.JMS_PRIORITY);
+                int jmsPriority = (Integer) jmsProperties.get(JMSHeadersType.JMS_PRIORITY);
                 if (jmsPriority >= 0)
                     producer.setPriority(jmsPriority);
             }
@@ -190,13 +190,13 @@ public class JMSHelper {
             producer = session.createProducer((Destination) targetDestination);
 
             if (null != jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE)) {
-                int jmsDeliveryMode = (int) jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE);
+                int jmsDeliveryMode = (Integer) jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE);
                 if (jmsDeliveryMode == DeliveryMode.NON_PERSISTENT || jmsDeliveryMode == DeliveryMode.PERSISTENT)
                     producer.setDeliveryMode(jmsDeliveryMode);
             }
 
             if (null != jmsProperties.get(JMSHeadersType.JMS_PRIORITY)) {
-                int jmsPriority = (int) jmsProperties.get(JMSHeadersType.JMS_PRIORITY);
+                int jmsPriority = (Integer) jmsProperties.get(JMSHeadersType.JMS_PRIORITY);
                 if (jmsPriority >= 0)
                     producer.setPriority(jmsPriority);
             }

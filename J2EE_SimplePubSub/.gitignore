@@ -1,6 +1,7 @@
 .DS_Store
 *.log
 *.build.customer*
+/build.customprofiles.properties
 
 # Compiled source #
 ###################

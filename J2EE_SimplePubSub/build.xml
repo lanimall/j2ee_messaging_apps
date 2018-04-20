@@ -1,8 +1,11 @@
-<project name="J2EE JMS Examples" default="assemble" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="J2EE JMS Examples" default="assemble" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant" xmlns:if="ant:if">
     <description>build file</description>
 
+    <condition property="build.customprofiles.properties.exist" value="true">
+        <available file="build.customprofiles.properties"/>
+    </condition>
+    <property file="build.customprofiles.properties" if:true="${build.customprofiles.properties.exist}"/>
     <property file="build.properties"/>
-
     <property environment="env"/>
 
     <target name="init.ant.contrib">
@@ -100,6 +103,7 @@
             <arg value="-DskipTests"/>
             <arg value="-Dbuild.properties=${basedir}/${app.name}/${property.file.name}"/>
             <arg value="-P ${j2ee-jms-examples.deployment_target}"/>
+            <arg value="-P ${j2ee-jms-examples.compiler.target}"/>
         </artifact:mvn>
     </target>
 

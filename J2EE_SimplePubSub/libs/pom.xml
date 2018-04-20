@@ -12,6 +12,33 @@
 
     <artifactId>libs</artifactId>
 
+    <profiles>
+        <profile>
+            <id>Java6</id>
+            <properties>
+                <maven.compiler.target>1.6</maven.compiler.target>
+                <maven.compiler.source>1.6</maven.compiler.source>
+            </properties>
+        </profile>
+        <profile>
+            <id>Java7</id>
+            <properties>
+                <maven.compiler.target>1.7</maven.compiler.target>
+                <maven.compiler.source>1.7</maven.compiler.source>
+            </properties>
+        </profile>
+        <profile>
+            <id>Java8</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <maven.compiler.target>1.8</maven.compiler.target>
+                <maven.compiler.source>1.8</maven.compiler.source>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
         <!-- SLF4J -->
         <dependency>
@@ -34,4 +61,36 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>${maven.compiler.target}</version>
+                            <vendor>sun</vendor>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
