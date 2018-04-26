@@ -55,6 +55,11 @@
                 <env-entry-type>java.lang.Long</env-entry-type>
                 <env-entry-value>${Consumer.Processors.MockSleepProcessor.Env.mockSleepTimeInMillis}</env-entry-value>
             </env-entry>
+            <env-entry>
+                <env-entry-name>enableCloneProcessing</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${Consumer.Processors.MockSleepProcessor.Env.enableCloneProcessing}</env-entry-value>
+            </env-entry>
         </session>
         <session>
             <ejb-name>MockSleepAndExceptionsProcessor</ejb-name>
@@ -69,6 +74,11 @@
                 <env-entry-name>mockExceptionsCountInterval</env-entry-name>
                 <env-entry-type>java.lang.Integer</env-entry-type>
                 <env-entry-value>${Consumer.Processors.MockSleepAndExceptionsProcessor.Env.mockExceptionsCountInterval}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>enableCloneProcessing</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${Consumer.Processors.MockSleepAndExceptionsProcessor.Env.enableCloneProcessing}</env-entry-value>
             </env-entry>
         </session>
         <session>
