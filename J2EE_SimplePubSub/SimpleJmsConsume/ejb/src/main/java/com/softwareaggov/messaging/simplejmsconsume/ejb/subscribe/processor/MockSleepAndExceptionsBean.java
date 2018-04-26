@@ -32,6 +32,9 @@ public class MockSleepAndExceptionsBean extends MockSleepBean implements Message
     @Resource(name = "mockSleepTimeInMillis")
     private Long mockSleepTimeInMillis = 0L;
 
+    @Resource(name = "enableCloneProcessing")
+    private Boolean enableCloneProcessing = false;
+
     private MessageProcessor processor;
 
     @PostConstruct
@@ -40,7 +43,7 @@ public class MockSleepAndExceptionsBean extends MockSleepBean implements Message
                 mockSleepTimeInMillis,
                 mockExceptionsCountInterval,
                 messageProcessingCounter,
-                true);
+                enableCloneProcessing);
     }
 
     @Override

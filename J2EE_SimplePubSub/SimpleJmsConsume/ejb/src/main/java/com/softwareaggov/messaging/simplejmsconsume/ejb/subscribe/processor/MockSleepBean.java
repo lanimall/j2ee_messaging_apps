@@ -28,11 +28,14 @@ public class MockSleepBean implements MessageProcessorLocal {
     @Resource(name = "mockSleepTimeInMillis")
     private Long mockSleepTimeInMillis = 0L;
 
+    @Resource(name = "enableCloneProcessing")
+    private Boolean enableCloneProcessing = false;
+
     private MessageProcessor processor;
 
     @PostConstruct
     public void initialize() {
-        processor = new MockSleepProcessor(mockSleepTimeInMillis, true);
+        processor = new MockSleepProcessor(mockSleepTimeInMillis, enableCloneProcessing);
     }
 
     @Override
