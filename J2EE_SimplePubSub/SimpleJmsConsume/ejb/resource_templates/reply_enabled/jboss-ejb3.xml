@@ -74,6 +74,16 @@
                     </activation-config-property-value>
                 </activation-config-property>
             </activation-config>
+            <resource-ref>
+                <res-ref-name>jms/someManagedReplyCF</res-ref-name>
+                <res-type>javax.jms.ConnectionFactory</res-type>
+                <jndi-name>java:/jms/${Consumer.ReplyConnectionFactory.BindingName}</jndi-name>
+            </resource-ref>
+            <resource-ref>
+                <res-ref-name>jms/someManagedDefaultReplyTo</res-ref-name>
+                <res-type>javax.jms.Destination</res-type>
+                <jndi-name>java:/jms/${Consumer.ReplyToDefaultDestination.BindingName}</jndi-name>
+            </resource-ref>
         </message-driven>
     </jboss:enterprise-beans>
     <assembly-descriptor>

@@ -1,0 +1,60 @@
+<project name="ConditionalCopyFile" default="copyfile" basedir=".">
+    <description>Copy ejb-jar with reply file if reply is enabled</description>
+
+    <target name="initsinglefile">
+        <property name="ejbjar_withreply_filepath" value="${project.build.outputDirectory}/META-INF/ejb-jar_withreply.xml"/>
+
+        <echo message="Property Consumer.Env.jmsMessageEnableReply = ${Consumer.Env.jmsMessageEnableReply}"/>
+
+        <condition property="ejbjar_withreply_filepath.exists">
+            <available file="${ejbjar_withreply_filepath}"/>
+        </condition>
+        <property name="ejbjar_withreply_filepath.exists" value="false"/>
+
+        <echo message="${ejbjar_withreply_filepath} Exists? ${ejbjar_withreply_filepath.exists}"/>
+
+        <condition property="copyfile.doit">
+            <and>
+                <equals arg1="${Consumer.Env.jmsMessageEnableReply}" arg2="true"/>
+                <equals arg1="${ejbjar_withreply_filepath.exists}" arg2="true"/>
+            </and>
+        </condition>
+
+        <echo message="copyfile.doit ? ${copyfile.doit}"/>
+    </target>
+
+    <target name="copysinglefile" depends="initsinglefile" if="copyfile.doit">
+        <copy file="${ejbjar_withreply_filepath}" tofile="${project.build.outputDirectory}/META-INF/ejb-jar.xml" overwrite="true"></copy>
+    </target>
+
+    <target name="initdir">
+        <echo message="Property Consumer.Env.jmsMessageEnableReply = ${Consumer.Env.jmsMessageEnableReply}"/>
+
+        <property name="ejbresources_withreply_dirpath" value="resource_templates/reply_enabled/"/>
+        <condition property="ejbresources_withreply_dirpath.exists">
+            <available file="${ejbresources_withreply_dirpath}" type="dir"/>
+        </condition>
+        <property name="ejbresources_withreply_dirpath.exists" value="false"/>
+
+        <echo message="${ejbresources_withreply_dirpath} Exists? ${ejbresources_withreply_dirpath.exists}"/>
+
+        <condition property="copydir.doit">
+            <and>
+                <equals arg1="${Consumer.Env.jmsMessageEnableReply}" arg2="true"/>
+                <equals arg1="${ejbresources_withreply_dirpath.exists}" arg2="true"/>
+            </and>
+        </condition>
+
+        <echo message="copydir.doit ? ${copydir.doit}"/>
+    </target>
+
+    <target name="copydir" depends="initdir" if="copydir.doit">
+        <echo message="${ejbresources_withreply_dirpath} Exists? ${ejbresources_withreply_dirpath.exists}"/>
+
+        <copy todir="${project.build.outputDirectory}/META-INF" overwrite="true">
+            <fileset dir="${ejbresources_withreply_dirpath}">
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
+    </target>
+</project>

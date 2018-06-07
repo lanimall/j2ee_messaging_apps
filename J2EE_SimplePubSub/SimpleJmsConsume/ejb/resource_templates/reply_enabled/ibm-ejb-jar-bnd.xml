@@ -6,6 +6,10 @@
 
     <message-driven name="MessageConsumerService">
         <jca-adapter activation-spec-binding-name="${Consumer.ActivationSpec.BindingName}"/>
+        <resource-ref name="jms/someManagedReplyCF"
+                      binding-name="${Consumer.ReplyConnectionFactory.BindingName}"></resource-ref>
+        <resource-ref name="jms/someManagedDefaultReplyTo"
+                      binding-name="${Consumer.ReplyToDefaultDestination.BindingName}"></resource-ref>
     </message-driven>
     <session name="MockSleepProcessor" simple-binding-name="ejb/${ear.build.name}/session/MockSleepProcessor">
     </session>

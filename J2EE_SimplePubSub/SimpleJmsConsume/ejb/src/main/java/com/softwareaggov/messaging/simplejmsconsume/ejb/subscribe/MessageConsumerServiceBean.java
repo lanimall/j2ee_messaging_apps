@@ -12,6 +12,10 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.*;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -38,27 +42,33 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
 
     private MessageDrivenContext mdbContext;
     private transient JMSHelper jmsHelper;
-    private transient Destination jmsDefaultReplyTo = null;
     private volatile boolean init = false;
+
+    private static final String RESOURCE_NAME_REPLYCF = "jms/someManagedReplyCF";
+    private static final String RESOURCE_NAME_REPLYDEST = "jms/someManagedDefaultReplyTo";
+
+    // private transient Destination jmsDefaultReplyTo = null;
 
     @Resource(name = "jmsMessageEnableReply")
     private Boolean jmsMessageEnableReply = false;
 
-    @Resource(name = "jmsReplyDefaultDestinationName")
-    private String jmsReplyDefaultDestinationName = null;
-
-    @Resource(name = "jmsReplyDefaultDestinationType")
-    private String jmsReplyDefaultDestinationType = null;
-
     @Resource(name = "jmsMessageReplyOverridesDefault")
     private Boolean jmsMessageReplyOverridesDefault = true;
 
-    @Resource(name = "jms/someManagedReplyCF")
+    //@Resource(name = "jms/someManagedReplyCF")
     private ConnectionFactory jmsConnectionFactory = null;
+
+    //@Resource(name = "jms/someManagedDefaultReplyTo")
+    private Destination jmsDefaultReplyTo;
 
     @PostConstruct
     public void ejbCreate() {
         log.info("ejbCreate()");
+
+        //lookup the resources, and set null if resource cannot be found
+        jmsConnectionFactory = (ConnectionFactory) lookupEnvResource(RESOURCE_NAME_REPLYCF);
+        jmsDefaultReplyTo = (Destination) lookupEnvResource(RESOURCE_NAME_REPLYDEST);
+
         messageProcessingCounter.incrementAndGet(getBeanName() + "-create");
     }
 
@@ -73,6 +83,7 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
         jmsHelper = null;
     }
 
+
     public void setMessageDrivenContext(MessageDrivenContext ctx) throws EJBException {
         mdbContext = ctx;
     }
@@ -81,27 +92,32 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
         return this.getClass().getSimpleName();
     }
 
+    public Object lookupEnvResource(String jndiLookupName) {
+        Object resource = null;
+        try {
+            // create the context
+            final Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");
+
+            resource = envCtx.lookup(jndiLookupName);
+        } catch (NamingException e) {
+            log.warn("Could not lookup the resource " + jndiLookupName, e);
+        }
+        return resource;
+    }
+
     // Initializing resource outside the EJB creation to make sure these lookups get retried until they work
     // (eg. if UM is not available yet when EJB is created)
     private void initJMSReply() throws JMSException {
         if (!init) {
             synchronized (this.getClass()) {
                 if (!init) {
-                    try {
-                        this.jmsHelper = JMSHelper.createSender(jmsConnectionFactory);
+                    if (null == jmsConnectionFactory)
+                        throw new IllegalArgumentException("jmsConnectionFactory cannot be null for replies");
 
-                        //JMS reply destination
-                        if (null != jmsReplyDefaultDestinationName && !"".equals(jmsReplyDefaultDestinationName) &&
-                                null != jmsReplyDefaultDestinationType && !"".equals(jmsReplyDefaultDestinationType)) {
-                            jmsDefaultReplyTo = jmsHelper.lookupDestination(jmsReplyDefaultDestinationName, jmsReplyDefaultDestinationType);
-                        }
-
-                        init = true;
-                        messageProcessingCounter.incrementAndGet(getBeanName() + "-initReply");
-                    } catch (JMSException e) {
-                        messageProcessingCounter.incrementAndGet(getBeanName() + "-initReplyErrors");
-                        throw e;
-                    }
+                    this.jmsHelper = JMSHelper.createSender(jmsConnectionFactory);
+                    messageProcessingCounter.incrementAndGet(getBeanName() + "-initReply");
+                    init = true;
                 }
             }
         }
@@ -117,11 +133,8 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
         messageProcessingCounter.incrementAndGet(getBeanName() + "-messageConsumed");
 
         if (null != msg) {
-            //post processing
-            Object postProcessingPayload = null;
-            Map<JMSHelper.JMSHeadersType, Object> postProcessingJMSHeaderProperties = null;
-            Map<String, Object> postProcessingCustomProperties = null;
-
+            //post processing result
+            ProcessorOutput processorResult = null;
             try {
                 if (log.isDebugEnabled()) {
                     Object preProcessingPayload = JMSHelper.getMessagePayload(msg);
@@ -139,12 +152,17 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                     throw new IllegalArgumentException("Message Processor is null...unexpected.");
 
                 //process the message
-                ProcessorOutput processorResult = messageProcessor.processMessage(msg);
+                processorResult = messageProcessor.processMessage(msg);
 
-                if (null != processorResult) {
-                    postProcessingPayload = processorResult.getMessagePayload();
-                    postProcessingJMSHeaderProperties = processorResult.getJMSHeaderProperties();
-                    postProcessingCustomProperties = processorResult.getMessageProperties();
+                if (log.isDebugEnabled()) {
+                    if (null != processorResult) {
+                        log.debug("Post processing payload: {}, \nJMS Headers: {}, \nCustom Properties: {}",
+                                ((null != processorResult.getMessagePayload()) ? processorResult.getMessagePayload() : "null"),
+                                ((null != processorResult.getJMSHeaderProperties()) ? JMSHelper.getMessageJMSHeaderPropsAsString(processorResult.getJMSHeaderProperties(), ",") : "null"),
+                                ((null != processorResult.getMessageProperties()) ? JMSHelper.getMessagePropertiesAsString(processorResult.getMessageProperties(), ",") : "null"));
+                    } else {
+                        log.debug("Post processing payload is NULL");
+                    }
                 }
 
                 messageProcessingCounter.incrementAndGet(getBeanName() + "-processingSuccess");
@@ -154,15 +172,25 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                 throw new EJBException(e);
             }
 
-            if (jmsMessageEnableReply && null != postProcessingJMSHeaderProperties) {
+            if (jmsMessageEnableReply && null != processorResult) {
                 try {
+                    //init reply
                     initJMSReply();
+
+                    Object postProcessingPayload = null;
+                    Map<JMSHelper.JMSHeadersType, Object> postProcessingJMSHeaderProperties = null;
+                    Map<String, Object> postProcessingCustomProperties = null;
+                    if (null != processorResult) {
+                        postProcessingPayload = processorResult.getMessagePayload();
+                        postProcessingJMSHeaderProperties = processorResult.getJMSHeaderProperties();
+                        postProcessingCustomProperties = processorResult.getMessageProperties();
+                    }
 
                     //if replyTo overrides default, use it first, and only use default if the message replyTo is null
                     //otherwise, force to using the default always
                     Destination replyTo = null;
                     if (jmsMessageReplyOverridesDefault) {
-                        if (null != postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_REPLYTO))
+                        if (null != postProcessingJMSHeaderProperties && null != postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_REPLYTO))
                             replyTo = (Destination) postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_REPLYTO);
 
                         if (null == replyTo)
@@ -173,6 +201,9 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
 
                     //if replyTo is set, reply
                     if (null != replyTo) {
+                        if (null == postProcessingJMSHeaderProperties)
+                            postProcessingJMSHeaderProperties = new HashMap<JMSHelper.JMSHeadersType, Object>();
+
                         //set the destination to the replyTo
                         postProcessingJMSHeaderProperties.put(JMSHelper.JMSHeadersType.JMS_DESTINATION, replyTo);
 
