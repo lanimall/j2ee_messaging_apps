@@ -3,7 +3,10 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-ejb-jar-bnd_1_1.xsd"
         version="1.1">
-
+    <!--
+        IMPORTANT: FILE overwritten from following folder: <project.dir>/resource_templates/reply_enabled
+        IF you need to modify the reply-enabled descriptor, modify the source file <project.dir>/resource_templates/reply_enabled
+        -->
     <message-driven name="MessageConsumerService">
         <jca-adapter activation-spec-binding-name="${Consumer.ActivationSpec.BindingName}"/>
         <resource-ref name="jms/someManagedReplyCF"

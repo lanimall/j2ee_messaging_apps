@@ -67,6 +67,10 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
+            <!--<resource>-->
+            <!--<directory>resource_templates</directory>-->
+            <!--<filtering>true</filtering>-->
+            <!--</resource>-->
         </resources>
         <plugins>
             <plugin>
@@ -105,7 +109,7 @@
                 <version>1.8</version>
                 <executions>
                     <execution>
-                        <phase>prepare-package</phase>
+                        <phase>process-resources</phase>
                         <configuration>
                             <tasks>
                                 <ant dir="${project.basedir}"

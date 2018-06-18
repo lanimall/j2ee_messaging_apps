@@ -7,7 +7,10 @@
                xsi:schemaLocation="http://www.jboss.com/xml/ns/javaee http://www.jboss.org/j2ee/schema/jboss-ejb3-2_0.xsd http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
                version="3.1"
                impl-version="2.0">
-
+    <!--
+    IMPORTANT: FILE copied from following folder: <project.dir>/resource_templates/reply_disabled
+    IF you need to modify the reply-disabled descriptor, modify the source file <project.dir>/resource_templates/reply_disabled
+    -->
     <jboss:enterprise-beans>
         <message-driven>
             <ejb-name>MessageConsumerService</ejb-name>

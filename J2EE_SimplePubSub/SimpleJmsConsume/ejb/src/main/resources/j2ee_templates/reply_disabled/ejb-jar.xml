@@ -5,6 +5,10 @@
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
                             http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
         version="3.1">
+    <!--
+    IMPORTANT: FILE copied from following folder: <project.dir>/resource_templates/reply_disabled
+    IF you need to modify the reply-disabled descriptor, modify the source file <project.dir>/resource_templates/reply_disabled
+    -->
     <description>Partial deployment descriptors</description>
     <display-name>Partial deployment descriptors</display-name>
     <enterprise-beans>
@@ -31,16 +35,6 @@
                     <injection-target-name>messageProcessor</injection-target-name>
                 </injection-target>
             </ejb-local-ref>
-            <resource-ref>
-                <description>The Connection Factory for Message Replies</description>
-                <res-ref-name>jms/someManagedReplyCF</res-ref-name>
-                <res-type>javax.jms.ConnectionFactory</res-type>
-            </resource-ref>
-            <resource-ref>
-                <description>The Connection Factory for Message Replies</description>
-                <res-ref-name>jms/someManagedDefaultReplyTo</res-ref-name>
-                <res-type>javax.jms.Destination</res-type>
-            </resource-ref>
         </message-driven>
         <session>
             <ejb-name>MockSleepProcessor</ejb-name>
