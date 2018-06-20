@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
+import javax.jms.IllegalStateException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -129,10 +130,37 @@ public class JMSHelper {
 
             producer.send(msg); // Send Message
 
+            if (sessionTransacted) {
+                if (log.isDebugEnabled())
+                    log.debug("About to commit Session (send)");
+                session.commit();
+            }
+
             if (log.isDebugEnabled())
                 log.debug("message sent successfully");
 
             return msg.getJMSMessageID();
+        } catch (JMSException je) {
+            if (log.isDebugEnabled())
+                log.error("JMSException on send.", je);
+
+            if (sessionTransacted) {
+                try {
+                    if (log.isDebugEnabled())
+                        log.error("Since transaciton is enabled, doing rollback of session due to JMSException.", je);
+
+                    if (null != session) {
+                        session.rollback();
+                        if (log.isDebugEnabled())
+                            log.debug("Rolled back session.");
+                    }
+                } catch (Throwable t) {
+                    if (log.isDebugEnabled())
+                        log.error("Session rollback failed with exception", t);
+                }
+            }
+
+            throw je;
         } finally {
             if (null != producer)
                 producer.close();
@@ -218,8 +246,16 @@ public class JMSHelper {
             //send the message
             producer.send(msg); // Send Message
 
+            if (sessionTransacted) {
+                if (log.isDebugEnabled())
+                    log.debug("About to commit Session (send)");
+                session.commit();
+            }
+
             if (log.isDebugEnabled())
                 log.debug("message sent successfully");
+
+            /// wait for REPLY section..
 
             // Create a selector to only get the reply message that matches my request message id.
             String selector = String.format("JMSCorrelationID='%s'", msg.getJMSMessageID());
@@ -234,16 +270,43 @@ public class JMSHelper {
             if (null == replyWaitTimeoutMs || replyWaitTimeoutMs <= 0) replyWaitTimeoutMs = 0L;
             Message receivedMessage = responseConsumer.receive(replyWaitTimeoutMs);
 
+            if (null == receivedMessage) {
+                throw new JMSException(String.format("Didn't receive message response within timeout [%d] for Message ID [%s]", replyWaitTimeoutMs, msg.getJMSMessageID()));
+            }
+
+            if (sessionTransacted) {
+                if (log.isDebugEnabled())
+                    log.debug("About to commit Session (receive)");
+                session.commit();
+            }
+
             //if null, it means no message came within the timeout (or consumer got closed concurrently)
             if (null != receivedMessage && receivedMessage instanceof TextMessage) {
                 return ((TextMessage) receivedMessage).getText();
             } else {
-                if (null == receivedMessage) {
-                    throw new JMSException(String.format("Didn't receive message response within timeout [%d] for Message ID [%s]", replyWaitTimeoutMs, msg.getJMSMessageID()));
-                } else {
-                    throw new JMSException(String.format("Message response type not expected - received: [%s] / expected: [%s]", receivedMessage.getClass().getName(), TextMessage.class.getName()));
+                throw new IllegalStateException(String.format("Message response type not expected - received: [%s] / expected: [%s]", receivedMessage.getClass().getName(), TextMessage.class.getName()));
+            }
+        } catch (JMSException je) {
+            if (log.isDebugEnabled())
+                log.error("JMSException on send.", je);
+
+            if (sessionTransacted) {
+                try {
+                    if (log.isDebugEnabled())
+                        log.error("Since transaction is enabled, doing rollback of session due to JMSException.", je);
+
+                    if (null != session) {
+                        session.rollback();
+                        if (log.isDebugEnabled())
+                            log.debug("Rolled back session.");
+                    }
+                } catch (Throwable t) {
+                    if (log.isDebugEnabled())
+                        log.error("Session rollback failed with exception", t);
                 }
             }
+
+            throw je;
         } finally {
             if (null != producer)
                 producer.close();
