@@ -78,11 +78,11 @@ public class JMSHelper {
                 throw new JMSException("invalid ack mode...can't do anything...");
             }
 
-            if (log.isDebugEnabled()) {
+            if (log.isTraceEnabled()) {
                 String msgJMSHeaderPropertiesStr = JMSHelper.getMessageJMSHeaderPropsAsString(jmsProperties, ",");
                 String msgCustomPropertiesStr = JMSHelper.getMessagePropertiesAsString(customProperties, ",");
 
-                log.debug("Message data to send: {}, \nJMS Headers: {}, \nCustom Properties: {}",
+                log.trace("Message data to send: {}, \nJMS Headers: {}, \nCustom Properties: {}",
                         ((null != payload) ? payload : "null"),
                         ((null != msgJMSHeaderPropertiesStr) ? msgJMSHeaderPropertiesStr : "null"),
                         ((null != msgCustomPropertiesStr) ? msgCustomPropertiesStr : "null"));
@@ -147,7 +147,7 @@ public class JMSHelper {
             if (sessionTransacted) {
                 try {
                     if (log.isDebugEnabled())
-                        log.error("Since transaciton is enabled, doing rollback of session due to JMSException.", je);
+                        log.error("Since transaction is enabled, doing rollback of session due to JMSException.", je);
 
                     if (null != session) {
                         session.rollback();
@@ -191,11 +191,11 @@ public class JMSHelper {
                 throw new JMSException("invalid ack mode...can't do anything...");
             }
 
-            if (log.isDebugEnabled()) {
+            if (log.isTraceEnabled()) {
                 String msgJMSHeaderPropertiesStr = JMSHelper.getMessageJMSHeaderPropsAsString(jmsProperties, ",");
                 String msgCustomPropertiesStr = JMSHelper.getMessagePropertiesAsString(customProperties, ",");
 
-                log.debug("Message data to send: {}, \nJMS Headers: {}, \nCustom Properties: {}",
+                log.trace("Message data to send: {}, \nJMS Headers: {}, \nCustom Properties: {}",
                         ((null != payload) ? payload : "null"),
                         ((null != msgJMSHeaderPropertiesStr) ? msgJMSHeaderPropertiesStr : "null"),
                         ((null != msgCustomPropertiesStr) ? msgCustomPropertiesStr : "null"));
