@@ -98,10 +98,9 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
             // create the context
             final Context initCtx = new InitialContext();
             Context envCtx = (Context) initCtx.lookup("java:comp/env");
-
             resource = envCtx.lookup(jndiLookupName);
         } catch (NamingException e) {
-            log.warn("Could not lookup the resource " + jndiLookupName, e);
+            log.warn("Could not lookup the resource " + jndiLookupName);
         }
         return resource;
     }
@@ -136,15 +135,21 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
             //post processing result
             ProcessorOutput processorResult = null;
             try {
-                if (log.isDebugEnabled()) {
+                if (log.isDebugEnabled() || log.isTraceEnabled()) {
                     Object preProcessingPayload = JMSHelper.getMessagePayload(msg);
                     String preProcessingJMSHeaderPropertiesStr = JMSHelper.getMessageJMSHeaderPropsAsString(msg, ",");
                     String preProcessingCustomPropertiesStr = JMSHelper.getMessagePropertiesAsString(msg, ",");
 
-                    log.debug("Received message before any processing: {}, \nJMS Headers: {}, \nCustom Properties: {}",
-                            ((null != preProcessingPayload) ? preProcessingPayload : "null"),
-                            ((null != preProcessingJMSHeaderPropertiesStr) ? preProcessingJMSHeaderPropertiesStr : "null"),
-                            ((null != preProcessingCustomPropertiesStr) ? preProcessingCustomPropertiesStr : "null"));
+                    if (log.isTraceEnabled()) {
+                        log.trace("Received message before any processing: {}, \nJMS Headers: {}, \nCustom Properties: {}",
+                                ((null != preProcessingPayload) ? preProcessingPayload : "null"),
+                                ((null != preProcessingJMSHeaderPropertiesStr) ? preProcessingJMSHeaderPropertiesStr : "null"),
+                                ((null != preProcessingCustomPropertiesStr) ? preProcessingCustomPropertiesStr : "null"));
+                    } else if (log.isDebugEnabled()) {
+                        log.debug("Received message before any processing with JMS Headers: {}, \nCustom Properties: {}",
+                                ((null != preProcessingJMSHeaderPropertiesStr) ? preProcessingJMSHeaderPropertiesStr : "null"),
+                                ((null != preProcessingCustomPropertiesStr) ? preProcessingCustomPropertiesStr : "null"));
+                    }
                 }
 
                 //processing the message
@@ -154,12 +159,18 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                 //process the message
                 processorResult = messageProcessor.processMessage(msg);
 
-                if (log.isDebugEnabled()) {
+                if (log.isDebugEnabled() || log.isTraceEnabled()) {
                     if (null != processorResult) {
-                        log.debug("Post processing payload: {}, \nJMS Headers: {}, \nCustom Properties: {}",
-                                ((null != processorResult.getMessagePayload()) ? processorResult.getMessagePayload() : "null"),
-                                ((null != processorResult.getJMSHeaderProperties()) ? JMSHelper.getMessageJMSHeaderPropsAsString(processorResult.getJMSHeaderProperties(), ",") : "null"),
-                                ((null != processorResult.getMessageProperties()) ? JMSHelper.getMessagePropertiesAsString(processorResult.getMessageProperties(), ",") : "null"));
+                        if (log.isTraceEnabled()) {
+                            log.trace("Post processing payload: {}, \nJMS Headers: {}, \nCustom Properties: {}",
+                                    ((null != processorResult.getMessagePayload()) ? processorResult.getMessagePayload() : "null"),
+                                    ((null != processorResult.getJMSHeaderProperties()) ? JMSHelper.getMessageJMSHeaderPropsAsString(processorResult.getJMSHeaderProperties(), ",") : "null"),
+                                    ((null != processorResult.getMessageProperties()) ? JMSHelper.getMessagePropertiesAsString(processorResult.getMessageProperties(), ",") : "null"));
+                        } else if (log.isDebugEnabled()) {
+                            log.debug("Post processing payload with JMS Headers: {}, \nCustom Properties: {}",
+                                    ((null != processorResult.getJMSHeaderProperties()) ? JMSHelper.getMessageJMSHeaderPropsAsString(processorResult.getJMSHeaderProperties(), ",") : "null"),
+                                    ((null != processorResult.getMessageProperties()) ? JMSHelper.getMessagePropertiesAsString(processorResult.getMessageProperties(), ",") : "null"));
+                        }
                     } else {
                         log.debug("Post processing payload is NULL");
                     }
