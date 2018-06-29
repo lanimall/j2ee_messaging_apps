@@ -24,14 +24,14 @@ import java.util.HashMap;
 import java.util.Properties;
 
 /**
- * Created by fabien.sanglier on 6/23/16.
+ * Created by fabien.sanglier on 6/26/18.
  */
 
-@Stateless(name = "SendAndWaitProcessor")
+@Stateless(name = "JmsPublisherRemoteClientProcessor")
 @Local(MessageProcessorLocal.class)
 @TransactionManagement(value = TransactionManagementType.BEAN)
-public class SendAndWaitBean implements MessageProcessorLocal {
-    private static Logger log = LoggerFactory.getLogger(SendAndWaitBean.class);
+public class JmsPublisherRemoteClientBean implements MessageProcessorLocal {
+    private static Logger log = LoggerFactory.getLogger(JmsPublisherRemoteClientBean.class);
 
     // This will be injected dynamically by jndi lookup...
     // the reason is that we don't want the deployment to fail if the jmsMessagePublisher is not set AND this bean is not used in the runtime path
@@ -48,19 +48,14 @@ public class SendAndWaitBean implements MessageProcessorLocal {
     @Resource(name = "jndi.ejblookup.url")
     private String jndiUrl;
 
+    //Generally, format for EJB lookup is: "ejb:" + appName + "/" + moduleName + "/" + beanName + "!" + viewClassName;
     @Resource(name = "jndi.ejblookup.bindingname")
     private String jndiEjbLookupBindingName;
-
-//    final String appName = "SimpleJmsSend";
-//    final String moduleName = "SimpleJmsSend-ejb";
-//    final String beanName = "JmsSendAndWaitService";
-//    final String viewClassName = JmsPublisherRemote.class.getName();
 
     @PostConstruct
     public void initialize() {
         if (null != jndiEjbLookupBindingName && !"".equals(jndiEjbLookupBindingName)) {
             final Properties jndiProperties = new Properties();
-
             if (null != jndiUrl && !"".equals(jndiUrl))
                 jndiProperties.put(Context.PROVIDER_URL, jndiUrl);
 
@@ -81,7 +76,6 @@ public class SendAndWaitBean implements MessageProcessorLocal {
             }
         }
     }
-
 
     @Override
     public ProcessorOutput processMessage(Message msg) throws JMSException {
