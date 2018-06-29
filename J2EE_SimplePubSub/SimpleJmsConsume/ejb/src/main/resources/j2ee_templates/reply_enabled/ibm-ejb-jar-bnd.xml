@@ -21,8 +21,6 @@
     </session>
     <session name="NoopProcessor" simple-binding-name="ejb/${ear.build.name}/session/NoopProcessor">
     </session>
-    <session name="SendAndForgetProcessor" simple-binding-name="ejb/${ear.build.name}/session/SendAndForgetProcessor">
-    </session>
-    <session name="SendAndWaitProcessor" simple-binding-name="ejb/${ear.build.name}/session/SendAndWaitProcessor">
+    <session name="JmsPublisherRemoteClientProcessor" simple-binding-name="ejb/${ear.build.name}/session/JmsPublisherRemoteClientProcessor">
     </session>
 </ejb-jar-bnd>
