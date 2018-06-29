@@ -6,14 +6,14 @@
     </appender>
 
     <logger name="com.softwareaggov.messaging.libs">
-        <level value="info"/>
+        <level value="${logger.com.softwareaggov.messaging.libs}"/>
     </logger>
 
-    <logger name="com.softwareaggov.messaging.simplejmsconsume">
-        <level value="info"/>
+    <logger name="com.softwareaggov.messaging.simplejmsconsume.ejb">
+        <level value="${logger.com.softwareaggov.messaging.simplejmsconsume.ejb}"/>
     </logger>
 
-    <root level="warn">
+    <root level="${logger.root}">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
