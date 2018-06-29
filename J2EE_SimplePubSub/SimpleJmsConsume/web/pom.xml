@@ -24,7 +24,7 @@
 
     <dependencies>
         <!-- Client Dependency on the EJB module so we can use it's services if needed -->
-        <!-- Important: scope must be provided because the EJB client API must not be embedded in the WAR since it's already in the EAR/lib
+        <!-- Important: scope must be provided because the EJB sharedclient API must not be embedded in the WAR since it's already in the EAR/lib
          otherwise issues with reflections -->
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
