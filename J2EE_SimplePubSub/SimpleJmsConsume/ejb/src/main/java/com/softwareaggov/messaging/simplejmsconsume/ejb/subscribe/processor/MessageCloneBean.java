@@ -30,6 +30,9 @@ public class MessageCloneBean implements MessageProcessorLocal {
     private static final String PROPS_KEYVAL_DELIM = "=";
     private static final String PROPS_DELIM = ";";
 
+    @Resource(name = "mockSleepTimeInMillis")
+    private Long mockSleepTimeInMillis = 0L;
+
     @Resource(name = "overwritePayloadEnabled")
     private Boolean overwritePayloadEnabled;
 
