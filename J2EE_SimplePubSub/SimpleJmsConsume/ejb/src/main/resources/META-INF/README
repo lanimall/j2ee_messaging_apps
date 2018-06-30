@@ -1,7 +1,0 @@
-
-The J2EE resources are actually in <project.dir>/resource_templates/
-
-Explanation:
-
-We need to change the J2EE descriptors based on value of build property "Consumer.Env.jmsMessageEnableReply".
-So we use a maven ant task to copy the right resource based on that property value.
