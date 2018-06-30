@@ -15,7 +15,7 @@ Resource Adapter.
 
 Important Note:
 This project is open-sourced and provided AS-IS without any warrenty...and is not supported by SoftwareAG. 
-For any issue, please submit an issue on github and the developper community 
+For any issue, please submit an issue on github and the developper community will make every attempts to fix them asap.
 
 Content
 -------
