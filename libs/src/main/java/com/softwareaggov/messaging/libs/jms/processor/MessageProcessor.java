@@ -18,7 +18,11 @@
  *    limitations under the License.
  *
  * /
- */import javax.jms.JMSException;
+ */
+
+package com.softwareaggov.messaging.libs.jms.processor;
+
+import javax.jms.JMSException;
 import javax.jms.Message;
 
 /**

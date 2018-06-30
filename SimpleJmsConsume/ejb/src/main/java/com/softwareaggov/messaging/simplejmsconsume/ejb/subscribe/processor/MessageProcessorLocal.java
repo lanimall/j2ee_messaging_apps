@@ -18,7 +18,9 @@
  *    limitations under the License.
  *
  * /
- */subscribe.processor;
+ */
+
+package com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor;
 
 import com.softwareaggov.messaging.libs.jms.processor.MessageProcessor;
 

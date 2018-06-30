@@ -18,7 +18,9 @@
  *    limitations under the License.
  *
  * /
- */jb.publish;
+ */
+
+package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish;
 
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import org.slf4j.Logger;

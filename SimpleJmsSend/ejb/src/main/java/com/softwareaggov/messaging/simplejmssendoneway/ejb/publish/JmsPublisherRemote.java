@@ -18,7 +18,9 @@
  *    limitations under the License.
  *
  * /
- */jb.publish;
+ */
+
+package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish;
 
 /**
  * Created by fabien.sanglier on 6/15/16.

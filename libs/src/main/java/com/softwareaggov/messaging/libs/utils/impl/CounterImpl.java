@@ -18,7 +18,11 @@
  *    limitations under the License.
  *
  * /
- */ort com.softwareaggov.messaging.libs.utils.Counter;
+ */
+
+package com.softwareaggov.messaging.libs.utils.impl;
+
+import com.softwareaggov.messaging.libs.utils.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

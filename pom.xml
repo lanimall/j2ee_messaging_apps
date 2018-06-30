@@ -19,7 +19,8 @@
   ~ *   limitations under the License.
   ~ *
   ~ */
-  -->xsi="http://www.w3.org/2001/XMLSchema-instance"
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.softwareaggov.messaging</groupId>
@@ -34,19 +35,19 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
         </license>
     </licenses>
-    
+
     <developers>
-    <developer>
-      <id>fabien.sanglier</id>
-      <name>Fabien Sanglier</name>
-      <email>fabien.sanglier@softwareaggov.com</email>
-      <url>https://www.softwareaggov.com</url>
-      <organization>SoftwareAG Government Solutions</organization>
-      <organizationUrl>https://www.softwareaggov.com</organizationUrl>
-      <timezone>-6</timezone>
-    </developer>
+        <developer>
+            <id>fabien.sanglier</id>
+            <name>Fabien Sanglier</name>
+            <email>fabien.sanglier@softwareaggov.com</email>
+            <url>https://www.softwareaggov.com</url>
+            <organization>SoftwareAG Government Solutions</organization>
+            <organizationUrl>https://www.softwareaggov.com</organizationUrl>
+            <timezone>-6</timezone>
+        </developer>
     </developers>
-    
+
     <modules>
         <module>libs</module>
         <module>SimpleJmsSend</module>

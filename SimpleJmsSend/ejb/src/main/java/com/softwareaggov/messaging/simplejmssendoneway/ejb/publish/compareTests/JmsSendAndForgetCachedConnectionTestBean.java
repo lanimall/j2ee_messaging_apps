@@ -18,7 +18,9 @@
  *    limitations under the License.
  *
  * /
- */jb.publish.compareTests;
+ */
+
+package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests;
 
 import com.softwareaggov.messaging.libs.jms.CachedConnectionFactory;
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;

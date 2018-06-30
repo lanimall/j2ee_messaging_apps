@@ -18,7 +18,9 @@
  *    limitations under the License.
  *
  * /
- */jb.publish.compareTests;
+ */
+
+package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests;
 
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisher;

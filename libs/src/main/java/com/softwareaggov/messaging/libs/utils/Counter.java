@@ -18,7 +18,12 @@
  *    limitations under the License.
  *
  * /
- */reated by fabien.sanglier on 6/28/16.
+ */
+
+package com.softwareaggov.messaging.libs.utils;
+
+/**
+ * Created by fabien.sanglier on 6/28/16.
  */
 public interface Counter {
     String[] getAllCounterNames();

@@ -18,7 +18,9 @@
  *    limitations under the License.
  *
  * /
- */jb.utils;
+ */
+
+package com.softwareaggov.messaging.simplejmssendoneway.ejb.utils;
 
 import com.softwareaggov.messaging.libs.utils.Counter;
 import com.softwareaggov.messaging.libs.utils.impl.CounterImpl;
