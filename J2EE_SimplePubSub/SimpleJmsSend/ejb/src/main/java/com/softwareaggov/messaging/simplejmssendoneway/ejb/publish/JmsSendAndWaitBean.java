@@ -4,6 +4,7 @@ import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.ConnectionFactory;
@@ -19,7 +20,7 @@ import java.util.Map;
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(JmsPublisherLocal.class)
 @Remote(JmsPublisherRemote.class)
-public class JmsSendAndWaitBean extends JmsPublisherBase implements JmsPublisherLocal, JmsPublisherRemote {
+public class JmsSendAndWaitBean extends JmsPublisherBase {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndWaitBean.class);
 
     @Resource(name = "jms/someManagedCF")
@@ -30,6 +31,12 @@ public class JmsSendAndWaitBean extends JmsPublisherBase implements JmsPublisher
 
     @Resource(name = "jmsResponseWaitMillis")
     private Long jmsResponseWaitMillis = null;
+
+    @PostConstruct
+    public void ejbCreate() {
+        log.info("ejbCreate()");
+        messageProcessingCounter.incrementAndGet(getBeanName() + "-create");
+    }
 
     @Override
     public ConnectionFactory getJmsConnectionFactory() {
@@ -42,8 +49,8 @@ public class JmsSendAndWaitBean extends JmsPublisherBase implements JmsPublisher
     }
 
     @Override
-    protected String sendMessage(Destination destination, Object payload, Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+    protected String sendMessage(Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, Object payload, Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
         Map<JMSHelper.JMSHeadersType, Object> jmsProperties = JMSHelper.getMessageJMSHeaderPropsAsMap(destination, deliveryMode, priority, correlationID, replyTo);
-        return jmsHelper.sendTextMessageAndWait(payload, jmsProperties, headerProperties, jmsResponseWaitMillis);
+        return jmsHelper.sendTextMessageAndWait(payload, jmsProperties, headerProperties, jmsResponseWaitMillis, sessionTransacted, sessionAcknowledgeMode);
     }
 }

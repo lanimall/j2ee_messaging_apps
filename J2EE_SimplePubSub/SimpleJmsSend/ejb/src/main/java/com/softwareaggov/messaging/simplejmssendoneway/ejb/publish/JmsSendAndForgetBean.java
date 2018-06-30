@@ -4,6 +4,7 @@ import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.ConnectionFactory;
@@ -19,7 +20,7 @@ import java.util.Map;
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(JmsPublisherLocal.class)
 @Remote(JmsPublisherRemote.class)
-public class JmsSendAndForgetBean extends JmsPublisherBase implements JmsPublisherLocal, JmsPublisherRemote {
+public class JmsSendAndForgetBean extends JmsPublisherBase {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetBean.class);
 
     @Resource(name = "jms/someManagedCF")
@@ -27,6 +28,12 @@ public class JmsSendAndForgetBean extends JmsPublisherBase implements JmsPublish
 
     @Resource(name = "jms/someManagedDestination")
     private Destination jmsDestination;
+
+    @PostConstruct
+    public void ejbCreate() {
+        log.info("ejbCreate()");
+        messageProcessingCounter.incrementAndGet(getBeanName() + "-create");
+    }
 
     @Override
     public ConnectionFactory getJmsConnectionFactory() {
@@ -39,8 +46,8 @@ public class JmsSendAndForgetBean extends JmsPublisherBase implements JmsPublish
     }
 
     @Override
-    protected String sendMessage(Destination destination, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+    protected String sendMessage(Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
         Map<JMSHelper.JMSHeadersType, Object> jmsProperties = JMSHelper.getMessageJMSHeaderPropsAsMap(destination, deliveryMode, priority, correlationID, replyTo);
-        return jmsHelper.sendTextMessage(payload, jmsProperties, headerProperties);
+        return jmsHelper.sendTextMessage(payload, jmsProperties, headerProperties, sessionTransacted, sessionAcknowledgeMode);
     }
 }

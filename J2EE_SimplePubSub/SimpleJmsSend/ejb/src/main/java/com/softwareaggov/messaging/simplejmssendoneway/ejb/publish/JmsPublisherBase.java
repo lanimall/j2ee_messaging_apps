@@ -13,17 +13,24 @@ import javax.ejb.EJBException;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.Session;
 import java.util.Map;
 
 /*
  * Simple JMS Publisher bean relying on the connection factory to create the JMS connection on each call
  * Created by fabien.sanglier on 6/15/16.
  */
-public abstract class JmsPublisherBase implements JmsPublisherLocal, JmsPublisherRemote {
+public abstract class JmsPublisherBase implements JmsPublisher {
     private static Logger log = LoggerFactory.getLogger(JmsPublisherBase.class);
 
     @EJB
-    private CounterLocal messageProcessingCounter;
+    protected CounterLocal messageProcessingCounter;
+
+    @Resource(name = "jmsSessionTransacted")
+    private Boolean jmsSessionTransacted = Boolean.FALSE;
+
+    @Resource(name = "jmsSessionAcknowledgeMode")
+    private Integer jmsSessionAcknowledgeMode = Session.AUTO_ACKNOWLEDGE;
 
     @Resource(name = "jmsDeliveryMode")
     private Integer jmsDeliveryMode = null;
@@ -67,11 +74,11 @@ public abstract class JmsPublisherBase implements JmsPublisherLocal, JmsPublishe
         return this.getClass().getSimpleName();
     }
 
-    abstract ConnectionFactory getJmsConnectionFactory();
+    protected abstract ConnectionFactory getJmsConnectionFactory();
 
-    abstract Destination getJmsDestination();
+    protected abstract Destination getJmsDestination();
 
-    abstract String sendMessage(Destination destination, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException;
+    protected abstract String sendMessage(Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException;
 
     @Override
     public boolean isEnabled() {
@@ -113,7 +120,7 @@ public abstract class JmsPublisherBase implements JmsPublisherLocal, JmsPublishe
             //Initialize JMS objects...once done, will not do it again
             initJMS();
 
-            returnText = sendMessage(getJmsDestination(), msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, null, jmsReplyTo);
+            returnText = sendMessage(getJmsDestination(), jmsSessionTransacted, jmsSessionAcknowledgeMode, msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, null, jmsReplyTo);
 
             //increment processing counter
             messageProcessingCounter.incrementAndGet(getBeanName() + "-messageSent");
