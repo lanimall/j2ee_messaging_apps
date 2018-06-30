@@ -1,0 +1,19 @@
+<configuration debug="true">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.softwareaggov.messaging.libs">
+        <level value="${logger.com.softwareaggov.messaging.libs}"/>
+    </logger>
+
+    <logger name="com.softwareaggov.messaging.simplejmsconsume.ejb">
+        <level value="${logger.com.softwareaggov.messaging.simplejmsconsume.ejb}"/>
+    </logger>
+
+    <root level="${logger.root}">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

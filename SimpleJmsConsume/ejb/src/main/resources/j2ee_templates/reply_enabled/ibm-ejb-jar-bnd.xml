@@ -1,0 +1,26 @@
+<ejb-jar-bnd
+        xmlns="http://websphere.ibm.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-ejb-jar-bnd_1_1.xsd"
+        version="1.1">
+    <!--
+        IMPORTANT: FILE overwritten from following folder: <project.dir>/resource_templates/reply_enabled
+        IF you need to modify the reply-enabled descriptor, modify the source file <project.dir>/resource_templates/reply_enabled
+        -->
+    <message-driven name="MessageConsumerService">
+        <jca-adapter activation-spec-binding-name="${Consumer.ActivationSpec.BindingName}"/>
+        <resource-ref name="jms/someManagedReplyCF"
+                      binding-name="${Consumer.ReplyConnectionFactory.BindingName}"></resource-ref>
+        <resource-ref name="jms/someManagedDefaultReplyTo"
+                      binding-name="${Consumer.ReplyToDefaultDestination.BindingName}"></resource-ref>
+    </message-driven>
+    <session name="MockSleepProcessor" simple-binding-name="ejb/${ear.build.name}/session/MockSleepProcessor">
+    </session>
+    <session name="MockSleepAndExceptionsProcessor"
+             simple-binding-name="ejb/${ear.build.name}/session/MockSleepAndExceptionsProcessor">
+    </session>
+    <session name="NoopProcessor" simple-binding-name="ejb/${ear.build.name}/session/NoopProcessor">
+    </session>
+    <session name="JmsPublisherRemoteClientProcessor" simple-binding-name="ejb/${ear.build.name}/session/JmsPublisherRemoteClientProcessor">
+    </session>
+</ejb-jar-bnd>
