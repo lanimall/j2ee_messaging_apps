@@ -12,10 +12,21 @@
             <ejb-name>JmsSendAndForgetService</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndForgetBean
             </ejb-class>
+
             <env-entry>
                 <env-entry-name>jmsSendEnabled</env-entry-name>
                 <env-entry-type>java.lang.Boolean</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndForgetService.Env.jmsSendEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsSessionTransacted</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetService.Env.jmsSessionTransacted}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsSessionAcknowledgeMode</env-entry-name>
+                <env-entry-type>java.lang.Integer</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetService.Env.jmsSessionAcknowledgeMode}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jmsDeliveryMode</env-entry-name>
@@ -58,6 +69,16 @@
                 <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsSendEnabled}</env-entry-value>
             </env-entry>
             <env-entry>
+                <env-entry-name>jmsSessionTransacted</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsSessionTransacted}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsSessionAcknowledgeMode</env-entry-name>
+                <env-entry-type>java.lang.Integer</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsSessionAcknowledgeMode}</env-entry-value>
+            </env-entry>
+            <env-entry>
                 <env-entry-name>jmsDeliveryMode</env-entry-name>
                 <env-entry-type>java.lang.Integer</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsDeliveryMode}</env-entry-value>
@@ -94,6 +115,51 @@
             </resource-ref>
         </session>
         <session>
+            <ejb-name>JmsSendAndForgetRuntimeJndiLookupsService</ejb-name>
+            <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndForgetRuntimeJndiLookupsBean
+            </ejb-class>
+            <env-entry>
+                <env-entry-name>jmsSendEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Env.jmsSendEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsSessionTransacted</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Env.jmsSessionTransacted}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsSessionAcknowledgeMode</env-entry-name>
+                <env-entry-type>java.lang.Integer</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Env.jmsSessionAcknowledgeMode}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsDeliveryMode</env-entry-name>
+                <env-entry-type>java.lang.Integer</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Env.jmsDeliveryMode}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsPriority</env-entry-name>
+                <env-entry-type>java.lang.Integer</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Env.jmsPriority}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsReplyDestinationName</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Env.jmsReplyDestinationName}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsReplyDestinationType</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Env.jmsReplyDestinationType}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsResponseWaitMillis</env-entry-name>
+                <env-entry-type>java.lang.Long</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetJCARuntimeJndiLookupsService.Env.jmsResponseWaitMillis}</env-entry-value>
+            </env-entry>
+        </session>
+        <session>
             <ejb-name>JmsSendAndForgetCachedConnectionTestService</ejb-name>
             <ejb-class>
                 com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests.JmsSendAndForgetCachedConnectionTestBean
@@ -102,6 +168,16 @@
                 <env-entry-name>jmsSendEnabled</env-entry-name>
                 <env-entry-type>java.lang.Boolean</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsSendEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsSessionTransacted</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsSessionTransacted}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsSessionAcknowledgeMode</env-entry-name>
+                <env-entry-type>java.lang.Integer</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsSessionAcknowledgeMode}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jmsDeliveryMode</env-entry-name>
@@ -143,6 +219,16 @@
                 <env-entry-name>jmsSendEnabled</env-entry-name>
                 <env-entry-type>java.lang.Boolean</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsSendEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsSessionTransacted</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsSessionTransacted}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>jmsSessionAcknowledgeMode</env-entry-name>
+                <env-entry-type>java.lang.Integer</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsSessionAcknowledgeMode}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jmsDeliveryMode</env-entry-name>
