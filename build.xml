@@ -18,7 +18,8 @@
   ~ *   limitations under the License.
   ~ *
   ~ */
-  -->dir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant" xmlns:if="ant:if">
+  -->
+<project name="J2EE JMS Examples" default="assemble" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant" xmlns:if="ant:if">
     <description>build file</description>
 
     <condition property="build.customprofiles.properties.exist" value="true">
