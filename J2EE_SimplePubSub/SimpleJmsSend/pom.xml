@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>j2ee-jms-examples</artifactId>
+        <artifactId>J2EE_SimplePubSub</artifactId>
         <groupId>com.softwareaggov.messaging</groupId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -28,9 +28,22 @@
 
     <properties>
         <build.properties>${project.basedir}/../build.properties</build.properties>
+        <logger.com.softwareaggov.messaging.libs>info</logger.com.softwareaggov.messaging.libs>
+        <logger.com.softwareaggov.messaging.simplejmssendoneway.ejb>info</logger.com.softwareaggov.messaging.simplejmssendoneway.ejb>
+        <logger.com.softwareaggov.messaging.simplejmssendoneway.web>info</logger.com.softwareaggov.messaging.simplejmssendoneway.web>
+        <logger.root>warn</logger.root>
     </properties>
 
     <profiles>
+        <profile>
+            <id>logging_debug</id>
+            <properties>
+                <logger.com.softwareaggov.messaging.libs>debug</logger.com.softwareaggov.messaging.libs>
+                <logger.com.softwareaggov.messaging.simplejmssendoneway.ejb>debug</logger.com.softwareaggov.messaging.simplejmssendoneway.ejb>
+                <logger.com.softwareaggov.messaging.simplejmssendoneway.web>debug</logger.com.softwareaggov.messaging.simplejmssendoneway.web>
+                <logger.root>warn</logger.root>
+            </properties>
+        </profile>
         <profile>
             <id>Java6</id>
             <properties>
