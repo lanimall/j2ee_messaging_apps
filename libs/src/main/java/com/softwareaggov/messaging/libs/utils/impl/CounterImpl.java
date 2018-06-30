@@ -14,7 +14,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */com.softwareaggov.messaging.libs.utils.impl;
+ */
+
+package com.softwareaggov.messaging.libs.utils.impl;
 
 import com.softwareaggov.messaging.libs.utils.Counter;
 import org.slf4j.Logger;

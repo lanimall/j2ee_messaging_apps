@@ -14,7 +14,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests;
+ */
+
+package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests;
 
 import com.softwareaggov.messaging.libs.jms.CachedConnectionFactory;
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;

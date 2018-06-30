@@ -15,7 +15,9 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  --> name="ConditionalCopyFile" default="copyfile" basedir=".">
+  -->
+
+<project name="ConditionalCopyFile" default="copyfile" basedir=".">
     <description>Copy ejb-jar with reply file if reply is enabled</description>
 
     <target name="initsinglefile">
