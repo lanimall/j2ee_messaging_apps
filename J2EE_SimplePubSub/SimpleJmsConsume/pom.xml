@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>j2ee-jms-examples</artifactId>
+        <artifactId>J2EE_SimplePubSub</artifactId>
         <groupId>com.softwareaggov.messaging</groupId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -31,9 +31,23 @@
         <EJB.JndiLookup.UrlPackagePrefix></EJB.JndiLookup.UrlPackagePrefix>
         <EJB.JndiLookup.Url.ejblocal></EJB.JndiLookup.Url.ejblocal>
         <EJB.JndiLookup.Url.ejbremote></EJB.JndiLookup.Url.ejbremote>
+
+        <logger.com.softwareaggov.messaging.libs>info</logger.com.softwareaggov.messaging.libs>
+        <logger.com.softwareaggov.messaging.simplejmsconsume.ejb>info</logger.com.softwareaggov.messaging.simplejmsconsume.ejb>
+        <logger.com.softwareaggov.messaging.simplejmsconsume.web>info</logger.com.softwareaggov.messaging.simplejmsconsume.web>
+        <logger.root>warn</logger.root>
     </properties>
 
     <profiles>
+        <profile>
+            <id>logging_debug</id>
+            <properties>
+                <logger.com.softwareaggov.messaging.libs>debug</logger.com.softwareaggov.messaging.libs>
+                <logger.com.softwareaggov.messaging.simplejmsconsume.ejb>debug</logger.com.softwareaggov.messaging.simplejmsconsume.ejb>
+                <logger.com.softwareaggov.messaging.simplejmsconsume.web>debug</logger.com.softwareaggov.messaging.simplejmsconsume.web>
+                <logger.root>warn</logger.root>
+            </properties>
+        </profile>
         <profile>
             <id>Java6</id>
             <properties>
@@ -59,12 +73,12 @@
             </properties>
         </profile>
         <profile>
-        <id>deployment_jboss</id>
+            <id>deployment_jboss</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <!--<EJB.JndiLookup.InitialContextFactory>org.jboss.naming.remote.client.InitialContextFactory</EJB.JndiLookup.InitialContextFactory>-->
+                <!--<EJB.JndiLookup.InitialContextFactory>org.jboss.naming.remote.sharedclient.InitialContextFactory</EJB.JndiLookup.InitialContextFactory>-->
                 <EJB.JndiLookup.InitialContextFactory></EJB.JndiLookup.InitialContextFactory>
                 <EJB.JndiLookup.UrlPackagePrefix>org.jboss.ejb.client.naming</EJB.JndiLookup.UrlPackagePrefix>
                 <EJB.JndiLookup.Url.ejblocal></EJB.JndiLookup.Url.ejblocal>
