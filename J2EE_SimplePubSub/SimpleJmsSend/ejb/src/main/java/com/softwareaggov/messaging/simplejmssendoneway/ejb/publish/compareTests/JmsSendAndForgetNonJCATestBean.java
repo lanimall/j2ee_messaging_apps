@@ -1,6 +1,7 @@
 package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests;
 
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
+import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisher;
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.utils.CounterLocal;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ import java.util.Map;
 @Stateless(name = "JmsSendAndForgetNonJCATestService")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(JmsPublisherLocal.class)
-public class JmsSendAndForgetNonJCATestBean implements JmsPublisherLocal {
+public class JmsSendAndForgetNonJCATestBean implements JmsPublisher {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetNonJCATestBean.class);
 
     @EJB

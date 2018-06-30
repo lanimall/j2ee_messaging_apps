@@ -21,7 +21,7 @@ import javax.jms.Destination;
 @Stateless(name = "JmsSendAndForgetCachedConnectionTestService")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(JmsPublisherLocal.class)
-public class JmsSendAndForgetCachedConnectionTestBean extends JmsSendAndForgetBean implements JmsPublisherLocal {
+public class JmsSendAndForgetCachedConnectionTestBean extends JmsSendAndForgetBean {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetCachedConnectionTestBean.class);
 
     @Resource(name = "jms/someManagedCF")
