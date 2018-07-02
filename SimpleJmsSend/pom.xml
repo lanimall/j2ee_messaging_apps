@@ -86,12 +86,6 @@
                 <maven.compiler.source>1.8</maven.compiler.source>
             </properties>
         </profile>
-        <profile>
-            <id>SimpleJmsSend_driverQueue</id>
-            <properties>
-                <build.properties>${project.basedir}/../build.driverQueue.properties</build.properties>
-            </properties>
-        </profile>
     </profiles>
 
     <dependencyManagement>
