@@ -128,7 +128,9 @@
     </target>
 
     <target name="assemble" description="Creates server jar" depends="init,clean_target_dir">
-        <for list="${j2ee-jms-examples.deployment_profiles}" param="profile">
+        <setprofilelist propname="deployment_profile_list" profilename="${j2ee-jms-examples.deployment_profilename}" />
+        <echo>${deployment_profile_list}</echo>
+        <for list="${deployment_profile_list}" param="profile">
             <sequential>
                 <trycatch reference="exception_ref">
                     <try>
@@ -163,4 +165,12 @@
             </sequential>
         </for>
     </target>
+
+    <macrodef name="setprofilelist">
+        <attribute name="propname"/>
+        <attribute name="profilename"/>
+        <sequential>
+            <property name="@{propname}" value="${j2ee-jms-examples.deployment_profiles_@{profilename}}" />
+        </sequential>
+    </macrodef>
 </project>
