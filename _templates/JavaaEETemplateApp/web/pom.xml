@@ -53,7 +53,7 @@
 
         <dependency>
             <groupId>com.softwareaggov.messaging</groupId>
-            <artifactId>j2ee-jms-examples-libs</artifactId>
+            <artifactId>libs</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -82,10 +82,57 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
                 <configuration>
-                    <!-- Java EE 6 doesn't require web.xml, Maven needs to catch up! -->
+                    <useCache>true</useCache>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- explode the future war content for pre-package processing -->
+                        <id>prepare-war</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exploded</goal>
+                        </goals>
+                        <!--<configuration>-->
+                        <!--<webappDirectory>${project.build.directory}/${project.build.finalName}-tmp</webappDirectory>-->
+                        <!--</configuration>-->
+                    </execution>
+                    <!--<execution>-->
+                    <!--&lt;!&ndash; use the same execution id to further configure the default binding and execution &ndash;&gt;-->
+                    <!--<id>default-war</id>-->
+                    <!--<phase>package</phase>-->
+                    <!--<goals>-->
+                    <!--<goal>war</goal>-->
+                    <!--</goals>-->
+                    <!--<configuration>-->
+                    <!--&lt;!&ndash; during the package phase, use the processed web.xml file &ndash;&gt;-->
+                    <!--<webXml>${project.build.directory}/${project.build.finalName}-tmp/WEB-INF/web.xml</webXml>-->
+                    <!--</configuration>-->
+                    <!--</execution>-->
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.2</version>
+                <executions>
+                    <execution>
+                        <!-- apply pre-package processing on web resources -->
+                        <id>process-web-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <file>${project.build.directory}/${project.build.finalName}/WEB-INF/web.xml</file>
+                    <token>@@displayname@@</token>
+                    <value>${project.build.finalName}</value>
                 </configuration>
             </plugin>
         </plugins>

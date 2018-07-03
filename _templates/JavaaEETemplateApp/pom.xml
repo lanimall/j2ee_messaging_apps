@@ -21,7 +21,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>j2ee-jms-examples</artifactId>
+        <artifactId>j2ee_messaging_apps</artifactId>
         <groupId>com.softwareaggov.messaging</groupId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -43,6 +43,50 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
         </license>
     </licenses>
+
+    <properties>
+        <build.properties>${project.basedir}/../build.properties</build.properties>
+        <logger.com.softwareaggov.messaging.libs>info</logger.com.softwareaggov.messaging.libs>
+        <logger.com.softwareaggov.messaging.simplesoapjms.client.ejb>info</logger.com.softwareaggov.messaging.simplesoapjms.client.ejb>
+        <logger.com.softwareaggov.messaging.simplesoapjms.client.web>info</logger.com.softwareaggov.messaging.simplesoapjms.client.web>
+        <logger.root>warn</logger.root>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>logging_debug</id>
+            <properties>
+                <logger.com.softwareaggov.messaging.libs>debug</logger.com.softwareaggov.messaging.libs>
+                <logger.com.softwareaggov.messaging.simplesoapjms.client.ejb>debug</logger.com.softwareaggov.messaging.simplesoapjms.client.ejb>
+                <logger.com.softwareaggov.messaging.simplesoapjms.client.web>debug</logger.com.softwareaggov.messaging.simplesoapjms.client.web>
+                <logger.root>warn</logger.root>
+            </properties>
+        </profile>
+        <profile>
+            <id>Java6</id>
+            <properties>
+                <maven.compiler.target>1.6</maven.compiler.target>
+                <maven.compiler.source>1.6</maven.compiler.source>
+            </properties>
+        </profile>
+        <profile>
+            <id>Java7</id>
+            <properties>
+                <maven.compiler.target>1.7</maven.compiler.target>
+                <maven.compiler.source>1.7</maven.compiler.source>
+            </properties>
+        </profile>
+        <profile>
+            <id>Java8</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <maven.compiler.target>1.8</maven.compiler.target>
+                <maven.compiler.source>1.8</maven.compiler.source>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>
@@ -71,7 +115,7 @@
 
             <dependency>
                 <groupId>com.softwareaggov.messaging</groupId>
-                <artifactId>j2ee-jms-examples-libs</artifactId>
+                <artifactId>libs</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
@@ -92,19 +136,42 @@
 
     <build>
         <pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>${maven.compiler.target}</version>
+                            <vendor>sun</vendor>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-ear-plugin</artifactId>
-                    <version>${version.ear.plugin}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-ejb-plugin</artifactId>
-                    <version>${version.ejb.plugin}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>${version.war.plugin}</version>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>properties-maven-plugin</artifactId>
+                    <version>1.0.0</version>
+                    <inherited>false</inherited>
                 </plugin>
             </plugins>
         </pluginManagement>

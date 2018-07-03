@@ -1,7 +1,7 @@
 j2ee_messaging_apps: JMS Messaging Apps using common Java EE patterns and Resource Adapter JCA patterns
 =========================================================================================================
 
-Author: Fabien Sanglier -- [github](https://github.com/lanimall)
+Author: Fabien Sanglier [github profile](https://github.com/lanimall)
 
 Project Source: <https://github.com/lanimall/j2ee_messaging_apps>
 
