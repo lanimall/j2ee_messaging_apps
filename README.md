@@ -13,7 +13,7 @@ These J2EE apps are compliant with EJB specs and JCA specs, and have been tested
 interacting with the the [Software AG Universal Messaging Server](http://www2.softwareag.com/it/products/terracotta/universal_messaging.aspx) via its JCA-compliant resource adapter.
 Resource Adapter.
 
-Important Note:
+**IMPORTANT**:
 This project is open-sourced and provided AS-IS without any warrenty...and is not supported by SoftwareAG. 
 For any issue, please submit an issue on github and the developper community will make every attempts to fix them asap.
 
@@ -88,7 +88,7 @@ While all the resource names can be easily modified, for the purpose of this qui
     * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
     * destinationJndiName=JMSSamples/SimpleQueue
 
-NOTE: Only Websphere provides abstraction for activation specs.
+**NOTE**: Only Websphere provides abstraction for activation specs.
 For other app servers (eg. Jboss), the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
 And the application already has that sertup to consumes from JMSSamples/SimpleQueue (see SimpleJmsConsume/build.properties for details)
 
@@ -98,13 +98,13 @@ Deploy the EARs using the standard mechanism for the application server of choic
 The deployment can use all the defaults...and should not require any configuration set at runtimte.
 
 To send messages, simply call the following url:
-* http://<app server host:port>/SimpleJmsSend/JmsSendAndForget
+* http://APP_SERVER_HOST:PORT/SimpleJmsSend/JmsSendAndForget
 
 To access the various implemented counters that track the sends and consumes, here is the URL:
-* http://<app server host:port>/SimpleJmsSend/messagecounters
-* http://<app server host:port>/SimpleJmsConsume/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsSend/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsume/messagecounters
 
-NOTE: In the event that the application does not start, it's very likely that something was not setup right with the resource adapter
+**NOTE**: In the event that the application does not start, it's very likely that something was not setup right with the resource adapter
 and/or related configurations. Review the application server logs to see what may have gone wrong.
 
 ### Sample Profile 2: JMS "Send with Reply"
@@ -161,7 +161,7 @@ While all the resource names can be easily modified, for the purpose of this qui
     * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
     * destinationJndiName=JMSSamples/ReplyQueueAsync
  
-NOTE: Only Websphere provides abstraction for activation specs.
+**NOTE**: Only Websphere provides abstraction for activation specs.
 For other app servers (eg. Jboss), the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
 And the application already has that sertup to consumes from JMSSamples/SimpleQueue (see SimpleJmsConsume/build.properties for details)
 
@@ -171,13 +171,13 @@ Deploy the EARs using the standard mechanism for the application server of choic
 The deployment can use all the defaults...and should not require any configuration set at runtimte.
 
 To send messages (using either "Send And Forget" or "Send and Wait"), simply call the following url:
-* http://<app server host:port>/SimpleJmsSendWithReply/JmsSendAndForget
-* http://<app server host:port>/SimpleJmsSendWithReply/JmsSendAndWait
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendWithReply/JmsSendAndForget
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendWithReply/JmsSendAndWait
 
 To access the various implemented counters that track the sends and consumes, here is the URL:
-* http://<app server host:port>/SimpleJmsSendWithReply/messagecounters
-* http://<app server host:port>/SimpleJmsConsumeWaitAndReply/messagecounters
-* http://<app server host:port>/SimpleJmsConsumeTheReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendWithReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeWaitAndReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
 
 ### Sample Profile 3a: JMS "Send to a Driver queue" which drives "Send And Forget With Reply" operations
 
@@ -186,7 +186,7 @@ Then, a consumer app consumes the driver queue messages, and calls the "Send And
 Then, as in profile 2, a consume app receives the message, processes it and reply to the appropriate destination basded on the ReplyTo header embedded in the message.
 Finally, a 3rd app consumes the Asynchronous reply message (used only by the "Asynchronous send and reply" case)
 
-IMPORTANT: In order to better customize better what you send on that driver queue, you could use any JMS-capable program (eg. jmeter) 
+**NOTE**: In order to better customize better what you send on that driver queue, you could use any JMS-capable program (eg. jmeter)
 to send the desired JMS message with the right payload and headers to that driver queue (instead of the sample "SimpleJmsSendAndForgetToDriver.ear" app)
 That way, the right message profile can flow through the various apps (as opposed to built-in sample messages)
 
@@ -242,7 +242,7 @@ While all the resource names can be easily modified, for the purpose of this qui
     * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
     * destinationJndiName=JMSSamples/ReplyQueueAsync
 
-_NOTE_: Only Websphere provides abstraction for activation specs.
+**NOTE**: Only Websphere provides abstraction for activation specs.
 For other app servers (eg. Jboss), the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
 And the application already has that sertup to consumes from JMSSamples/SimpleQueue (see SimpleJmsConsume/build.properties for details)
 
@@ -252,16 +252,16 @@ Deploy the EARs using the standard mechanism for the application server of choic
 The deployment can use all the defaults...and should not require any configuration set at runtimte.
 
 To send messages to the driver queue, simply call the following url:
-* http://<app server host:port>/SimpleJmsSendAndForgetToDriver/JmsSendAndForget
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendAndForgetToDriver/JmsSendAndForget
 
 OR use any JMS-capable program (eg. jmeter) to directly send the desired JMS message with the right payload and headers to that driver queue.
    
 To access the various implemented counters that track the sends and consumes, here is the URL:
-* http://<app server host:port>/SimpleJmsSendAndForgetToDriver/messagecounters
-* http://<app server host:port>/SimpleJmsConsumeAndForwardToEJB/messagecounters
-* http://<app server host:port>/SimpleJmsSendWithReply/messagecounters
-* http://<app server host:port>/SimpleJmsConsumeWaitAndReply/messagecounters
-* http://<app server host:port>/SimpleJmsConsumeTheReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendAndForgetToDriver/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeAndForwardToEJB/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendWithReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeWaitAndReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
 
 ### Sample Profile 3b: JMS "Send to a Driver queue" which drives "Send And Wait" operations
 
@@ -322,7 +322,7 @@ While all the resource names can be easily modified, for the purpose of this qui
     * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
     * destinationJndiName=JMSSamples/ReplyQueueAsync
 
-_NOTE_: Only Websphere provides abstraction for activation specs.
+**NOTE**: Only Websphere provides abstraction for activation specs.
 For other app servers (eg. Jboss), the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
 And the application already has that sertup to consumes from JMSSamples/SimpleQueue (see SimpleJmsConsume/build.properties for details)
 
@@ -332,13 +332,13 @@ Deploy the EARs using the standard mechanism for the application server of choic
 The deployment can use all the defaults...and should not require any configuration set at runtimte.
 
 To send messages to the driver queue, simply call the following url:
-* http://<app server host:port>/SimpleJmsSendAndForgetToDriver/JmsSendAndForget
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendAndForgetToDriver/JmsSendAndForget
 
 OR use any JMS-capable program (eg. jmeter) to directly send the desired JMS message with the right payload and headers to that driver queue.
 
 To access the various implemented counters that track the sends and consumes, here is the URL:
-* http://<app server host:port>/SimpleJmsSendAndForgetToDriver/messagecounters
-* http://<app server host:port>/SimpleJmsConsumeAndForwardToEJB/messagecounters
-* http://<app server host:port>/SimpleJmsSendWithReply/messagecounters
-* http://<app server host:port>/SimpleJmsConsumeWaitAndReply/messagecounters
-* http://<app server host:port>/SimpleJmsConsumeTheReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendAndForgetToDriver/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeAndForwardToEJB/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendWithReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeWaitAndReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
