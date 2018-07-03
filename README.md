@@ -1,7 +1,7 @@
 j2ee_messaging_apps: JMS Messaging Apps using common Java EE patterns and Resource Adapter JCA patterns
 =========================================================================================================
 
-Author: [Fabien Sanglier](mailto:Fabien.Sanglier@softwareag.com)
+Author: Fabien Sanglier -- [github](https://github.com/lanimall)
 
 Project Source: <https://github.com/lanimall/j2ee_messaging_apps>
 
@@ -103,9 +103,9 @@ While all the resource names can be easily modified, for the purpose of this qui
     * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
     * destinationJndiName=JMSSamples/SimpleQueue
 
-**NOTE**: Only Websphere provides abstraction for activation specs.
-For other app servers (eg. Jboss), the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
-And the application already has that sertup to consumes from JMSSamples/SimpleQueue (see SimpleJmsConsume/build.properties for details)
+**NOTE**: Not all application servers provide abstraction for activation specs. Please refer to your application server documentation.
+For example, Websphere provides such abstraction, whereas for Jboss, the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
+The applications support and will work with both mechanisms.
 
 #### Deploy the app and run
 
@@ -257,9 +257,9 @@ While all the resource names can be easily modified, for the purpose of this qui
     * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
     * destinationJndiName=JMSSamples/ReplyQueueAsync
 
-**NOTE**: Only Websphere provides abstraction for activation specs.
-For other app servers (eg. Jboss), the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
-And the application already has that sertup to consumes from JMSSamples/SimpleQueue (see SimpleJmsConsume/build.properties for details)
+**NOTE**: Not all application servers provide abstraction for activation specs. Please refer to your application server documentation.
+For example, Websphere provides such abstraction, whereas for Jboss, the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
+The applications support and will work with both mechanisms.
 
 #### Deploy the app and run
 
@@ -337,9 +337,9 @@ While all the resource names can be easily modified, for the purpose of this qui
     * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
     * destinationJndiName=JMSSamples/ReplyQueueAsync
 
-**NOTE**: Only Websphere provides abstraction for activation specs.
-For other app servers (eg. Jboss), the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
-And the application already has that sertup to consumes from JMSSamples/SimpleQueue (see SimpleJmsConsume/build.properties for details)
+**NOTE**: Not all application servers provide abstraction for activation specs. Please refer to your application server documentation.
+For example, Websphere provides such abstraction, whereas for Jboss, the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
+The applications support and will work with both mechanisms.
 
 #### Deploy the app and run
 
