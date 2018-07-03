@@ -59,8 +59,8 @@ The apps come with pre-configured resource names that must be created on the app
 ```
 
 2 applications should be created:
-- dist/SimpleJmsSend.ear
-- dist/SimpleJmsConsume.ear
+* dist/SimpleJmsSend.ear
+* dist/SimpleJmsConsume.ear
 
 #### Configuration Pre-requisites before deploying the apps on the Application Server
 
@@ -69,27 +69,24 @@ While all the resource names can be easily modified, for the purpose of this qui
 
 ##### Objects to be created on the Messaging provider
 
-Queues:
-- JMSSamples/SimpleQueue
-
-Connection Factories:
-- SimpleJmsSendConnectionFactory
-- SimpleJmsConsumerConnectionFactory
+* Queues:
+  * JMSSamples/SimpleQueue
+* Connection Factories:
+  * SimpleJmsSendConnectionFactory
+  * SimpleJmsConsumerConnectionFactory
 
 ##### RA Objects to be created on the Application servers
 
-Managed Connection Factory: 
- - SimpleJmsSendConnectionFactory
-   -- ConnectionFactoryJndiName=SimpleJmsSendConnectionFactory
-
-Managed Admin Object:
- - SimpleJmsSendDestination
-   -- DestinationJndiName=JMSSamples/SimpleQueue
-
-Managed Activation Specification:
- - SimpleJmsConsumer
-   -- connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
-   -- destinationJndiName=JMSSamples/SimpleQueue
+* Managed Connection Factory:
+  * SimpleJmsSendConnectionFactory
+    * ConnectionFactoryJndiName=SimpleJmsSendConnectionFactory
+* Managed Admin Object:
+  * SimpleJmsSendDestination
+    * DestinationJndiName=JMSSamples/SimpleQueue
+* Managed Activation Specification:
+  * SimpleJmsConsumer
+    * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
+    * destinationJndiName=JMSSamples/SimpleQueue
 
 NOTE: Only Websphere provides abstraction for activation specs.
 For other app servers (eg. Jboss), the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
@@ -114,8 +111,8 @@ and/or related configurations. Review the application server logs to see what ma
 
 This sample sends JMS messages to a queue with a ReplyTo header. 
 2 options for sends: 
-- "Send and Forget" (Asynchronous send and reply - Reply consumed by another app)
-- "Send and Wait" for reply (Synchronous send and wait - reply consumed in the same waiting thread)
+* "Send and Forget" (Asynchronous send and reply - Reply consumed by another app)
+* "Send and Wait" for reply (Synchronous send and wait - reply consumed in the same waiting thread)
 
 Then, a consume app receives the message, processes it and reply to the appropriate destination basded on the ReplyTo header embedded in the message.
 Finally, a 3rd app consumes the Asynchronous reply message (used only by the "Asynchronous send and reply" case)
@@ -127,9 +124,9 @@ Finally, a 3rd app consumes the Asynchronous reply message (used only by the "As
 ```
 
 3 applications should be created:
-- dist/SimpleJmsSendWithReply.ear
-- dist/SimpleJmsConsumeWaitAndReply.ear
-- dist/SimpleJmsConsumeTheReply.ear
+* dist/SimpleJmsSendWithReply.ear
+* dist/SimpleJmsConsumeWaitAndReply.ear
+* dist/SimpleJmsConsumeTheReply.ear
 
 #### Configuration Pre-requisites before deploying the apps on the Application Server
 
@@ -138,34 +135,31 @@ While all the resource names can be easily modified, for the purpose of this qui
 
 ##### Objects to be created on the Messaging provider
 
-Queues:
-- JMSSamples/RequestQueue
-- JMSSamples/ReplyQueueSync
-- JMSSamples/ReplyQueueAsync
-
-Connection Factories:
-- SimpleJmsSendConnectionFactory
-- SimpleJmsConsumerConnectionFactory
+* Queues:
+  * JMSSamples/RequestQueue
+  * JMSSamples/ReplyQueueSync
+  * JMSSamples/ReplyQueueAsync
+* Connection Factories:
+  * SimpleJmsSendConnectionFactory
+  * SimpleJmsConsumerConnectionFactory
 
 ##### RA Objects to be created on the Application servers
 
-Managed Connection Factory:
- - SimpleJmsSendConnectionFactory
-   -- ConnectionFactoryJndiName=SimpleJmsSendConnectionFactory
-
-Managed Admin Object:
- - SimpleJmsSendWithReplyDestination
-   --- DestinationJndiName=JMSSamples/RequestQueue
- - SimpleJmsSendReplyToDestination
-   --- DestinationJndiName=JMSSamples/ReplyQueueAsync
-
-Managed Activation Specification: 
- - SimpleJmsConsumeRequest
-   -- connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
-   -- destinationJndiName=JMSSamples/RequestQueue
- - SimpleJmsConsumeAsyncReply
-   -- connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
-   -- destinationJndiName=JMSSamples/ReplyQueueAsync
+* Managed Connection Factory:
+  * SimpleJmsSendConnectionFactory
+    * ConnectionFactoryJndiName=SimpleJmsSendConnectionFactory
+* Managed Admin Object:
+  * SimpleJmsSendWithReplyDestination
+    * DestinationJndiName=JMSSamples/RequestQueue
+  * SimpleJmsSendReplyToDestination
+    * DestinationJndiName=JMSSamples/ReplyQueueAsync
+* Managed Activation Specification:
+  * SimpleJmsConsumeRequest
+    * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
+    * destinationJndiName=JMSSamples/RequestQueue
+  * SimpleJmsConsumeAsyncReply
+    * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
+    * destinationJndiName=JMSSamples/ReplyQueueAsync
  
 NOTE: Only Websphere provides abstraction for activation specs.
 For other app servers (eg. Jboss), the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
@@ -177,13 +171,13 @@ Deploy the EARs using the standard mechanism for the application server of choic
 The deployment can use all the defaults...and should not require any configuration set at runtimte.
 
 To send messages (using either "Send And Forget" or "Send and Wait"), simply call the following url:
-http://<app server host:port>/SimpleJmsSendWithReply/JmsSendAndForget
-http://<app server host:port>/SimpleJmsSendWithReply/JmsSendAndWait
+* http://<app server host:port>/SimpleJmsSendWithReply/JmsSendAndForget
+* http://<app server host:port>/SimpleJmsSendWithReply/JmsSendAndWait
 
 To access the various implemented counters that track the sends and consumes, here is the URL:
-http://<app server host:port>/SimpleJmsSendWithReply/messagecounters
-http://<app server host:port>/SimpleJmsConsumeWaitAndReply/messagecounters
-http://<app server host:port>/SimpleJmsConsumeTheReply/messagecounters
+* http://<app server host:port>/SimpleJmsSendWithReply/messagecounters
+* http://<app server host:port>/SimpleJmsConsumeWaitAndReply/messagecounters
+* http://<app server host:port>/SimpleJmsConsumeTheReply/messagecounters
 
 ### Sample Profile 3a: JMS "Send to a Driver queue" which drives "Send And Forget With Reply" operations
 
@@ -203,11 +197,11 @@ That way, the right message profile can flow through the various apps (as oppose
 ```
 
 5 applications should be created:
-- dist/SimpleJmsSendAndForgetToDriver.ear
-- dist/SimpleJmsConsumeAndForwardToEJB1.ear
-- dist/SimpleJmsSendWithReply.ear
-- dist/SimpleJmsConsumeWaitAndReply.ear
-- dist/SimpleJmsConsumeTheReply.ear
+* dist/SimpleJmsSendAndForgetToDriver.ear
+* dist/SimpleJmsConsumeAndForwardToEJB1.ear
+* dist/SimpleJmsSendWithReply.ear
+* dist/SimpleJmsConsumeWaitAndReply.ear
+* dist/SimpleJmsConsumeTheReply.ear
 
 #### Configuration Pre-requisites before deploying the apps on the Application Server
 
@@ -216,14 +210,13 @@ While all the resource names can be easily modified, for the purpose of this qui
 
 ##### Objects to be created on the Messaging provider
 
-Queues:
-- JMSSamples/DriverQueue
-- JMSSamples/RequestQueue
-- JMSSamples/ReplyQueueAsync
-
-Connection Factories:
-- SimpleJmsSendConnectionFactory
-- SimpleJmsConsumerConnectionFactory
+* Queues:
+  * JMSSamples/DriverQueue
+  * JMSSamples/RequestQueue
+  * JMSSamples/ReplyQueueAsync
+* Connection Factories:
+  * SimpleJmsSendConnectionFactory
+  * SimpleJmsConsumerConnectionFactory
 
 ##### RA Objects to be created on the Application servers
 
