@@ -6,19 +6,34 @@ Author: [Fabien Sanglier](mailto:Fabien.Sanglier@softwareag.com)
 Project Source: <https://github.com/lanimall/j2ee_messaging_apps>
 
 What is it?
------------
+--------------------------------------------
 Modular J2EE messaging applications that rely on common JCA Resource Adapters to interact with Messaging provider such as SoftwareAG Universal Messaging.
-Using these application, it's easy to create different message pub/sub designs by "plugging" multiple apps together via EJB lookups.
-These J2EE apps are compliant with EJB specs and JCA specs, and have been tested on both JBOSS EAP 6 and IBM Websphere 8.x platforms 
-interacting with the the [Software AG Universal Messaging Server](http://www2.softwareag.com/it/products/terracotta/universal_messaging.aspx) via its JCA-compliant resource adapter.
-Resource Adapter.
+Using these applications, it's easy to create different message pub/sub designs by "plugging" multiple apps together via EJB lookups.
 
-**IMPORTANT**:
-This project is open-sourced and provided AS-IS without any warrenty...and is not supported by SoftwareAG. 
-For any issue, please submit an issue on github and the developper community will make every attempts to fix them asap.
+These J2EE apps are compliant with EJB specs and JCA specs, and have been succesfully tested on both JBOSS EAP 6.x and IBM Websphere 8.x platforms,
+interacting with the the [Software AG Universal Messaging Server](http://www2.softwareag.com/it/products/terracotta/universal_messaging.aspx) via its JCA-compliant Resource Adapter.
 
-Content
--------
+**For any issue**: 
+Please create a ticket on github and the developper will make every attempts to address it as soon as possible.
+Or even better: feel free to fork, fix it and submit a PR.
+
+Licensing - Apache-2.0
+--------------------------------------------
+
+This project is Licensed under the Apache License, Version 2.0 (the "License");
+You may not use this project except in compliance with the License.
+You may obtain a copy of the License at
+
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Code Content
+--------------------------------------------
 
 * SimpleJmsSend
   * Sends JMS messages to UM queues/topics via JCA proxies (JCA Admin objects and Conection Factories) using the Resource Adapter. Multiple approach to test:
@@ -34,14 +49,14 @@ Content
   * A simple counter (accessible via servlet) is also made available to track various metrics (message sent, message consumed, processing success, processing errors, etc...)
   
 Resource Adapter Guides
------------------------
+--------------------------------------------
 
 Detail guides to setup Software AG Universal Messaging Resource Adapter on both JBOSS EAP 6 and IBM Websphere 8.x are availble at:
 
 * [Integration and Configuration of SoftwareAG’s Universal Messaging with JBOSS EAP 6.1](http://techcommunity.softwareag.com/web/guest/pwiki/-/wiki/Main/Integration+and+Configuration+of+SoftwareAG’s+Universal+Messaging+with+JBOSS+EAP+6.1)
 * [Integration and configuration of sofwareag’s universal messaging with ibm websphere application server](http://techcommunity.softwareag.com/web/guest/pwiki/-/wiki/Main/integration+and+configuration+of+sofwareag’s+universal+messaging+with+ibm+websphere+application+server)
 
-Quick Start Guide
+Quick Start Guide with Different Samples
 --------------------------------------------
 
 All samples below require a JCA Resouyrce Adapter installed on the Application Server. 
