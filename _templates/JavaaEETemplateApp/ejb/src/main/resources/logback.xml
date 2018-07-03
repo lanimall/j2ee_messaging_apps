@@ -28,10 +28,6 @@
         <level value="${logger.com.softwareaggov.messaging.libs}"/>
     </logger>
 
-    <logger name="com.softwareaggov.messaging.simplejmssendoneway.ejb">
-        <level value="${logger.com.softwareaggov.messaging.simplejmssendoneway.ejb}"/>
-    </logger>
-
     <root level="${logger.root}">
     <appender-ref ref="STDOUT"/>
     </root>
