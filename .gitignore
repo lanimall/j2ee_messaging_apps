@@ -2,6 +2,7 @@
 *.log
 *.build.customer*
 /build.customprofiles.properties
+/temp
 
 # Compiled source #
 ###################
