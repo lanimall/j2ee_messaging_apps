@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright © 2016 - 2018 Software AG, Darmstadt, Germany and/or its licensors
+  ~
+  ~ SPDX-License-Identifier: Apache-2.0
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<ejb-jar
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                            http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+        version="3.1">
+    <description>Partial deployment descriptors</description>
+    <display-name>Partial deployment descriptors</display-name>
+    <enterprise-beans>
+        <session>
+            <ejb-name>SoapHttpClientOneWayService</ejb-name>
+            <ejb-class>com.softwareaggov.messaging.simplesoapjms.client.ejb.SoapHttpClientOneWayBean
+            </ejb-class>
+            <env-entry>
+                <env-entry-name>isEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.SoapHttpClientOneWayService.Env.isEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>msgPayloadFilePath</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${JmsSend.SoapHttpClientOneWayService.Env.msgPayloadFilePath}</env-entry-value>
+            </env-entry>
+        </session>
+        <session>
+            <ejb-name>SoapHttpClientTwoWayService</ejb-name>
+            <ejb-class>com.softwareaggov.messaging.simplesoapjms.client.ejb.SoapHttpClientTwoWayBean
+            </ejb-class>
+            <env-entry>
+                <env-entry-name>isEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.SoapHttpClientTwoWayService.Env.isEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>msgPayloadFilePath</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${JmsSend.SoapHttpClientTwoWayService.Env.msgPayloadFilePath}</env-entry-value>
+            </env-entry>
+        </session>
+        <session>
+            <ejb-name>SoapJmsClientOneWayService</ejb-name>
+            <ejb-class>com.softwareaggov.messaging.simplesoapjms.client.ejb.SoapJmsClientOneWayBean
+            </ejb-class>
+            <env-entry>
+                <env-entry-name>isEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.SoapJmsClientOneWayService.Env.isEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>msgPayloadFilePath</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${JmsSend.SoapJmsClientOneWayService.Env.msgPayloadFilePath}</env-entry-value>
+            </env-entry>
+            <resource-ref>
+                <description>The JCA Managed Connection Factory for Message Publish</description>
+                <res-ref-name>jms/someManagedCF</res-ref-name>
+                <res-type>javax.jms.ConnectionFactory</res-type>
+            </resource-ref>
+            <resource-ref>
+                <description>The JCA Managed Admin Object for Message Destination</description>
+                <res-ref-name>jms/someManagedDestination</res-ref-name>
+                <res-type>javax.jms.Destination</res-type>
+            </resource-ref>
+        </session>
+        <session>
+            <ejb-name>SoapJmsClientTwoWayService</ejb-name>
+            <ejb-class>com.softwareaggov.messaging.simplesoapjms.client.ejb.SoapJmsClientTwoWayBean
+            </ejb-class>
+            <env-entry>
+                <env-entry-name>isEnabled</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.SoapJmsClientTwoWayService.Env.isEnabled}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>msgPayloadFilePath</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${JmsSend.SoapJmsClientTwoWayService.Env.msgPayloadFilePath}</env-entry-value>
+            </env-entry>
+            <resource-ref>
+                <description>The JCA Managed Connection Factory for Message Publish</description>
+                <res-ref-name>jms/someManagedCF</res-ref-name>
+                <res-type>javax.jms.ConnectionFactory</res-type>
+            </resource-ref>
+            <resource-ref>
+                <description>The JCA Managed Admin Object for Message Destination</description>
+                <res-ref-name>jms/someManagedDestination</res-ref-name>
+                <res-type>javax.jms.Destination</res-type>
+            </resource-ref>
+        </session>
+    </enterprise-beans>
+</ejb-jar>

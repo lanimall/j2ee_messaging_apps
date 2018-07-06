@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright © 2016 - 2018 Software AG, Darmstadt, Germany and/or its licensors
+  ~
+  ~ SPDX-License-Identifier: Apache-2.0
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<ejb-jar
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                            http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+        version="3.1">
+    <description>Partial deployment descriptors</description>
+    <display-name>Partial deployment descriptors</display-name>
+    <enterprise-beans>
+        <session>
+            <ejb-name>TestProcessorService</ejb-name>
+            <ejb-class>com.softwareaggov.messaging.simplesoapjms.server.ejb.TestProcessorBean
+            </ejb-class>
+            <env-entry>
+                <env-entry-name>replyPayloadFilePath</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value>${JmsSend.TestProcessorService.Env.replyPayloadFilePath}</env-entry-value>
+            </env-entry>
+        </session>
+        <session>
+            <ejb-name>TestWebService</ejb-name>
+            <business-remote>com.softwareaggov.messaging.simplesoapjms.server.ejb.soap.TestWebServiceRemote</business-remote>
+            <ejb-class>com.softwareaggov.messaging.simplesoapjms.server.ejb.soap.TestWebService</ejb-class>
+            <session-type>Stateless</session-type>
+            <concurrency-management-type>Container</concurrency-management-type>
+            <ejb-local-ref>
+                <ejb-ref-name>com.softwareaggov.messaging.simplesoapjms.server.ejb.soap.TestWebService/testProcessorLocal</ejb-ref-name>
+                <ejb-ref-type>Session</ejb-ref-type>
+                <local>com.softwareaggov.messaging.simplesoapjms.server.ejb.TestProcessorLocal</local>
+                <injection-target>
+                    <injection-target-class>com.softwareaggov.messaging.simplesoapjms.server.ejb.soap.TestWebService</injection-target-class>
+                    <injection-target-name>testProcessorLocal</injection-target-name>
+                </injection-target>
+            </ejb-local-ref>
+        </session>
+        <session>
+            <ejb-name>CounterBean</ejb-name>
+            <business-local>com.softwareaggov.messaging.simplesoapjms.server.ejb.utils.CounterLocal</business-local>
+            <ejb-class>com.softwareaggov.messaging.simplesoapjms.server.ejb.utils.CounterBean</ejb-class>
+            <session-type>Singleton</session-type>
+            <concurrency-management-type>Bean</concurrency-management-type>
+            <post-construct>
+                <lifecycle-callback-class>com.softwareaggov.messaging.simplesoapjms.server.ejb.utils.CounterBean</lifecycle-callback-class>
+                <lifecycle-callback-method>initialize</lifecycle-callback-method>
+            </post-construct>
+        </session>
+    </enterprise-beans>
+</ejb-jar>
