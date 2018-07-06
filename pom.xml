@@ -51,6 +51,7 @@
         <module>SimpleJmsSend</module>
         <module>SimpleJmsConsume</module>
         <module>SimpleSoapJmsClient</module>
+        <module>SimpleSoapJmsServer</module>
     </modules>
 
     <properties>
