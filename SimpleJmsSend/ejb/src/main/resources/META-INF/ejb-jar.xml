@@ -134,7 +134,7 @@
         </session>
         <session>
             <ejb-name>JmsSendAndForgetRuntimeJndiLookupsService</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndForgetRuntimeJndiLookupsBean
+            <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests.JmsSendAndForgetRuntimeJndiLookupsBean
             </ejb-class>
             <env-entry>
                 <env-entry-name>jmsSendEnabled</env-entry-name>

@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 
-package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish;
+package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests;
 
+import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherBase;
+import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;
+import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.*;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -42,20 +44,19 @@ import java.util.Map;
 public class JmsSendAndForgetRuntimeJndiLookupsBean extends JmsPublisherBase implements JmsPublisherLocal {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetRuntimeJndiLookupsBean.class);
 
-    @PostConstruct
-    public void ejbCreate() {
-        log.info("ejbCreate()");
-        messageProcessingCounter.incrementAndGet(getBeanName() + "-create");
-    }
-
     @Override
-    public ConnectionFactory getJmsConnectionFactory() {
+    protected ConnectionFactory getJmsConnectionFactory() {
         return (ConnectionFactory) lookupEnvResource("jms/someManagedCF");
     }
 
     @Override
-    public Destination getJmsDestination() {
+    protected Destination getJmsDestination() {
         return (Destination) lookupEnvResource("jms/someManagedDestination");
+    }
+
+    @Override
+    protected Destination getJmsReplyToDestination() {
+        return (Destination) lookupEnvResource("jms/someManagedReplyToDestination");
     }
 
     private Object lookupEnvResource(String jndiLookupName) {
@@ -72,7 +73,7 @@ public class JmsSendAndForgetRuntimeJndiLookupsBean extends JmsPublisherBase imp
     }
 
     @Override
-    protected String sendMessage(Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, Object payload, Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+    protected String sendMessage(ConnectionFactory jmsConnectionFactory, Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, Object payload, Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
         return null;
     }
 }
