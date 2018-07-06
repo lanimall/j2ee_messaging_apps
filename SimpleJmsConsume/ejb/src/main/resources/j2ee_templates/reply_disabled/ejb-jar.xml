@@ -55,6 +55,13 @@
             </ejb-local-ref>
         </message-driven>
         <session>
+            <ejb-name>CounterService</ejb-name>
+            <business-local>com.softwareaggov.messaging.libs.utils.Counter</business-local>
+            <ejb-class>com.softwareaggov.messaging.libs.utils.impl.CounterImpl</ejb-class>
+            <session-type>Singleton</session-type>
+            <concurrency-management-type>Bean</concurrency-management-type>
+        </session>
+        <session>
             <ejb-name>MockSleepProcessor</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.MockSleepBean</ejb-class>
             <env-entry>

@@ -18,8 +18,8 @@
 
 package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish;
 
+import com.softwareaggov.messaging.libs.utils.Counter;
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.utils.CounterLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +41,8 @@ import java.util.Map;
 public abstract class JmsPublisherBase implements JmsPublisher {
     private static Logger log = LoggerFactory.getLogger(JmsPublisherBase.class);
 
-    @EJB
-    protected CounterLocal messageProcessingCounter;
+    @EJB(beanName = "CounterService")
+    protected Counter messageProcessingCounter;
 
     @Resource(name = "jmsSessionTransacted")
     private Boolean jmsSessionTransacted = Boolean.FALSE;
@@ -56,20 +56,18 @@ public abstract class JmsPublisherBase implements JmsPublisher {
     @Resource(name = "jmsPriority")
     private Integer jmsPriority = null;
 
-    @Resource(name = "jmsReplyDestinationName")
-    private String jmsReplyDestinationName = null;
-
-    @Resource(name = "jmsReplyDestinationType")
-    private String jmsReplyDestinationType = null;
+//    @Resource(name = "jmsReplyDestinationName")
+//    private String jmsReplyDestinationName = null;
+//
+//    @Resource(name = "jmsReplyDestinationType")
+//    private String jmsReplyDestinationType = null;
 
     @Resource(name = "jmsSendEnabled")
     private Boolean isEnabled;
 
-    private volatile boolean init = false;
+//    private volatile boolean init = false;
 
-    protected transient JMSHelper jmsHelper = null;
-
-    private transient Destination jmsReplyTo = null;
+//    protected transient JMSHelper jmsHelper = null;
 
     @PostConstruct
     public void ejbCreate() {
@@ -81,11 +79,10 @@ public abstract class JmsPublisherBase implements JmsPublisher {
     public void ejbRemove() throws EJBException {
         log.info("ejbRemove()");
         messageProcessingCounter.incrementAndGet(getBeanName() + "-remove");
-        jmsReplyTo = null;
-        init = false;
-        if (null != jmsHelper)
-            jmsHelper.cleanup();
-        jmsHelper = null;
+//        init = false;
+//        if (null != jmsHelper)
+//            jmsHelper.cleanup();
+//        jmsHelper = null;
     }
 
     protected String getBeanName() {
@@ -96,38 +93,39 @@ public abstract class JmsPublisherBase implements JmsPublisher {
 
     protected abstract Destination getJmsDestination();
 
-    protected abstract String sendMessage(Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException;
+    protected abstract Destination getJmsReplyToDestination();
 
-    @Override
+    protected abstract String sendMessage(ConnectionFactory jmsConnectionFactory, Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException;
+
     public boolean isEnabled() {
         return (null != isEnabled) ? isEnabled : false;
     }
 
     // Initializing resource outside the EJB creation to make sure these lookups get retried until they work
     // (eg. if UM is not available yet when EJB is created)
-    private void initJMS() throws JMSException {
-        if (!init) {
-            synchronized (this.getClass()) {
-                if (!init) {
-                    try {
-                        this.jmsHelper = JMSHelper.createSender(getJmsConnectionFactory());
-
-                        //JMS reply destination
-                        if (null != jmsReplyDestinationName && !"".equals(jmsReplyDestinationName) &&
-                                null != jmsReplyDestinationType && !"".equals(jmsReplyDestinationType)) {
-                            jmsReplyTo = jmsHelper.lookupDestination(jmsReplyDestinationName, jmsReplyDestinationType);
-                        }
-
-                        init = true;
-                        messageProcessingCounter.incrementAndGet(getBeanName() + "-initSuccess");
-                    } catch (JMSException e) {
-                        messageProcessingCounter.incrementAndGet(getBeanName() + "-initErrors");
-                        throw e;
-                    }
-                }
-            }
-        }
-    }
+//    private void initJMS() throws JMSException {
+//        if (!init) {
+//            synchronized (this.getClass()) {
+//                if (!init) {
+//                    try {
+//                        this.jmsHelper = JMSHelper.createSender(getJmsConnectionFactory());
+//
+//                        //JMS reply destination
+//                        if (null != jmsReplyDestinationName && !"".equals(jmsReplyDestinationName) &&
+//                                null != jmsReplyDestinationType && !"".equals(jmsReplyDestinationType)) {
+//                            jmsReplyTo = jmsHelper.lookupDestination(jmsReplyDestinationName, jmsReplyDestinationType);
+//                        }
+//
+//                        init = true;
+//                        messageProcessingCounter.incrementAndGet(getBeanName() + "-initSuccess");
+//                    } catch (JMSException e) {
+//                        messageProcessingCounter.incrementAndGet(getBeanName() + "-initErrors");
+//                        throw e;
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public String sendTextMessage(final Object msgTextPayload, final Map<String, Object> msgHeaderProperties) throws JMSException {
         String returnText = "";
@@ -136,9 +134,9 @@ public abstract class JmsPublisherBase implements JmsPublisher {
 
         try {
             //Initialize JMS objects...once done, will not do it again
-            initJMS();
+//            initJMS();
 
-            returnText = sendMessage(getJmsDestination(), jmsSessionTransacted, jmsSessionAcknowledgeMode, msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, null, jmsReplyTo);
+            returnText = sendMessage(getJmsConnectionFactory(), getJmsDestination(), jmsSessionTransacted, jmsSessionAcknowledgeMode, msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, null, getJmsReplyToDestination());
 
             //increment processing counter
             messageProcessingCounter.incrementAndGet(getBeanName() + "-messageSent");

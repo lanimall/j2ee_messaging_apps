@@ -18,8 +18,8 @@
 
 package com.softwareaggov.messaging.simplesoapjms.server.ejb;
 
+import com.softwareaggov.messaging.libs.utils.Counter;
 import com.softwareaggov.messaging.libs.utils.FileUtils;
-import com.softwareaggov.messaging.simplesoapjms.server.ejb.utils.CounterLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +38,8 @@ import java.io.IOException;
 public class TestProcessorBean implements TestProcessor {
     private static Logger log = LoggerFactory.getLogger(TestProcessorBean.class);
 
-    @EJB
-    protected CounterLocal messageProcessingCounter;
+    @EJB(beanName = "CounterService")
+    protected Counter messageProcessingCounter;
 
     @Resource(name = "replyPayloadFilePath")
     private String replyPayloadFilePath = null;

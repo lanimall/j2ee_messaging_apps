@@ -21,7 +21,7 @@ package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisher;
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.utils.CounterLocal;
+import com.softwareaggov.messaging.libs.utils.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +44,8 @@ import java.util.Map;
 public class JmsSendAndForgetNonJCATestBean implements JmsPublisher {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetNonJCATestBean.class);
 
-    @EJB
-    private CounterLocal messageProcessingCounter;
+    @EJB(beanName = "CounterService")
+    private Counter messageProcessingCounter;
 
     @Resource(name = "jmsSendEnabled")
     private Boolean isEnabled = true;

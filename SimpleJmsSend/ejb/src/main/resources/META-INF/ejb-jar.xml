@@ -27,10 +27,16 @@
     <display-name>Partial deployment descriptors</display-name>
     <enterprise-beans>
         <session>
+            <ejb-name>CounterService</ejb-name>
+            <business-local>com.softwareaggov.messaging.libs.utils.Counter</business-local>
+            <ejb-class>com.softwareaggov.messaging.libs.utils.impl.CounterImpl</ejb-class>
+            <session-type>Singleton</session-type>
+            <concurrency-management-type>Bean</concurrency-management-type>
+        </session>
+        <session>
             <ejb-name>JmsSendAndForgetService</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsSendAndForgetBean
             </ejb-class>
-
             <env-entry>
                 <env-entry-name>jmsSendEnabled</env-entry-name>
                 <env-entry-type>java.lang.Boolean</env-entry-type>
@@ -56,24 +62,19 @@
                 <env-entry-type>java.lang.Integer</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndForgetService.Env.jmsPriority}</env-entry-value>
             </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationName</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationName}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationType</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetService.Env.jmsReplyDestinationType}</env-entry-value>
-            </env-entry>
             <resource-ref>
                 <description>The JCA Managed Connection Factory for Message Publish</description>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
                 <res-type>javax.jms.ConnectionFactory</res-type>
             </resource-ref>
             <resource-ref>
-                <description>The JCA Managed Admin Object for Message Destination</description>
+                <description>The JCA Managed Admin Object for Request Message Destination</description>
                 <res-ref-name>jms/someManagedDestination</res-ref-name>
+                <res-type>javax.jms.Destination</res-type>
+            </resource-ref>
+            <resource-ref>
+                <description>The JCA Managed Admin Object for ReplyTo Message Destination</description>
+                <res-ref-name>jms/someManagedReplyToDestination</res-ref-name>
                 <res-type>javax.jms.Destination</res-type>
             </resource-ref>
         </session>
@@ -107,16 +108,6 @@
                 <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsPriority}</env-entry-value>
             </env-entry>
             <env-entry>
-                <env-entry-name>jmsReplyDestinationName</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationName}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationType</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsReplyDestinationType}</env-entry-value>
-            </env-entry>
-            <env-entry>
                 <env-entry-name>jmsResponseWaitMillis</env-entry-name>
                 <env-entry-type>java.lang.Long</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis}</env-entry-value>
@@ -129,6 +120,11 @@
             <resource-ref>
                 <description>The JCA Managed Admin Object for Message Destination</description>
                 <res-ref-name>jms/someManagedDestination</res-ref-name>
+                <res-type>javax.jms.Destination</res-type>
+            </resource-ref>
+            <resource-ref>
+                <description>The JCA Managed Admin Object for ReplyTo Message Destination</description>
+                <res-ref-name>jms/someManagedReplyToDestination</res-ref-name>
                 <res-type>javax.jms.Destination</res-type>
             </resource-ref>
         </session>
@@ -162,20 +158,25 @@
                 <env-entry-value>${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Env.jmsPriority}</env-entry-value>
             </env-entry>
             <env-entry>
-                <env-entry-name>jmsReplyDestinationName</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Env.jmsReplyDestinationName}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationType</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Env.jmsReplyDestinationType}</env-entry-value>
-            </env-entry>
-            <env-entry>
                 <env-entry-name>jmsResponseWaitMillis</env-entry-name>
                 <env-entry-type>java.lang.Long</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndForgetJCARuntimeJndiLookupsService.Env.jmsResponseWaitMillis}</env-entry-value>
             </env-entry>
+            <resource-ref>
+                <description>The JCA Managed Connection Factory for Message Publish</description>
+                <res-ref-name>jms/someManagedCF</res-ref-name>
+                <res-type>javax.jms.ConnectionFactory</res-type>
+            </resource-ref>
+            <resource-ref>
+                <description>The JCA Managed Admin Object for Message Destination</description>
+                <res-ref-name>jms/someManagedDestination</res-ref-name>
+                <res-type>javax.jms.Destination</res-type>
+            </resource-ref>
+            <resource-ref>
+                <description>The JCA Managed Admin Object for ReplyTo Message Destination</description>
+                <res-ref-name>jms/someManagedReplyToDestination</res-ref-name>
+                <res-type>javax.jms.Destination</res-type>
+            </resource-ref>
         </session>
         <session>
             <ejb-name>JmsSendAndForgetCachedConnectionTestService</ejb-name>
@@ -207,16 +208,6 @@
                 <env-entry-type>java.lang.Integer</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsPriority}</env-entry-value>
             </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationName</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationName}</env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>jmsReplyDestinationType</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetCachedConnectionTestService.Env.jmsReplyDestinationType}</env-entry-value>
-            </env-entry>
             <resource-ref>
                 <description>The JCA Managed Connection Factory for Message Publish</description>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
@@ -225,6 +216,11 @@
             <resource-ref>
                 <description>The JCA Managed Admin Object for Message Destination</description>
                 <res-ref-name>jms/someManagedDestination</res-ref-name>
+                <res-type>javax.jms.Destination</res-type>
+            </resource-ref>
+            <resource-ref>
+                <description>The JCA Managed Admin Object for ReplyTo Message Destination</description>
+                <res-ref-name>jms/someManagedReplyToDestination</res-ref-name>
                 <res-type>javax.jms.Destination</res-type>
             </resource-ref>
         </session>

@@ -28,6 +28,8 @@
                       binding-name="${JmsSend.JmsSendAndForgetService.Resources.ConnectionFactory.BindingName}"></resource-ref>
         <resource-ref name="jms/someManagedDestination"
                       binding-name="${JmsSend.JmsSendAndForgetService.Resources.Destination.BindingName}"></resource-ref>
+        <resource-ref name="jms/someManagedReplyToDestination"
+                      binding-name="${JmsSend.JmsSendAndForgetService.Resources.ReplyToDestination.BindingName}"></resource-ref>
     </session>
 
     <session name="JmsSendAndWaitService">
@@ -35,6 +37,8 @@
                       binding-name="${JmsSend.JmsSendAndWaitService.Resources.ConnectionFactory.BindingName}"></resource-ref>
         <resource-ref name="jms/someManagedDestination"
                       binding-name="${JmsSend.JmsSendAndWaitService.Resources.Destination.BindingName}"></resource-ref>
+        <resource-ref name="jms/someManagedReplyToDestination"
+                      binding-name="${JmsSend.JmsSendAndWaitService.Resources.ReplyToDestination.BindingName}"></resource-ref>
     </session>
 
     <session name="JmsSendAndForgetCachedConnectionTestService">
@@ -42,5 +46,16 @@
                       binding-name="${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.ConnectionFactory.BindingName}"></resource-ref>
         <resource-ref name="jms/someManagedDestination"
                       binding-name="${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.Destination.BindingName}"></resource-ref>
+        <resource-ref name="jms/someManagedReplyToDestination"
+                      binding-name="${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.ReplyToDestination.BindingName}"></resource-ref>
+    </session>
+
+    <session name="JmsSendAndForgetRuntimeJndiLookupsService">
+        <resource-ref name="jms/someManagedCF"
+                      binding-name="${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Resources.ConnectionFactory.BindingName}"></resource-ref>
+        <resource-ref name="jms/someManagedDestination"
+                      binding-name="${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Resources.Destination.BindingName}"></resource-ref>
+        <resource-ref name="jms/someManagedReplyToDestination"
+                      binding-name="${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Resources.ReplyToDestination.BindingName}"></resource-ref>
     </session>
 </ejb-jar-bnd>

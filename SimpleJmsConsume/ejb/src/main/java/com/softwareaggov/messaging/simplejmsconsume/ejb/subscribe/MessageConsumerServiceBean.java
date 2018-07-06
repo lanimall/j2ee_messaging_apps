@@ -24,7 +24,7 @@ package com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe;
 import com.softwareaggov.messaging.libs.jms.processor.ProcessorOutput;
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.MessageProcessorLocal;
-import com.softwareaggov.messaging.simplejmsconsume.ejb.utils.CounterLocal;
+import com.softwareaggov.messaging.libs.utils.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +54,8 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
 
     private static Logger log = LoggerFactory.getLogger(MessageConsumerServiceBean.class);
 
-    @EJB
-    private CounterLocal messageProcessingCounter;
+    @EJB(beanName = "CounterService")
+    protected Counter messageProcessingCounter;
 
     //Implementation for the message processing
     @EJB(name = "ejb/messageProcessor")

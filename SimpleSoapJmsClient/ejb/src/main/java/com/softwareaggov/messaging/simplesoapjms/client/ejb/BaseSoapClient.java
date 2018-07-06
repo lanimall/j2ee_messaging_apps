@@ -18,9 +18,9 @@
 
 package com.softwareaggov.messaging.simplesoapjms.client.ejb;
 
+import com.softwareaggov.messaging.libs.utils.Counter;
 import com.softwareaggov.messaging.libs.utils.FileUtils;
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisher;
-import com.softwareaggov.messaging.simplesoapjms.client.ejb.utils.CounterLocal;
 import com.softwareaggov.messaging.simplesoapjms.client.jaxws.TestWebService;
 import com.softwareaggov.messaging.simplesoapjms.client.jaxws.TestWebServicePortType;
 import com.softwareaggov.messaging.simplesoapjms.client.utils.HandlerFactory;
@@ -44,8 +44,8 @@ import java.util.Map;
 public abstract class BaseSoapClient implements SoapClient, JmsPublisher {
     private static Logger log = LoggerFactory.getLogger(BaseSoapClient.class);
 
-    @EJB
-    protected CounterLocal messageProcessingCounter;
+    @EJB(beanName = "CounterService")
+    protected Counter messageProcessingCounter;
 
     @Resource(name = "isEnabled")
     private Boolean isEnabled;

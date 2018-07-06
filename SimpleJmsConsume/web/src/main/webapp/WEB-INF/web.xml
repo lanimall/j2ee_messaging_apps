@@ -29,4 +29,26 @@
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
+
+    <servlet>
+        <servlet-name>CountersServlet</servlet-name>
+        <servlet-class>com.softwareaggov.messaging.libs.utils.CountersServlet</servlet-class>
+    </servlet>
+
+    <!-- The servlet and jsp page mappings -->
+    <servlet-mapping>
+        <servlet-name>CountersServlet</servlet-name>
+        <url-pattern>/messagecounters</url-pattern>
+    </servlet-mapping>
+
+    <ejb-local-ref>
+        <ejb-ref-name>CounterBean</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local>com.softwareaggov.messaging.libs.utils.Counter</local>
+        <ejb-link>CounterBean</ejb-link>
+        <injection-target>
+            <injection-target-class>com.softwareaggov.messaging.libs.utils.CountersServlet</injection-target-class>
+            <injection-target-name>messageProcessingCounter</injection-target-name>
+        </injection-target>
+    </ejb-local-ref>
 </web-app>

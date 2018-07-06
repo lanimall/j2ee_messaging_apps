@@ -32,6 +32,8 @@ sed -i 's/<transaction-type>Container<\/transaction-type>/<transaction-type>Bean
 echo "Done Updating JMSRouter ejb-jar.xml file..."
 
 ##TODO: Add the missing ConnectionFactory too...
+## In META-INF/ibm-ejb-jar-bnd.xml, add within <message-driven name="WebServicesJMSRouter">
+## <resource-env-ref name="jms/WebServicesReplyQCF" binding-name="SimpleJmsSendConnectionFactory" />
 
 ## repackage
 echo "Repackaging the EAR..."

@@ -21,7 +21,7 @@ package com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor;
 import com.softwareaggov.messaging.libs.jms.processor.MessageProcessor;
 import com.softwareaggov.messaging.libs.jms.processor.ProcessorOutput;
 import com.softwareaggov.messaging.libs.jms.processor.impl.MockSleepAndExceptionsProcessor;
-import com.softwareaggov.messaging.simplejmsconsume.ejb.utils.CounterLocal;
+import com.softwareaggov.messaging.libs.utils.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +41,8 @@ import javax.jms.Message;
 public class MockSleepAndExceptionsBean extends MockSleepBean implements MessageProcessorLocal {
     private static Logger log = LoggerFactory.getLogger(MockSleepAndExceptionsBean.class);
 
-    @EJB
-    private CounterLocal messageProcessingCounter;
+    @EJB(beanName = "CounterService")
+    protected Counter messageProcessingCounter;
 
     @Resource(name = "mockExceptionsCountInterval")
     private Integer mockExceptionsCountInterval = 0;

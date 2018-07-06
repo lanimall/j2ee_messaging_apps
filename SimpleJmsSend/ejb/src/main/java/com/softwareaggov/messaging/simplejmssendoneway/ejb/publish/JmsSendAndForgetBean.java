@@ -42,30 +42,32 @@ public class JmsSendAndForgetBean extends JmsPublisherBase {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetBean.class);
 
     @Resource(name = "jms/someManagedCF")
-    private ConnectionFactory jmsConnectionFactory;
+    protected ConnectionFactory jmsConnectionFactory;
 
     @Resource(name = "jms/someManagedDestination")
-    private Destination jmsDestination;
+    protected Destination jmsDestination;
 
-    @PostConstruct
-    public void ejbCreate() {
-        log.info("ejbCreate()");
-        messageProcessingCounter.incrementAndGet(getBeanName() + "-create");
-    }
+    @Resource(name = "jms/someManagedReplyToDestination")
+    protected Destination jmsReplyToDestination;
 
     @Override
-    public ConnectionFactory getJmsConnectionFactory() {
+    protected ConnectionFactory getJmsConnectionFactory() {
         return jmsConnectionFactory;
     }
 
     @Override
-    public Destination getJmsDestination() {
+    protected Destination getJmsDestination() {
         return jmsDestination;
     }
 
     @Override
-    protected String sendMessage(Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+    protected Destination getJmsReplyToDestination() {
+        return jmsReplyToDestination;
+    }
+
+    @Override
+    protected String sendMessage(ConnectionFactory jmsConnectionFactory, Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
         Map<JMSHelper.JMSHeadersType, Object> jmsProperties = JMSHelper.getMessageJMSHeaderPropsAsMap(destination, deliveryMode, priority, correlationID, replyTo);
-        return jmsHelper.sendTextMessage(payload, jmsProperties, headerProperties, sessionTransacted, sessionAcknowledgeMode);
+        return JMSHelper.createSender(jmsConnectionFactory).sendTextMessage(payload, jmsProperties, headerProperties, sessionTransacted, sessionAcknowledgeMode);
     }
 }

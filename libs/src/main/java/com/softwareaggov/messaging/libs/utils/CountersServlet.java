@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 
-package com.softwareaggov.messaging.simplesoapjms.client.web;
+package com.softwareaggov.messaging.libs.utils;
 
-import com.softwareaggov.messaging.simplesoapjms.client.ejb.utils.CounterLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,13 +34,12 @@ import java.io.PrintWriter;
  * @author Fabien Sanglier
  *
  */
-@WebServlet("/messagecounters")
 public class CountersServlet extends HttpServlet {
     private static final long serialVersionUID = -8314702649252239L;
     private static Logger log = LoggerFactory.getLogger(CountersServlet.class);
 
-    @EJB
-    private CounterLocal messageProcessingCounter;
+    //EJB to be injected in the descriptor
+    protected Counter messageProcessingCounter;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
