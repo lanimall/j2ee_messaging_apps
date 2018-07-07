@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright © 2016 - 2018 Software AG, Darmstadt, Germany and/or its licensors
+  ~
+  ~ SPDX-License-Identifier: Apache-2.0
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project name="ConditionalCopyFile" default="copytemplates" basedir=".">
+    <description>Copy templates with filters</description>
+    <property file="build.properties"/>
+
+    <target name="init">
+        <property name="ejbresources_templates_dirpath" value="${project.build.outputDirectory}/j2ee_templates/"/>
+        <condition property="ejbresources_templates_dirpath.exists">
+            <available file="${ejbresources_templates_dirpath}" type="dir"/>
+        </condition>
+        <fail message="${ejbresources_templates_dirpath} does not exists" unless="ejbresources_templates_dirpath.exists" />
+
+        <set-if-nonempty name="JmsSendAndForgetService.ReplyTo.exists"
+                                  property="JmsSend.JmsSendAndForgetService.Resources.ReplyToDestination.BindingName" />
+
+        <set-if-nonempty name="JmsSendAndWaitService.ReplyTo.exists"
+                                  property="JmsSend.JmsSendAndWaitService.Resources.ReplyToDestination.BindingName" />
+
+        <set-if-nonempty name="JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.exists"
+                                  property="JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Resources.ReplyToDestination.BindingName" />
+
+        <set-if-nonempty name="JmsSendAndForgetCachedConnectionTestService.ReplyTo.exists"
+                                  property="JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.ReplyToDestination.BindingName" />
+
+        <echo message="JmsSendAndForgetService.ReplyTo.exists = ${JmsSendAndForgetService.ReplyTo.exists}"/>
+        <echo message="JmsSendAndWaitService.ReplyTo.exists = ${JmsSendAndWaitService.ReplyTo.exists}"/>
+        <echo message="JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.exists = ${JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.exists}"/>
+        <echo message="JmsSendAndForgetCachedConnectionTestService.ReplyTo.exists = ${JmsSendAndForgetCachedConnectionTestService.ReplyTo.exists}"/>
+
+        <!-- JmsSendAndForgetService -->
+        <set-if-nonempty name="EjbJar.JmsSendAndForgetService.ReplyTo.BindingBlock"
+                         property="JmsSendAndForgetService.ReplyTo.exists"
+                         value="${ejbjar.reply.block}"/>
+        <property name="EjbJar.JmsSendAndForgetService.ReplyTo.BindingBlock" value=""/>
+
+        <replace property="wasejbjar.reply.block.processed.JmsSendAndForgetService"
+                 value="${wasejbjar.reply.block}"
+                 token="@VALUE@"
+                 replacement="${JmsSend.JmsSendAndForgetService.Resources.ReplyToDestination.BindingName}" />
+
+        <set-if-nonempty name="WasEjbJar.JmsSendAndForgetService.ReplyTo.BindingBlock"
+                         property="JmsSendAndForgetService.ReplyTo.exists"
+                         value="${wasejbjar.reply.block.processed.JmsSendAndForgetService}"/>
+        <property name="WasEjbJar.JmsSendAndForgetService.ReplyTo.BindingBlock" value=""/>
+
+        <replace property="jbossejbjar.reply.block.processed.JmsSendAndForgetService"
+                 value="${jbossejbjar.reply.block}"
+                 token="@VALUE@"
+                 replacement="${JmsSend.JmsSendAndForgetService.Resources.ReplyToDestination.BindingName}" />
+
+        <set-if-nonempty name="JbossEjbJar.JmsSendAndForgetService.ReplyTo.BindingBlock"
+                         property="JmsSendAndForgetService.ReplyTo.exists"
+                         value="${jbossejbjar.reply.block.processed.JmsSendAndForgetService}"/>
+        <property name="JbossEjbJar.JmsSendAndForgetService.ReplyTo.BindingBlock" value=""/>
+
+        <!-- JmsSendAndWaitService -->
+        <set-if-nonempty name="EjbJar.JmsSendAndWaitService.ReplyTo.BindingBlock"
+                         property="JmsSendAndWaitService.ReplyTo.exists"
+                         value="${ejbjar.reply.block}"/>
+        <property name="EjbJar.JmsSendAndWaitService.ReplyTo.BindingBlock" value=""/>
+
+        <replace property="wasejbjar.reply.block.processed.JmsSendAndWaitService"
+                 value="${wasejbjar.reply.block}"
+                 token="@VALUE@"
+                 replacement="${JmsSend.JmsSendAndWaitService.Resources.ReplyToDestination.BindingName}" />
+
+        <set-if-nonempty name="WasEjbJar.JmsSendAndWaitService.ReplyTo.BindingBlock"
+                         property="JmsSendAndWaitService.ReplyTo.exists"
+                         value="${wasejbjar.reply.block.processed.JmsSendAndWaitService}"/>
+        <property name="WasEjbJar.JmsSendAndWaitService.ReplyTo.BindingBlock" value=""/>
+
+        <replace property="jbossejbjar.reply.block.processed.JmsSendAndWaitService"
+                 value="${jbossejbjar.reply.block}"
+                 token="@VALUE@"
+                 replacement="${JmsSend.JmsSendAndWaitService.Resources.ReplyToDestination.BindingName}" />
+
+        <set-if-nonempty name="JbossEjbJar.JmsSendAndWaitService.ReplyTo.BindingBlock"
+                         property="JmsSendAndWaitService.ReplyTo.exists"
+                         value="${jbossejbjar.reply.block.processed.JmsSendAndWaitService}"/>
+        <property name="JbossEjbJar.JmsSendAndWaitService.ReplyTo.BindingBlock" value=""/>
+
+        <!-- JmsSendAndForgetRuntimeJndiLookupsService -->
+        <set-if-nonempty name="EjbJar.JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.BindingBlock"
+                         property="JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.exists"
+                         value="${ejbjar.reply.block}"/>
+        <property name="EjbJar.JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.BindingBlock" value=""/>
+
+        <replace property="wasejbjar.reply.block.processed.JmsSendAndForgetRuntimeJndiLookupsService"
+                 value="${wasejbjar.reply.block}"
+                 token="@VALUE@"
+                 replacement="${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Resources.ReplyToDestination.BindingName}" />
+
+        <set-if-nonempty name="WasEjbJar.JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.BindingBlock"
+                         property="JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.exists"
+                         value="${wasejbjar.reply.block.processed.JmsSendAndForgetRuntimeJndiLookupsService}"/>
+        <property name="WasEjbJar.JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.BindingBlock" value=""/>
+
+        <replace property="jbossejbjar.reply.block.processed.JmsSendAndForgetRuntimeJndiLookupsService"
+                 value="${jbossejbjar.reply.block}"
+                 token="@VALUE@"
+                 replacement="${JmsSend.JmsSendAndForgetRuntimeJndiLookupsService.Resources.ReplyToDestination.BindingName}" />
+
+        <set-if-nonempty name="JbossEjbJar.JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.BindingBlock"
+                         property="JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.exists"
+                         value="${jbossejbjar.reply.block.processed.JmsSendAndForgetRuntimeJndiLookupsService}"/>
+        <property name="JbossEjbJar.JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.BindingBlock" value=""/>
+
+        <!-- JmsSendAndForgetCachedConnectionTestService -->
+        <set-if-nonempty name="EjbJar.JmsSendAndForgetCachedConnectionTestService.ReplyTo.BindingBlock"
+                         property="JmsSendAndForgetCachedConnectionTestService.ReplyTo.exists"
+                         value="${ejbjar.reply.block}"/>
+        <property name="EjbJar.JmsSendAndForgetCachedConnectionTestService.ReplyTo.BindingBlock" value=""/>
+
+        <replace property="wasejbjar.reply.block.processed.JmsSendAndForgetCachedConnectionTestService"
+                 value="${wasejbjar.reply.block}"
+                 token="@VALUE@"
+                 replacement="${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.ReplyToDestination.BindingName}" />
+
+        <set-if-nonempty name="WasEjbJar.JmsSendAndForgetCachedConnectionTestService.ReplyTo.BindingBlock"
+                         property="JmsSendAndForgetCachedConnectionTestService.ReplyTo.exists"
+                         value="${wasejbjar.reply.block.processed.JmsSendAndForgetCachedConnectionTestService}"/>
+        <property name="WasEjbJar.JmsSendAndForgetCachedConnectionTestService.ReplyTo.BindingBlock" value=""/>
+
+        <replace property="jbossejbjar.reply.block.processed.JmsSendAndForgetCachedConnectionTestService"
+                 value="${jbossejbjar.reply.block}"
+                 token="@VALUE@"
+                 replacement="${JmsSend.JmsSendAndForgetCachedConnectionTestService.Resources.ReplyToDestination.BindingName}" />
+
+        <set-if-nonempty name="JbossEjbJar.JmsSendAndForgetCachedConnectionTestService.ReplyTo.BindingBlock"
+                         property="JmsSendAndForgetCachedConnectionTestService.ReplyTo.exists"
+                         value="${jbossejbjar.reply.block.processed.JmsSendAndForgetCachedConnectionTestService}"/>
+        <property name="JbossEjbJar.JmsSendAndForgetCachedConnectionTestService.ReplyTo.BindingBlock" value=""/>
+    </target>
+
+    <target name="copytemplates" depends="init">
+        <copy todir="${project.build.outputDirectory}/META-INF" overwrite="true">
+            <fileset dir="${ejbresources_templates_dirpath}">
+                <include name="**/*.xml"/>
+            </fileset>
+            <filterset begintoken="@" endtoken="@">
+                <propertyset>
+                    <propertyref name="EjbJar.JmsSendAndForgetService.ReplyTo.BindingBlock"/>
+                    <propertyref name="WasEjbJar.JmsSendAndForgetService.ReplyTo.BindingBlock"/>
+                    <propertyref name="JbossEjbJar.JmsSendAndForgetService.ReplyTo.BindingBlock"/>
+
+                    <propertyref name="EjbJar.JmsSendAndWaitService.ReplyTo.BindingBlock"/>
+                    <propertyref name="WasEjbJar.JmsSendAndWaitService.ReplyTo.BindingBlock"/>
+                    <propertyref name="JbossEjbJar.JmsSendAndWaitService.ReplyTo.BindingBlock"/>
+
+                    <propertyref name="EjbJar.JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.BindingBlock"/>
+                    <propertyref name="WasEjbJar.JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.BindingBlock"/>
+                    <propertyref name="JbossEjbJar.JmsSendAndForgetRuntimeJndiLookupsService.ReplyTo.BindingBlock"/>
+
+                    <propertyref name="EjbJar.JmsSendAndForgetCachedConnectionTestService.ReplyTo.BindingBlock"/>
+                    <propertyref name="WasEjbJar.JmsSendAndForgetCachedConnectionTestService.ReplyTo.BindingBlock"/>
+                    <propertyref name="JbossEjbJar.JmsSendAndForgetCachedConnectionTestService.ReplyTo.BindingBlock"/>
+                </propertyset>
+            </filterset>
+        </copy>
+
+        <echo message="DONE!!!"/>
+    </target>
+
+    <macrodef name="set-if-nonempty">
+        <attribute name="name" />
+        <attribute name="property" />
+        <attribute name="value" default="${@{property}}" />
+
+        <sequential>
+            <condition property="@{name}" value="@{value}">
+                <and>
+                    <isset property="@{property}" />
+                    <not>
+                        <equals arg1="${@{property}}" arg2="" />
+                    </not>
+                </and>
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <scriptdef language="javascript" name="replace">
+        <attribute name="property" />
+        <attribute name="value" />
+        <attribute name="token" />
+        <attribute name="replacement" />
+
+        <![CDATA[
+        project.setProperty(attributes.get("property"), attributes.get("value").replaceAll(attributes.get("token"), attributes.get("replacement")));
+        ]]>
+    </scriptdef>
+</project>
