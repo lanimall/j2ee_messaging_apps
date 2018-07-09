@@ -36,17 +36,27 @@ Code Content
 --------------------------------------------
 
 * SimpleJmsSend
-  * Sends JMS messages to UM queues/topics via JCA proxies (JCA Admin objects and Conection Factories) using the Resource Adapter. Multiple approach to test:
+  * Sends JMS messages to UM queues/topics via JCA proxies (JCA Admin objects and Conection Factories) using the Resource Adapter:
     * "Send And Forget"
     * "Send And Wait For Reply"
+  * Exposes web front end to drive load
+  * Implements remote interface to plug this into other app via EJB Remoting
 * SimpleJmsConsume
-  * Consumes JMS messages from queues/topics using the UM Resource Adapter,
+  * Consumes JMS messages from queues/topics using the Resource Adapter,
   * Ability to perform some mock processing (eg. sleep time, mock exceptions at intervals, etc...),
   * Ability to call remote EJBs that implement the JmsPublisherRemote interface (eg. the ones in the SimpleJmsSend application) in order to chain message comsumption with extra message sending,
   * Ability to reply if the "replyTo" field is specified in the message (or if a default "replyTo" is set)
+* SimpleSoapJmsClient
+  * JAX-WS client that works with the SimpleSoapJmsServer to communicate with the SOAP Endpoint
+  * Implements both SOAP-over-HTTP and SOAP-over-JMS mechanisms to test and compare
+  * Exposes web front end to drive load
+  * Implements remote interface to plug this into other app via EJB Remoting
+* SimpleSoapJmsServer
+  * Creates a simple SOAP endpoint (JAX-WS) for OneWay and TwoWay SOAP requests
+  * Ability to use either HTTP or JMS to communicate with SOAP to this endpoint
 * libs
   * Shared library that contains global code and especially the custom-built JMSHelper that encapsulate simple JMS contructs
-  * A simple counter (accessible via servlet) is also made available to track various metrics (message sent, message consumed, processing success, processing errors, etc...)
+  * A simple counter (accessible via servlet) is also made available on every apps to track various metrics (message sent, message consumed, processing success, processing errors, etc...)
   
 Resource Adapter Guides
 --------------------------------------------
@@ -357,3 +367,7 @@ To access the various implemented counters that track the sends and consumes, he
 * http://APP_SERVER_HOST:PORT/SimpleJmsSendWithReply/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeWaitAndReply/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
+
+### Sample Profile 4: SOAP-over-JMS
+
+Instructions TBD
