@@ -112,7 +112,7 @@
                             <tasks>
                                 <ant dir="${project.basedir}"
                                      antfile="build.xml">
-                                    <target name="copytemplates"/>
+                                    <target name="applytemplates"/>
                                 </ant>
                             </tasks>
                         </configuration>
