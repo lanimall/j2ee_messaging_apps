@@ -41,14 +41,17 @@ import java.util.Map;
 public class JmsSendAndForgetBean extends JmsPublisherBase {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetBean.class);
 
-    @Resource(name = "jms/someManagedCF")
     protected ConnectionFactory jmsConnectionFactory;
-
-    @Resource(name = "jms/someManagedDestination")
     protected Destination jmsDestination;
-
-    @Resource(name = "jms/someManagedReplyToDestination")
     protected Destination jmsReplyToDestination;
+
+    @Override
+    public void ejbCreate() {
+        super.ejbCreate();
+        jmsConnectionFactory = (ConnectionFactory) lookupEnvResource(JmsPublisherBase.RESOURCE_NAME_CF);
+        jmsDestination = (Destination) lookupEnvResource(JmsPublisherBase.RESOURCE_NAME_DEST);
+        jmsReplyToDestination = (Destination) lookupEnvResource(JmsPublisherBase.RESOURCE_NAME_REPLYDEST);
+    }
 
     @Override
     protected ConnectionFactory getJmsConnectionFactory() {

@@ -46,30 +46,17 @@ public class JmsSendAndForgetRuntimeJndiLookupsBean extends JmsPublisherBase imp
 
     @Override
     protected ConnectionFactory getJmsConnectionFactory() {
-        return (ConnectionFactory) lookupEnvResource("jms/someManagedCF");
+        return (ConnectionFactory) lookupEnvResource(JmsPublisherBase.RESOURCE_NAME_CF);
     }
 
     @Override
     protected Destination getJmsDestination() {
-        return (Destination) lookupEnvResource("jms/someManagedDestination");
+        return (Destination) lookupEnvResource(JmsPublisherBase.RESOURCE_NAME_DEST);
     }
 
     @Override
     protected Destination getJmsReplyToDestination() {
-        return (Destination) lookupEnvResource("jms/someManagedReplyToDestination");
-    }
-
-    private Object lookupEnvResource(String jndiLookupName) {
-        Object resource = null;
-        try {
-            // create the context
-            final Context initCtx = new InitialContext();
-            Context envCtx = (Context) initCtx.lookup("java:comp/env");
-            resource = envCtx.lookup(jndiLookupName);
-        } catch (NamingException e) {
-            log.warn("Could not lookup the resource " + jndiLookupName);
-        }
-        return resource;
+        return (Destination) lookupEnvResource(JmsPublisherBase.RESOURCE_NAME_REPLYDEST);
     }
 
     @Override

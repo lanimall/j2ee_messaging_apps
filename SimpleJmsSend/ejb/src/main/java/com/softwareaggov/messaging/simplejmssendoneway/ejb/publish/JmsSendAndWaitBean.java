@@ -41,17 +41,19 @@ import java.util.Map;
 public class JmsSendAndWaitBean extends JmsPublisherBase {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndWaitBean.class);
 
-    @Resource(name = "jms/someManagedCF")
     private ConnectionFactory jmsConnectionFactory;
-
-    @Resource(name = "jms/someManagedDestination")
     private Destination jmsDestination;
-
-    @Resource(name = "jms/someManagedReplyToDestination")
     private Destination jmsReplyToDestination;
 
     @Resource(name = "jmsResponseWaitMillis")
     private Long jmsResponseWaitMillis = null;
+
+    @Override
+    public void ejbCreate() {
+        super.ejbCreate();
+        jmsConnectionFactory = (ConnectionFactory) lookupEnvResource(JmsPublisherBase.RESOURCE_NAME_CF);
+        jmsDestination = (Destination) lookupEnvResource(JmsPublisherBase.RESOURCE_NAME_DEST);
+        jmsReplyToDestination = (Destination) lookupEnvResource(JmsPublisherBase.RESOURCE_NAME_REPLYDEST);    }
 
     @Override
     protected ConnectionFactory getJmsConnectionFactory() {

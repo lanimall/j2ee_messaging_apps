@@ -32,6 +32,9 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.util.Map;
 
 /*
@@ -40,6 +43,10 @@ import java.util.Map;
  */
 public abstract class JmsPublisherBase implements JmsPublisher {
     private static Logger log = LoggerFactory.getLogger(JmsPublisherBase.class);
+
+    public static final String RESOURCE_NAME_CF = "jms/someManagedCF";
+    public static final String RESOURCE_NAME_DEST = "jms/someManagedDestination";
+    public static final String RESOURCE_NAME_REPLYDEST = "jms/someManagedReplyToDestination";
 
     @EJB(beanName = "CounterService")
     protected Counter messageProcessingCounter;
@@ -96,6 +103,19 @@ public abstract class JmsPublisherBase implements JmsPublisher {
     protected abstract Destination getJmsReplyToDestination();
 
     protected abstract String sendMessage(ConnectionFactory jmsConnectionFactory, Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException;
+
+    protected Object lookupEnvResource(String jndiLookupName) {
+        Object resource = null;
+        try {
+            // create the context
+            final Context initCtx = new InitialContext();
+            Context envCtx = (Context) initCtx.lookup("java:comp/env");
+            resource = envCtx.lookup(jndiLookupName);
+        } catch (NamingException e) {
+            log.warn("Could not lookup the resource " + jndiLookupName);
+        }
+        return resource;
+    }
 
     public boolean isEnabled() {
         return (null != isEnabled) ? isEnabled : false;
