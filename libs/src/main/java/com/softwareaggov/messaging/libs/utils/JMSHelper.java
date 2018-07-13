@@ -56,7 +56,7 @@ public class JMSHelper {
     static public enum JMSHeadersType {
         JMS_PAYLOAD,
         JMS_MESSAGEID,
-        JMS_CORRELATIONID,
+        JMS_CORRELATIONID("JMSCorrelationID"),
         JMS_DELIVERYMODE,
         JMS_PRIORITY,
         JMS_DESTINATION,
@@ -65,6 +65,20 @@ public class JMSHelper {
         JMS_TYPE,
         JMS_REPLYTO,
         JMS_REDELIVERED;
+
+        private String fieldName = "";
+
+        JMSHeadersType() {
+            this("");
+        }
+
+        JMSHeadersType(String fieldName) {
+            this.fieldName = fieldName;
+        }
+
+        public String getFieldName() {
+            return fieldName;
+        }
     }
 
     private JMSHelper(ConnectionFactory connectionFactory) {
@@ -227,11 +241,6 @@ public class JMSHelper {
             if (null == targetDestination)
                 throw new JMSException("Destination is null...can't do anything...");
 
-            //here, we could fall back on creating a temp response queue if reply is not specified...likely a good thing to try
-            Object replyToDestination = jmsProperties.get(JMSHeadersType.JMS_REPLYTO);
-            if (null == replyToDestination)
-                throw new JMSException("ReplyTo Destination is null...can't do anything...");
-
             // Create Message Producer
             producer = session.createProducer((Destination) targetDestination);
 
@@ -252,8 +261,17 @@ public class JMSHelper {
             if (null != payload)
                 msg.setText((String) payload); // TODO: temporary...here we need to support more types!!!!
 
-            if (null != replyToDestination)
-                msg.setJMSReplyTo((Destination) replyToDestination);
+            //get a permanent replyTo queue...or create a temp queue for the reply
+            Object replyToDestination = jmsProperties.get(JMSHeadersType.JMS_REPLYTO);
+            if (null == replyToDestination){
+                replyToDestination = session.createTemporaryQueue();
+            }
+
+            //if at this point, the replyToDestination is null, we can't do much in a SendAndWait scenario
+            if(null == replyToDestination)
+                throw new JMSException("ReplyTo Destination is null...can't do anything...");
+
+            msg.setJMSReplyTo((Destination) replyToDestination);
 
             if (null != customProperties) {
                 for (Entry<String, Object> entry : customProperties.entrySet()) {
@@ -276,10 +294,17 @@ public class JMSHelper {
             /// wait for REPLY section..
 
             // Create a selector to only get the reply message that matches my request message id.
-            String selector = String.format("JMSCorrelationID='%s'", msg.getJMSMessageID());
+            String requestMessageId = msg.getJMSMessageID();
+            if (log.isDebugEnabled())
+                log.debug("Outbound Request MessageId: {}", requestMessageId);
+
+            //create the seclector on the CorrelationID field
+            StringBuilder selector = new StringBuilder().append(JMSHeadersType.JMS_CORRELATIONID.getFieldName()).append("=").append("'").append(requestMessageId).append("'");
+            if (log.isDebugEnabled())
+                log.debug("Creating consumer to destination {} with Message Selector {}", ((null != replyToDestination)?replyToDestination.toString():"null"), selector.toString());
 
             //create a consumer with the selector
-            responseConsumer = session.createConsumer((Destination) replyToDestination, selector);
+            responseConsumer = session.createConsumer((Destination) replyToDestination, selector.toString());
 
             // Start the connection
             connection.start();
@@ -289,7 +314,7 @@ public class JMSHelper {
             Message receivedMessage = responseConsumer.receive(replyWaitTimeoutMs);
 
             if (null == receivedMessage) {
-                throw new JMSException(String.format("Didn't receive message response within timeout [%d] for Message ID [%s]", replyWaitTimeoutMs, msg.getJMSMessageID()));
+                throw new JMSException(String.format("Didn't receive message response within timeout [%d] for Message ID [%s]", replyWaitTimeoutMs, requestMessageId));
             }
 
             if (sessionTransacted) {
@@ -298,11 +323,25 @@ public class JMSHelper {
                 session.commit();
             }
 
+            String replyCorrelationId = receivedMessage.getJMSCorrelationID();
+
+            if (log.isDebugEnabled())
+                log.debug(String.format("Reply message contains correlation id: %s", ((replyCorrelationId == null)? replyCorrelationId.toString(): "null")));
+
+            if(replyCorrelationId == null || !replyCorrelationId.equals(requestMessageId))
+            {
+                throw new JMSException(
+                        String.format("Unexpected: Reply message Correlation ID [%s] does not match with request messageID [%s]",
+                        (replyCorrelationId == null)? replyCorrelationId.toString(): "null",
+                        (requestMessageId == null)? requestMessageId.toString(): "null"));
+            }
+
             //if null, it means no message came within the timeout (or consumer got closed concurrently)
+            //TODO: Message instance of TextMessage is not needed... could be some other message type and be valid
             if (null != receivedMessage && receivedMessage instanceof TextMessage) {
                 return ((TextMessage) receivedMessage).getText();
             } else {
-                throw new IllegalStateException(String.format("Message response type not expected - received: [%s] / expected: [%s]", receivedMessage.getClass().getName(), TextMessage.class.getName()));
+                throw new IllegalStateException(String.format("Message response type not expected - received: [%s] / expected: [%s]", (null != receivedMessage)?receivedMessage.getClass().getName():"null", TextMessage.class.getName()));
             }
         } catch (JMSException je) {
             if (log.isDebugEnabled())
