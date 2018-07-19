@@ -65,8 +65,8 @@
         <version.surefire.plugin>2.10</version.surefire.plugin>
 
         <!-- maven-compiler-plugin -->
-        <maven.compiler.target.master>1.6</maven.compiler.target.master>
-        <maven.compiler.source.master>1.6</maven.compiler.source.master>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
 
         <slf4j.version>1.7.1</slf4j.version>
         <junit.version>4.11</junit.version>
@@ -75,6 +75,59 @@
         <deploy.target.ip></deploy.target.ip>
         <deploy.target.port></deploy.target.port>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>Java6</id>
+            <properties>
+                <maven.compiler.target>1.6</maven.compiler.target>
+                <maven.compiler.source>1.6</maven.compiler.source>
+            </properties>
+        </profile>
+        <profile>
+            <id>Java7</id>
+            <properties>
+                <maven.compiler.target>1.7</maven.compiler.target>
+                <maven.compiler.source>1.7</maven.compiler.source>
+            </properties>
+        </profile>
+        <profile>
+            <id>Java8</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <maven.compiler.target>1.8</maven.compiler.target>
+                <maven.compiler.source>1.8</maven.compiler.source>
+            </properties>
+        </profile>
+        <profile>
+            <id>Toolchain</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-toolchains-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>toolchain</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <toolchains>
+                                <jdk>
+                                    <version>${maven.compiler.target}</version>
+                                    <vendor>sun</vendor>
+                                </jdk>
+                            </toolchains>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>
@@ -94,6 +147,16 @@
     </dependencyManagement>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
