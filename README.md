@@ -84,7 +84,9 @@ Quick Start Guide with Different Samples
 All samples below require a JCA Resouyrce Adapter installed on the Application Server. 
 Please refer to the section "Resource Adapter Guides" for detailed guides.
 
-### Sample Profile 1: JMS "Send and Forget"
+
+
+### Sample Profile 1a: Simple JMS "Send and Forget" + Consume
 
 This sample sends JMS messages to a queue, and consume from that same queue (2 apps will be built and deployed)
 The apps come with pre-configured resource names that must be created on the application server(s). 
@@ -92,7 +94,7 @@ The apps come with pre-configured resource names that must be created on the app
 #### Build
 
 ```
-   ant -Dj2ee-jms-examples.deployment_profilename=profile1 assemble
+   ant -Dj2ee-jms-examples.deployment_profilename=profile1a assemble
 ```
 
 2 applications should be created:
@@ -144,7 +146,9 @@ To access the various implemented counters that track the sends and consumes, he
 **NOTE**: In the event that the application does not start, it's very likely that something was not setup right with the resource adapter
 and/or related configurations. Review the application server logs to see what may have gone wrong.
 
-### Sample Profile 2: JMS "Send with Reply"
+
+
+### Sample Profile 2a: Simple JMS "Send with Reply" + consume the reply (either synchronously or asynchronously)
 
 This sample sends JMS messages to a queue with a ReplyTo header. 
 2 options for sends: 
@@ -157,7 +161,7 @@ Finally, a 3rd app consumes the Asynchronous reply message (used only by the "As
 #### Build
 
 ```
-   ant -Dj2ee-jms-examples.deployment_profilename=profile2 assemble
+   ant -Dj2ee-jms-examples.deployment_profilename=profile2a assemble
 ```
 
 3 applications should be created:
@@ -216,11 +220,78 @@ To access the various implemented counters that track the sends and consumes, he
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeWaitAndReply/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
 
-### Sample Profile 3a: JMS "Send to a Driver queue" which drives "Send And Forget With Reply" operations
+
+
+
+### Sample Profile 1b: JMS "Send to a Driver queue" which drives profile 1a ("Send And Forget" operations)
+
+This sample sends JMS messages to a "driver" queue
+Then, a consumer app consumes the driver queue messages, and calls the "Send And Forget" EJB from the "SimpleJmsSendWithReply.ear" app of Profile 1a.
+Finally, as in profile 1a, a 3rd app consumes the message.
+
+**NOTE**: In order to better customize what you send on that driver queue, you could use any JMS-capable program (eg. jmeter)
+to send the desired JMS message with the right payload and headers to that driver queue (instead of the sample "SimpleJmsSendAndForgetToDriver.ear" app)
+That way, the right message profile can flow through the various apps (as opposed to built-in sample messages)
+
+#### Build
+
+```
+   ant -Dj2ee-jms-examples.deployment_profilename=profile1b assemble
+```
+
+4 applications should be created:
+* dist/SimpleJmsSendAndForgetToDriver.ear
+* dist/SimpleJmsConsumeDriverAndForwardToSendNoReply.ear
+* dist/SimpleJmsSend.ear
+* dist/SimpleJmsConsume.ear
+
+#### Configuration Pre-requisites before deploying the apps on the Application Server
+
+The application built in the previous stage requires some JCA Resource Adapter resources to be created on the application server.
+While all the resource names can be easily modified, for the purpose of this quick start, the default apps require the following resources:
+
+##### Objects to be created on the Messaging provider
+
+Same as profile1a + the following extra resources:
+
+* Queues:
+  * JMSSamples/DriverQueue
+
+##### RA Objects to be created on the Application servers
+
+Same as profile1a + the following extra resources:
+
+* Managed Admin Object:
+  * SimpleJmsSendDriverDestination
+    * DestinationJndiName=JMSSamples/DriverQueue
+
+* Managed Activation Specification:
+  * SimpleJmsConsumerDriverQueue
+    * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
+    * destinationJndiName=JMSSamples/DriverQueue
+
+#### Deploy the app and run
+
+Deploy the EARs using the standard mechanism for the application server of choice.
+The deployment can use all the defaults...and should not require any configuration set at runtimte.
+
+To send messages (using either "Send And Forget" or "Send and Wait"), simply call the following url:
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendAndForgetToDriver/JmsSendAndForget
+
+To access the various implemented counters that track the sends and consumes, here are the URLs:
+* http://APP_SERVER_HOST:PORT/SimpleJmsSendAndForgetToDriver/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsume_DriverAndSend/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsSend/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsume/messagecounters
+
+
+
+
+### Sample Profile 2b: JMS "Send to a Driver queue" which drives profile 2a with Asynchronous Reply ("Send And Forget" with reply operations)
 
 This sample sends JMS messages to a "driver" queue 
-Then, a consumer app consumes the driver queue messages, and calls the "Send And Forget" EJB from the "SimpleJmsSendWithReply.ear" app of Profile 2.
-Then, as in profile 2, a consume app receives the message, processes it and reply to the appropriate destination basded on the ReplyTo header embedded in the message.
+Then, a consumer app consumes the driver queue messages, and calls the "Send And Forget" EJB from the "SimpleJmsSendWithReply.ear" app of Profile 2a.
+Then, as in profile 2a, a consume app receives the message, processes it and reply to the appropriate destination basded on the ReplyTo header embedded in the message.
 Finally, a 3rd app consumes the Asynchronous reply message (used only by the "Asynchronous send and reply" case)
 
 **NOTE**: In order to better customize better what you send on that driver queue, you could use any JMS-capable program (eg. jmeter)
@@ -230,12 +301,12 @@ That way, the right message profile can flow through the various apps (as oppose
 #### Build
 
 ```
-   ant -Dj2ee-jms-examples.deployment_profilename=profile3a assemble
+   ant -Dj2ee-jms-examples.deployment_profilename=profile2b assemble
 ```
 
 5 applications should be created:
-* dist/SimpleJmsSendAndForgetToDriver.ear
-* dist/SimpleJmsConsumeAndForwardToEJB1.ear
+* dist/SimpleJmsSendDriver.ear
+* dist/SimpleJmsConsumeDriverAndForwardToSendWithReplyAsync.ear
 * dist/SimpleJmsSendWithReply.ear
 * dist/SimpleJmsConsumeWaitAndReply.ear
 * dist/SimpleJmsConsumeTheReply.ear
@@ -300,20 +371,23 @@ To access the various implemented counters that track the sends and consumes, he
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeWaitAndReply/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
 
-### Sample Profile 3b: JMS "Send to a Driver queue" which drives "Send And Wait" operations
 
-Same as profile 3a, but in this case, the consumer app which consumes the driver queue messages will calls 
-the "Send And Wait" EJB from the "SimpleJmsSendWithReply.ear" app of Profile 2.
+
+
+### Sample Profile 2c: JMS "Send to a Driver queue" which drives profile 2a with Synchronous Reply ("Send And Wait" for reply operations)
+
+Same as profile 2b, but in this case, the consumer app which consumes the driver queue messages will calls
+the "Send And Wait" EJB from the "SimpleJmsSendWithReply.ear" app.
 
 #### Build
 
 ```
-   ant -Dj2ee-jms-examples.deployment_profilename=profile3b assemble
+   ant -Dj2ee-jms-examples.deployment_profilename=profile2c assemble
 ```
 
 5 applications should be created:
-* dist/SimpleJmsSendAndForgetToDriver.ear
-* dist/SimpleJmsConsumeAndForwardToEJB2.ear
+* dist/SimpleJmsSendDriver.ear
+* dist/SimpleJmsConsumeDriverAndForwardToSendWithReplySync.ear
 * dist/SimpleJmsSendWithReply.ear
 * dist/SimpleJmsConsumeWaitAndReply.ear
 * dist/SimpleJmsConsumeTheReply.ear
@@ -380,6 +454,9 @@ To access the various implemented counters that track the sends and consumes, he
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeWaitAndReply/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
 
+
+
+
 ### Sample Profile 4: SOAP-over-JMS
 
-Instructions TBD
+Instructions TBD...
