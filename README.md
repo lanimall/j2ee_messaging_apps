@@ -66,7 +66,7 @@ Pre-requisites for building the apps
 * [Java](http://openjdk.java.net)
 * [Apache Maven](http://apache.spinellicreations.com/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.zip)
 
-In order to build, the maven home path must be provided eiher in either:
+In order to build, the maven home path must be provided in either:
 * An environment property "MAVEN_HOME" or "M2_HOME", OR
 * Specified in the "maven.home" property in the [build.properties](./build.properties) file
 
