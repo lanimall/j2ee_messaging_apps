@@ -25,6 +25,7 @@
     </condition>
     <property file="build.customprofiles.properties" if:true="${build.customprofiles.properties.exist}"/>
     <property file="build.properties"/>
+
     <property environment="env"/>
 
     <target name="init.ant.contrib">
@@ -34,10 +35,12 @@
 
     <!-- Maven task Initialization -->
     <target name="init.maven">
-        <property name="mvn_home" value="${env.MAVEN_HOME}"/>
-        <property name="mvn_home" value="${env.M2_HOME}"/>
-        <property name="mvn_home" value="${maven.home}"/>
+        <property name="mvn_home" value="${env.MAVEN_HOME}" if:set="env.MAVEN_HOME"/>
+        <property name="mvn_home" value="${env.M2_HOME}" if:set="env.M2_HOME"/>
+        <property name="mvn_home" value="${maven.home}" if:set="maven.home"/>
+        <property name="mvn_home" value="" />
 
+        <echo>Maven home: ${mvn_home}</echo>
         <fail message="Path to &quot;maven_home&quot; must be set. You can set it in application build.properties or in either MAVEN_HOME or M2_HOME environment variable.">
             <condition>
                 <and>
@@ -73,6 +76,7 @@
 
     <!-- Clean runtime -->
     <target name="clean" description="Cleaning all projects" depends="init">
+        <echo>Maven Cleaning...</echo>
         <artifact:mvn pom="pom.xml" mavenHome="${mvn_home}" fork="true" failonerror="true">
             <jvmarg value="-Dmaven.multiModuleProjectDirectory"/>
             <arg value="clean"/>
@@ -82,6 +86,7 @@
     </target>
 
     <target name="package" description="Compiles the sources and creates runtime jar" depends="init,clean">
+        <echo>Build package for profile ${profile}</echo>
         <property name="regex" value="^([^_-]*)[_-]?(.*)$"/>
 
         <propertyregex
