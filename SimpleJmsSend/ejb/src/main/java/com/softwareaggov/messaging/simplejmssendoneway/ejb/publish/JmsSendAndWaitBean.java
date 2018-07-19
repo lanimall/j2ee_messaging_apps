@@ -48,6 +48,9 @@ public class JmsSendAndWaitBean extends JmsPublisherBase {
     @Resource(name = "jmsResponseWaitMillis")
     private Long jmsResponseWaitMillis = null;
 
+    @Resource(name = "forceCreateTempReplyTo")
+    private Boolean forceCreateTempReplyTo = false;
+
     @Override
     public void ejbCreate() {
         super.ejbCreate();
@@ -72,6 +75,11 @@ public class JmsSendAndWaitBean extends JmsPublisherBase {
 
     @Override
     protected String sendMessage(ConnectionFactory jmsConnectionFactory, Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, Object payload, Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
+        // if prefer to use temp queues instead of permanent reply queue, simply set the replyTo to null...
+        // the sendTextMessageAndWait() will take care of creating the temp queue if replyTo=null
+        if(forceCreateTempReplyTo)
+            replyTo = null;
+
         Map<JMSHelper.JMSHeadersType, Object> jmsProperties = JMSHelper.getMessageJMSHeaderPropsAsMap(destination, deliveryMode, priority, correlationID, replyTo);
         return JMSHelper.createSender(jmsConnectionFactory).sendTextMessageAndWait(payload, jmsProperties, headerProperties, jmsResponseWaitMillis, sessionTransacted, sessionAcknowledgeMode);
     }
