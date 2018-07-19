@@ -103,8 +103,14 @@
                 select="\2"
                 casesensitive="false"/>
 
+        <!-- Some defaults -->
+        <property name="app.name" value="" />
+        <property name="build.name" value="" />
+
         <echo>app.name = ${app.name}</echo>
         <echo>build.name = ${build.name}</echo>
+        <tolowercase propname="build.property.name" value="${build.name}"></tolowercase>
+        <property name="build.property.name" value="${build.name}" />
 
         <if>
             <or>
@@ -115,7 +121,7 @@
                 <property name="property.file.name" value="build.properties"/>
             </then>
             <else>
-                <property name="property.file.name" value="build.${build.name}.properties"/>
+                <property name="property.file.name" value="build.${build.property.name}.properties"/>
             </else>
         </if>
 
@@ -178,4 +184,10 @@
             <property name="@{propname}" value="${j2ee-jms-examples.deployment_profiles_@{profilename}}" />
         </sequential>
     </macrodef>
+
+    <scriptdef language="javascript" name="tolowercase">
+        <attribute name="propname" />
+        <attribute name="value" />
+        project.setProperty(attributes.get("propname"), attributes.get("value").toLowerCase());
+    </scriptdef>
 </project>
