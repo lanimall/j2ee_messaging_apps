@@ -62,13 +62,9 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
     private MessageProcessorLocal messageProcessor;
 
     private MessageDrivenContext mdbContext;
-    private transient JMSHelper jmsHelper;
-    private volatile boolean init = false;
 
     private static final String RESOURCE_NAME_REPLYCF = "jms/someManagedReplyCF";
     private static final String RESOURCE_NAME_REPLYDEST = "jms/someManagedDefaultReplyTo";
-
-    // private transient Destination jmsDefaultReplyTo = null;
 
     @Resource(name = "jmsMessageEnableReply")
     private Boolean jmsMessageEnableReply = false;
@@ -76,10 +72,10 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
     @Resource(name = "jmsMessageReplyOverridesDefault")
     private Boolean jmsMessageReplyOverridesDefault = true;
 
-    //@Resource(name = "jms/someManagedReplyCF")
-    private ConnectionFactory jmsConnectionFactory = null;
+    //resource looked up from JNDI
+    private ConnectionFactory jmsReplyConnectionFactory = null;
 
-    //@Resource(name = "jms/someManagedDefaultReplyTo")
+    //resource looked up from JNDI
     private Destination jmsDefaultReplyTo;
 
     @PostConstruct
@@ -87,7 +83,7 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
         log.info("ejbCreate()");
 
         //lookup the resources, and set null if resource cannot be found
-        jmsConnectionFactory = (ConnectionFactory) lookupEnvResource(RESOURCE_NAME_REPLYCF);
+        jmsReplyConnectionFactory = (ConnectionFactory) lookupEnvResource(RESOURCE_NAME_REPLYCF);
         jmsDefaultReplyTo = (Destination) lookupEnvResource(RESOURCE_NAME_REPLYDEST);
 
         messageProcessingCounter.incrementAndGet(getBeanName() + "-create");
@@ -97,13 +93,7 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
     public void ejbRemove() throws EJBException {
         log.info("ejbRemove()");
         messageProcessingCounter.incrementAndGet(getBeanName() + "-remove");
-        jmsDefaultReplyTo = null;
-        init = false;
-        if (null != jmsHelper)
-            jmsHelper.cleanup();
-        jmsHelper = null;
     }
-
 
     public void setMessageDrivenContext(MessageDrivenContext ctx) throws EJBException {
         mdbContext = ctx;
@@ -124,23 +114,6 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
             log.warn("Could not lookup the resource " + jndiLookupName);
         }
         return resource;
-    }
-
-    // Initializing resource outside the EJB creation to make sure these lookups get retried until they work
-    // (eg. if UM is not available yet when EJB is created)
-    private void initJMSReply() throws JMSException {
-        if (!init) {
-            synchronized (this.getClass()) {
-                if (!init) {
-                    if (null == jmsConnectionFactory)
-                        throw new IllegalArgumentException("jmsConnectionFactory cannot be null for replies");
-
-                    this.jmsHelper = JMSHelper.createSender(jmsConnectionFactory);
-                    messageProcessingCounter.incrementAndGet(getBeanName() + "-initReply");
-                    init = true;
-                }
-            }
-        }
     }
 
     /**
@@ -206,9 +179,6 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
 
             if (jmsMessageEnableReply && null != processorResult) {
                 try {
-                    //init reply
-                    initJMSReply();
-
                     Object postProcessingPayload = null;
                     Map<JMSHelper.JMSHeadersType, Object> postProcessingJMSHeaderProperties = null;
                     Map<String, Object> postProcessingCustomProperties = null;
@@ -232,12 +202,15 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                     }
 
                     //if replyTo is set, reply
-                    if (null != replyTo) {
+                    if (null != replyTo && null != jmsReplyConnectionFactory) {
                         if (null == postProcessingJMSHeaderProperties)
                             postProcessingJMSHeaderProperties = new HashMap<JMSHelper.JMSHeadersType, Object>();
 
                         //set the destination to the replyTo
                         postProcessingJMSHeaderProperties.put(JMSHelper.JMSHeadersType.JMS_DESTINATION, replyTo);
+
+                        //clear replyTo field to avoid infinite loops...
+                        postProcessingJMSHeaderProperties.remove(JMSHelper.JMSHeadersType.JMS_REPLYTO);
 
                         // Get correlationID from message if set.
                         // If not set, then get the MessageID from message, and set the reply correlationID with it
@@ -245,10 +218,18 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                             postProcessingJMSHeaderProperties.put(JMSHelper.JMSHeadersType.JMS_CORRELATIONID, postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_MESSAGEID));
 
                         //send reply
-                        jmsHelper.sendTextMessage(postProcessingPayload, postProcessingJMSHeaderProperties, postProcessingCustomProperties);
+                        JMSHelper.createSender(jmsReplyConnectionFactory).sendTextMessage(postProcessingPayload, postProcessingJMSHeaderProperties, postProcessingCustomProperties);
                         messageProcessingCounter.incrementAndGet(getBeanName() + "-replySuccess");
                     } else {
-                        messageProcessingCounter.incrementAndGet(getBeanName() + "-replyNullDestination");
+                        if(null == jmsReplyConnectionFactory){
+                            messageProcessingCounter.incrementAndGet(getBeanName() + "-replyNullConnectionFactory");
+                            log.warn("Reply can't be sent because jmsReplyConnectionFactory is null");
+                        }
+
+                        if(null == replyTo) {
+                            messageProcessingCounter.incrementAndGet(getBeanName() + "-replyNullDestination");
+                            log.warn("Reply can't be sent because replyTo is null");
+                        }
                     }
                 } catch (Exception e) {
                     log.error("Exception occurred", e);
