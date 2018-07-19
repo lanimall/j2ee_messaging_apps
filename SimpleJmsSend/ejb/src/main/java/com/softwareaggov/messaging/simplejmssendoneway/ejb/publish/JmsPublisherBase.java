@@ -63,18 +63,8 @@ public abstract class JmsPublisherBase implements JmsPublisher {
     @Resource(name = "jmsPriority")
     private Integer jmsPriority = null;
 
-//    @Resource(name = "jmsReplyDestinationName")
-//    private String jmsReplyDestinationName = null;
-//
-//    @Resource(name = "jmsReplyDestinationType")
-//    private String jmsReplyDestinationType = null;
-
     @Resource(name = "jmsSendEnabled")
     private Boolean isEnabled;
-
-//    private volatile boolean init = false;
-
-//    protected transient JMSHelper jmsHelper = null;
 
     @PostConstruct
     public void ejbCreate() {
@@ -86,10 +76,6 @@ public abstract class JmsPublisherBase implements JmsPublisher {
     public void ejbRemove() throws EJBException {
         log.info("ejbRemove()");
         messageProcessingCounter.incrementAndGet(getBeanName() + "-remove");
-//        init = false;
-//        if (null != jmsHelper)
-//            jmsHelper.cleanup();
-//        jmsHelper = null;
     }
 
     protected String getBeanName() {
@@ -121,41 +107,12 @@ public abstract class JmsPublisherBase implements JmsPublisher {
         return (null != isEnabled) ? isEnabled : false;
     }
 
-    // Initializing resource outside the EJB creation to make sure these lookups get retried until they work
-    // (eg. if UM is not available yet when EJB is created)
-//    private void initJMS() throws JMSException {
-//        if (!init) {
-//            synchronized (this.getClass()) {
-//                if (!init) {
-//                    try {
-//                        this.jmsHelper = JMSHelper.createSender(getJmsConnectionFactory());
-//
-//                        //JMS reply destination
-//                        if (null != jmsReplyDestinationName && !"".equals(jmsReplyDestinationName) &&
-//                                null != jmsReplyDestinationType && !"".equals(jmsReplyDestinationType)) {
-//                            jmsReplyTo = jmsHelper.lookupDestination(jmsReplyDestinationName, jmsReplyDestinationType);
-//                        }
-//
-//                        init = true;
-//                        messageProcessingCounter.incrementAndGet(getBeanName() + "-initSuccess");
-//                    } catch (JMSException e) {
-//                        messageProcessingCounter.incrementAndGet(getBeanName() + "-initErrors");
-//                        throw e;
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     public String sendTextMessage(final Object msgTextPayload, final Map<String, Object> msgHeaderProperties) throws JMSException {
         String returnText = "";
         if (log.isDebugEnabled())
             log.debug("in EJB: sendTextMessage");
 
         try {
-            //Initialize JMS objects...once done, will not do it again
-//            initJMS();
-
             returnText = sendMessage(getJmsConnectionFactory(), getJmsDestination(), jmsSessionTransacted, jmsSessionAcknowledgeMode, msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, null, getJmsReplyToDestination());
 
             //increment processing counter
