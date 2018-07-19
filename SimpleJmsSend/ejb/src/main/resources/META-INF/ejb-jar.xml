@@ -112,6 +112,11 @@
                 <env-entry-type>java.lang.Long</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis}</env-entry-value>
             </env-entry>
+            <env-entry>
+                <env-entry-name>forceCreateTempReplyTo</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.forceCreateTempReplyTo}</env-entry-value>
+            </env-entry>
             <resource-ref>
                 <description>The JCA Managed Connection Factory for Message Publish</description>
                 <res-ref-name>jms/someManagedCF</res-ref-name>
