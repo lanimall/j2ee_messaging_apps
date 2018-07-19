@@ -58,6 +58,18 @@ Code Content
   * Shared library that contains global code and especially the custom-built JMSHelper that encapsulate simple JMS contructs
   * A simple counter (accessible via servlet) is also made available on every apps to track various metrics (message sent, message consumed, processing success, processing errors, etc...)
   
+
+Pre-requisites for building the apps
+--------------------------------------------
+
+* [Apache Ant](https://ant.apache.org/)
+* [Java](http://openjdk.java.net)
+* [Apache Maven](http://apache.spinellicreations.com/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.zip)
+
+In order to build, the maven home path must be provided eiher in either:
+* An environment property "MAVEN_HOME" or "M2_HOME", OR
+* Specified in the "maven.home" property in the [build.properties](./build.properties) file
+
 Resource Adapter Guides
 --------------------------------------------
 
