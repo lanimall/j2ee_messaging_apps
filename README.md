@@ -166,7 +166,7 @@ Finally, a 3rd app consumes the Asynchronous reply message (used only by the "As
 
 3 applications should be created:
 * dist/SimpleJmsSendWithReply.ear
-* dist/SimpleJmsConsumeWaitAndReply.ear
+* dist/SimpleJmsConsumeAndReply.ear
 * dist/SimpleJmsConsumeTheReply.ear
 
 #### Configuration Pre-requisites before deploying the apps on the Application Server
@@ -217,7 +217,7 @@ To send messages (using either "Send And Forget" or "Send and Wait"), simply cal
 
 To access the various implemented counters that track the sends and consumes, here is the URL:
 * http://APP_SERVER_HOST:PORT/SimpleJmsSendWithReply/messagecounters
-* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeWaitAndReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeAndReply/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
 
 
@@ -308,7 +308,7 @@ That way, the right message profile can flow through the various apps (as oppose
 * dist/SimpleJmsSendDriver.ear
 * dist/SimpleJmsConsumeDriverAndForwardToSendWithReplyAsync.ear
 * dist/SimpleJmsSendWithReply.ear
-* dist/SimpleJmsConsumeWaitAndReply.ear
+* dist/SimpleJmsConsumeAndReply.ear
 * dist/SimpleJmsConsumeTheReply.ear
 
 #### Configuration Pre-requisites before deploying the apps on the Application Server
@@ -368,7 +368,7 @@ To access the various implemented counters that track the sends and consumes, he
 * http://APP_SERVER_HOST:PORT/SimpleJmsSendAndForgetToDriver/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeAndForwardToEJB/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsSendWithReply/messagecounters
-* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeWaitAndReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeAndReply/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
 
 
@@ -389,7 +389,7 @@ the "Send And Wait" EJB from the "SimpleJmsSendWithReply.ear" app.
 * dist/SimpleJmsSendDriver.ear
 * dist/SimpleJmsConsumeDriverAndForwardToSendWithReplySync.ear
 * dist/SimpleJmsSendWithReply.ear
-* dist/SimpleJmsConsumeWaitAndReply.ear
+* dist/SimpleJmsConsumeAndReply.ear
 * dist/SimpleJmsConsumeTheReply.ear
 
 #### Configuration Pre-requisites before deploying the apps on the Application Server
@@ -451,7 +451,7 @@ To access the various implemented counters that track the sends and consumes, he
 * http://APP_SERVER_HOST:PORT/SimpleJmsSendAndForgetToDriver/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeAndForwardToEJB/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsSendWithReply/messagecounters
-* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeWaitAndReply/messagecounters
+* http://APP_SERVER_HOST:PORT/SimpleJmsConsumeAndReply/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
 
 
