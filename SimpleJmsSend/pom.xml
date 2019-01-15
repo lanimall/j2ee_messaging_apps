@@ -45,6 +45,7 @@
     </licenses>
 
     <properties>
+        <build.default.properties>${project.basedir}/../build.default.properties</build.default.properties>
         <build.properties>${project.basedir}/../build.properties</build.properties>
         <logger.com.softwareaggov.messaging.libs>info</logger.com.softwareaggov.messaging.libs>
         <logger.com.softwareaggov.messaging.simplejmssendoneway.ejb>info</logger.com.softwareaggov.messaging.simplejmssendoneway.ejb>
