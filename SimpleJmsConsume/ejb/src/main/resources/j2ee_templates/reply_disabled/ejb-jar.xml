@@ -135,27 +135,27 @@
             <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.NoopBean</ejb-class>
         </session>
         <session>
-            <ejb-name>JmsPublisherRemoteClientProcessor</ejb-name>
-            <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.JmsPublisherRemoteClientBean</ejb-class>
+            <ejb-name>MessageInteropClientProcessor</ejb-name>
+            <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor.MessageInteropClientBean</ejb-class>
             <env-entry>
                 <env-entry-name>jndi.ejblookup.initialContextFactory</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${Consumer.Processors.JmsPublisherRemoteClientProcessor.EJB.JndiLookup.InitialContextFactory}</env-entry-value>
+                <env-entry-value>${Consumer.Processors.MessageInteropClientProcessor.EJB.JndiLookup.InitialContextFactory}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jndi.ejblookup.urlPackagePrefix</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${Consumer.Processors.JmsPublisherRemoteClientProcessor.EJB.JndiLookup.UrlPackagePrefix}</env-entry-value>
+                <env-entry-value>${Consumer.Processors.MessageInteropClientProcessor.EJB.JndiLookup.UrlPackagePrefix}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jndi.ejblookup.url</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${Consumer.Processors.JmsPublisherRemoteClientProcessor.EJB.JndiLookup.Url}</env-entry-value>
+                <env-entry-value>${Consumer.Processors.MessageInteropClientProcessor.EJB.JndiLookup.Url}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jndi.ejblookup.bindingname</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${Consumer.Processors.JmsPublisherRemoteClientProcessor.EJB.JndiLookup.BindingName}</env-entry-value>
+                <env-entry-value>${Consumer.Processors.MessageInteropClientProcessor.EJB.JndiLookup.BindingName}</env-entry-value>
             </env-entry>
         </session>
     </enterprise-beans>

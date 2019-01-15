@@ -44,7 +44,7 @@ Code Content
 * SimpleJmsConsume
   * Consumes JMS messages from queues/topics using the Resource Adapter,
   * Ability to perform some mock processing (eg. sleep time, mock exceptions at intervals, etc...),
-  * Ability to call remote EJBs that implement the JmsPublisherRemote interface (eg. the ones in the SimpleJmsSend application) in order to chain message comsumption with extra message sending,
+  * Ability to call remote EJBs that implement the MessageInterop interface (eg. the ones in the SimpleJmsSend application) in order to chain message comsumption with extra message sending,
   * Ability to reply if the "replyTo" field is specified in the message (or if a default "replyTo" is set)
 * SimpleSoapJmsClient
   * JAX-WS client that works with the SimpleSoapJmsServer to communicate with the SOAP Endpoint

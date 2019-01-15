@@ -18,7 +18,7 @@
 
 package com.softwareaggov.messaging.simplesoapjms.client.ejb;
 
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote;
+import com.softwareaggov.messaging.libs.interop.MessageInterop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ import javax.ejb.*;
 @Stateless(name = "SoapHttpClientTwoWayService")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(SoapClientLocal.class)
-@Remote(JmsPublisherRemote.class)
+@Remote(MessageInterop.class)
 public class SoapHttpClientTwoWayBean extends BaseSoapHttpClient {
     private static Logger log = LoggerFactory.getLogger(SoapHttpClientTwoWayBean.class);
 

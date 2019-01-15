@@ -18,12 +18,11 @@
 
 package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish;
 
+import com.softwareaggov.messaging.libs.interop.MessageInterop;
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -36,8 +35,8 @@ import java.util.Map;
 
 @Stateless(name = "JmsSendAndForgetService")
 @TransactionManagement(TransactionManagementType.BEAN)
-@Local(JmsPublisherLocal.class)
-@Remote(JmsPublisherRemote.class)
+@Local(MessageInteropLocal.class)
+@Remote(MessageInterop.class)
 public class JmsSendAndForgetBean extends JmsPublisherBase {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetBean.class);
 

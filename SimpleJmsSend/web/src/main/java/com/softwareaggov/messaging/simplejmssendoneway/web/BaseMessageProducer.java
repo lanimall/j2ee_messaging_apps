@@ -19,7 +19,7 @@
 package com.softwareaggov.messaging.simplejmssendoneway.web;
 
 import com.softwareaggov.messaging.libs.utils.AppConfig;
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;
+import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.MessageInteropLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public abstract class BaseMessageProducer extends HttpServlet {
     protected String messagePayload;
     protected Map<String, Object> messageProperties;
 
-    protected abstract JmsPublisherLocal getJmsPublisherLocal();
+    protected abstract MessageInteropLocal getJmsPublisherLocal();
 
     @Override
     public void init() throws ServletException {
@@ -89,7 +89,7 @@ public abstract class BaseMessageProducer extends HttpServlet {
 
         out.write("<h1>" + req.getContextPath() + " - Sending JMS message To Queue</h1>");
         try {
-            JmsPublisherLocal jmsPublisher = getJmsPublisherLocal();
+            MessageInteropLocal jmsPublisher = getJmsPublisherLocal();
             if (null == jmsPublisher)
                 throw new IllegalArgumentException("jmsPublisher is null...should not be...check code or configs");
 

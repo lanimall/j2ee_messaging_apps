@@ -21,7 +21,6 @@ package com.softwareaggov.messaging.libs.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJBException;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -65,11 +64,7 @@ public class FileUtils {
                         }
                     } finally {
                         if (null != reader) {
-                            try {
-                                reader.close();
-                            } catch (IOException e) {
-                                throw new EJBException("Could not close the reader", e);
-                            }
+                            reader.close();
                         }
                     }
                     fileRawStr = textBuilder.toString();

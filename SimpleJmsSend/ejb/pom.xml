@@ -95,11 +95,6 @@
                     <!-- Tell Maven we are using EJB 3.1 -->
                     <ejbVersion>3.1</ejbVersion>
                     <generateClient>true</generateClient>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
             <plugin>

@@ -46,13 +46,6 @@
             <artifactId>libs</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>SimpleJmsSend-ejb</artifactId>
-            <version>${project.version}</version>
-            <type>ejb-client</type>
-        </dependency>
-
         <!-- SLF4J -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -113,11 +106,6 @@
                     <!-- Tell Maven we are using EJB 3.1 -->
                     <ejbVersion>3.1</ejbVersion>
                     <generateClient>true</generateClient>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
             <plugin>

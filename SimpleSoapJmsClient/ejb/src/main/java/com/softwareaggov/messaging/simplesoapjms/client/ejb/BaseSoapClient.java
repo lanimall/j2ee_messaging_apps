@@ -18,9 +18,9 @@
 
 package com.softwareaggov.messaging.simplesoapjms.client.ejb;
 
+import com.softwareaggov.messaging.libs.interop.MessageInterop;
 import com.softwareaggov.messaging.libs.utils.Counter;
 import com.softwareaggov.messaging.libs.utils.FileUtils;
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisher;
 import com.softwareaggov.messaging.simplesoapjms.client.jaxws.TestWebService;
 import com.softwareaggov.messaging.simplesoapjms.client.jaxws.TestWebServicePortType;
 import com.softwareaggov.messaging.simplesoapjms.client.utils.HandlerFactory;
@@ -41,7 +41,7 @@ import java.util.Map;
 /**
  * Created by fabien.sanglier on 6/27/18.
  */
-public abstract class BaseSoapClient implements SoapClient, JmsPublisher {
+public abstract class BaseSoapClient implements SoapClient, MessageInterop {
     private static Logger log = LoggerFactory.getLogger(BaseSoapClient.class);
 
     @EJB(beanName = "CounterService")
@@ -108,7 +108,7 @@ public abstract class BaseSoapClient implements SoapClient, JmsPublisher {
     public abstract String callWS(String content);
 
     @Override
-    public String sendTextMessage(Object msgTextPayload, Map<String, Object> msgHeaderProperties) throws JMSException {
+    public String sendTextMessage(String msgTextPayload, Map<String, Object> msgHeaderProperties) {
         return callWS((null != msgTextPayload)?msgTextPayload.toString():  msgPayload);
     }
 

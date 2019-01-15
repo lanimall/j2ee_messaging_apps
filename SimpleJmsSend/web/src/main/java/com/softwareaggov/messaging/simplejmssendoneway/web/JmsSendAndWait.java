@@ -18,7 +18,7 @@
 
 package com.softwareaggov.messaging.simplejmssendoneway.web;
 
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;
+import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.MessageInteropLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +42,10 @@ public class JmsSendAndWait extends BaseMessageProducer {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndWait.class);
 
     @EJB(beanName = "JmsSendAndWaitService")
-    private JmsPublisherLocal jmsSimplePublisher;
+    private MessageInteropLocal jmsSimplePublisher;
 
     @Override
-    protected final JmsPublisherLocal getJmsPublisherLocal() {
+    protected final MessageInteropLocal getJmsPublisherLocal() {
         return jmsSimplePublisher;
     }
 }

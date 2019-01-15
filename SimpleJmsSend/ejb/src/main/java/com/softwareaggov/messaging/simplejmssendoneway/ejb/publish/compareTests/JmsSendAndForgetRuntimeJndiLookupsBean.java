@@ -18,9 +18,9 @@
 
 package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests;
 
+import com.softwareaggov.messaging.libs.interop.MessageInterop;
 import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherBase;
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote;
+import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.MessageInteropLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +28,6 @@ import javax.ejb.*;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import java.util.Map;
 
 /**
@@ -39,9 +36,9 @@ import java.util.Map;
 
 @Stateless(name = "JmsSendAndForgetRuntimeJndiLookupsService")
 @TransactionManagement(TransactionManagementType.BEAN)
-@Local(JmsPublisherLocal.class)
-@Remote(JmsPublisherRemote.class)
-public class JmsSendAndForgetRuntimeJndiLookupsBean extends JmsPublisherBase implements JmsPublisherLocal {
+@Local(MessageInteropLocal.class)
+@Remote(MessageInterop.class)
+public class JmsSendAndForgetRuntimeJndiLookupsBean extends JmsPublisherBase {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetRuntimeJndiLookupsBean.class);
 
     @Override

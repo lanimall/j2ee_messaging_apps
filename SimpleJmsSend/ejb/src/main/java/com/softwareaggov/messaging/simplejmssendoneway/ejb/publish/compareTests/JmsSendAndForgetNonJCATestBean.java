@@ -18,9 +18,9 @@
 
 package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.compareTests;
 
+import com.softwareaggov.messaging.libs.interop.MessageInterop;
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisher;
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherLocal;
+import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.MessageInteropLocal;
 import com.softwareaggov.messaging.libs.utils.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +40,8 @@ import java.util.Map;
  */
 @Stateless(name = "JmsSendAndForgetNonJCATestService")
 @TransactionManagement(TransactionManagementType.BEAN)
-@Local(JmsPublisherLocal.class)
-public class JmsSendAndForgetNonJCATestBean implements JmsPublisher {
+@Local(MessageInteropLocal.class)
+public class JmsSendAndForgetNonJCATestBean implements MessageInterop {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetNonJCATestBean.class);
 
     @EJB(beanName = "CounterService")
@@ -97,11 +97,6 @@ public class JmsSendAndForgetNonJCATestBean implements JmsPublisher {
         if (null != jmsHelper)
             jmsHelper.cleanup();
         jmsHelper = null;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return isEnabled;
     }
 
     protected String getBeanName() {
@@ -161,8 +156,15 @@ public class JmsSendAndForgetNonJCATestBean implements JmsPublisher {
         return jmsHelper.sendTextMessage(payload, jmsProperties, headerProperties);
     }
 
+    //MessageInterop implementation
+    
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
     @TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
-    public String sendTextMessage(final Object msgTextPayload, final Map<String, Object> msgHeaderProperties) {
+    public String sendTextMessage(final String msgTextPayload, final Map<String, Object> properties) {
         String returnText = "";
         if (log.isDebugEnabled())
             log.debug("in EJB: sendTextMessage");
@@ -170,7 +172,7 @@ public class JmsSendAndForgetNonJCATestBean implements JmsPublisher {
         try {
             initJMS();
 
-            returnText = sendMessage(defaultDestination, msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, null, jmsReplyTo);
+            returnText = sendMessage(defaultDestination, msgTextPayload, properties, jmsDeliveryMode, jmsPriority, null, jmsReplyTo);
 
             //increment processing counter
             messageProcessingCounter.incrementAndGet(getBeanName());

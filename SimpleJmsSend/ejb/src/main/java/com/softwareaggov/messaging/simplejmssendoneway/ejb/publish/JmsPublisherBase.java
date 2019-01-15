@@ -18,6 +18,7 @@
 
 package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish;
 
+import com.softwareaggov.messaging.libs.interop.MessageInterop;
 import com.softwareaggov.messaging.libs.utils.Counter;
 import com.softwareaggov.messaging.libs.utils.JMSHelper;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ import java.util.Map;
  * Simple JMS Publisher bean relying on the connection factory to create the JMS connection on each call
  * Created by fabien.sanglier on 6/15/16.
  */
-public abstract class JmsPublisherBase implements JmsPublisher {
+public abstract class JmsPublisherBase implements MessageInterop {
     private static Logger log = LoggerFactory.getLogger(JmsPublisherBase.class);
 
     public static final String RESOURCE_NAME_CF = "jms/someManagedCF";
@@ -103,17 +104,18 @@ public abstract class JmsPublisherBase implements JmsPublisher {
         return resource;
     }
 
+    //MessageInterop implementation
     public boolean isEnabled() {
         return (null != isEnabled) ? isEnabled : false;
     }
 
-    public String sendTextMessage(final Object msgTextPayload, final Map<String, Object> msgHeaderProperties) throws JMSException {
+    public String sendTextMessage(final String msgTextPayload, final Map<String, Object> properties) {
         String returnText = "";
         if (log.isDebugEnabled())
             log.debug("in EJB: sendTextMessage");
 
         try {
-            returnText = sendMessage(getJmsConnectionFactory(), getJmsDestination(), jmsSessionTransacted, jmsSessionAcknowledgeMode, msgTextPayload, msgHeaderProperties, jmsDeliveryMode, jmsPriority, null, getJmsReplyToDestination());
+            returnText = sendMessage(getJmsConnectionFactory(), getJmsDestination(), jmsSessionTransacted, jmsSessionAcknowledgeMode, msgTextPayload, properties, jmsDeliveryMode, jmsPriority, null, getJmsReplyToDestination());
 
             //increment processing counter
             messageProcessingCounter.incrementAndGet(getBeanName() + "-messageSent");

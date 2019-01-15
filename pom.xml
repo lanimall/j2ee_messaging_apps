@@ -65,8 +65,8 @@
         <version.surefire.plugin>2.10</version.surefire.plugin>
 
         <!-- maven-compiler-plugin -->
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
 
         <slf4j.version>1.7.1</slf4j.version>
         <junit.version>4.11</junit.version>
@@ -86,6 +86,9 @@
         </profile>
         <profile>
             <id>Java7</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <maven.compiler.target>1.7</maven.compiler.target>
                 <maven.compiler.source>1.7</maven.compiler.source>
@@ -93,9 +96,6 @@
         </profile>
         <profile>
             <id>Java8</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <maven.compiler.target>1.8</maven.compiler.target>
                 <maven.compiler.source>1.8</maven.compiler.source>
@@ -103,6 +103,9 @@
         </profile>
         <profile>
             <id>Toolchain</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>

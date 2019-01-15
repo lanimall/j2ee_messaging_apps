@@ -36,6 +36,6 @@
     </session>
     <session name="NoopProcessor" simple-binding-name="ejb/${ear.build.name}/session/NoopProcessor">
     </session>
-    <session name="JmsPublisherRemoteClientProcessor" simple-binding-name="ejb/${ear.build.name}/session/JmsPublisherRemoteClientProcessor">
+    <session name="MessageInteropClientProcessor" simple-binding-name="ejb/${ear.build.name}/session/MessageInteropClientProcessor">
     </session>
 </ejb-jar-bnd>

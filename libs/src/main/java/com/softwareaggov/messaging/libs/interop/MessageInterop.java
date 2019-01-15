@@ -16,10 +16,14 @@
  * limitations under the License.
  */
 
-package com.softwareaggov.messaging.simplejmssendoneway.ejb.publish;
+package com.softwareaggov.messaging.libs.interop;
+
+import java.util.Map;
 
 /**
- * Created by fabien.sanglier on 6/15/16.
+ * Created by fabien.sanglier on 11/30/18.
  */
-public interface JmsPublisherLocal extends JmsPublisher {
+public interface MessageInterop {
+    boolean isEnabled();
+    String sendTextMessage(final String msgTextPayload, final Map<String, Object> properties);
 }

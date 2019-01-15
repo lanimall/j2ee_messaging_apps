@@ -18,9 +18,9 @@
 
 package com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.processor;
 
+import com.softwareaggov.messaging.libs.interop.MessageInterop;
 import com.softwareaggov.messaging.libs.jms.processor.ProcessorOutput;
 import com.softwareaggov.messaging.libs.jms.processor.impl.ProcessorOutputImpl;
-import com.softwareaggov.messaging.simplejmssendoneway.ejb.publish.JmsPublisherRemote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,15 +45,15 @@ import java.util.Properties;
  * Created by fabien.sanglier on 6/26/18.
  */
 
-@Stateless(name = "JmsPublisherRemoteClientProcessor")
+@Stateless(name = "MessageInteropClientProcessor")
 @Local(MessageProcessorLocal.class)
 @TransactionManagement(value = TransactionManagementType.BEAN)
-public class JmsPublisherRemoteClientBean implements MessageProcessorLocal {
-    private static Logger log = LoggerFactory.getLogger(JmsPublisherRemoteClientBean.class);
+public class MessageInteropClientBean implements MessageProcessorLocal {
+    private static Logger log = LoggerFactory.getLogger(MessageInteropClientBean.class);
 
     // This will be injected dynamically by jndi lookup...
     // the reason is that we don't want the deployment to fail if the jmsMessagePublisher is not set AND this bean is not used in the runtime path
-    private JmsPublisherRemote jmsMessagePublisher;
+    private MessageInterop messageInterop;
 
     //generally global based on target deployment
     @Resource(name = "jndi.ejblookup.initialContextFactory")
@@ -87,7 +87,7 @@ public class JmsPublisherRemoteClientBean implements MessageProcessorLocal {
             final Context context;
             try {
                 context = new InitialContext(jndiProperties);
-                jmsMessagePublisher = (JmsPublisherRemote) context.lookup(jndiEjbLookupBindingName);
+                messageInterop = (MessageInterop) context.lookup(jndiEjbLookupBindingName);
             } catch (NamingException e) {
                 log.error("Could not lookup the EJB with URL:" + jndiEjbLookupBindingName, e);
                 e.printStackTrace();
@@ -98,30 +98,33 @@ public class JmsPublisherRemoteClientBean implements MessageProcessorLocal {
     @Override
     public ProcessorOutput processMessage(Message msg) throws JMSException {
         if (msg instanceof TextMessage) {
-
             TextMessage txtMsg = (TextMessage) msg;
 
-            if (null != jmsMessagePublisher) {
-                //copy the properties from the incoming message
-                HashMap props = new HashMap();
-                Enumeration txtMsgPropertiesEnum = txtMsg.getPropertyNames();
-                while (txtMsgPropertiesEnum.hasMoreElements()) {
-                    String propName = (String) txtMsgPropertiesEnum.nextElement();
-                    props.put(propName, txtMsg.getObjectProperty(propName));
-                }
-
-                //send the send and wait message
-                String textReturned = jmsMessagePublisher.sendTextMessage(txtMsg.getText(), Collections.unmodifiableMap(props));
-
-                // Packaging the payload + properties into processorOutput object
-                return new ProcessorOutputImpl(
-                        textReturned,
-                        null,
-                        Collections.unmodifiableMap(props)
-                );
-            } else {
-                throw new IllegalArgumentException("jmsMessagePublisher is null...cannot do anything");
+            if (null == messageInterop) {
+                throw new IllegalArgumentException("messageInterop is null...cannot do anything");
             }
+
+            if(!messageInterop.isEnabled()) {
+                throw new IllegalArgumentException("messageInterop is not enabled...cannot do anything");
+            }
+
+            //copy the properties from the incoming message
+            HashMap props = new HashMap();
+            Enumeration txtMsgPropertiesEnum = txtMsg.getPropertyNames();
+            while (txtMsgPropertiesEnum.hasMoreElements()) {
+                String propName = (String) txtMsgPropertiesEnum.nextElement();
+                props.put(propName, txtMsg.getObjectProperty(propName));
+            }
+
+            //send the send and wait message
+            String textReturned = messageInterop.sendTextMessage(txtMsg.getText(), Collections.unmodifiableMap(props));
+
+            // Packaging the payload + properties into processorOutput object
+            return new ProcessorOutputImpl(
+                    textReturned,
+                    null,
+                    Collections.unmodifiableMap(props)
+            );
         } else {
             throw new IllegalArgumentException("Received non-text message");
         }
