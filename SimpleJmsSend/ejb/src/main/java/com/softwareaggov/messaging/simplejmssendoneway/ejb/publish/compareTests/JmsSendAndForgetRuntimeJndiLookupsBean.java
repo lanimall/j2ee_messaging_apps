@@ -37,7 +37,6 @@ import java.util.Map;
 @Stateless(name = "JmsSendAndForgetRuntimeJndiLookupsService")
 @TransactionManagement(TransactionManagementType.BEAN)
 @Local(MessageInteropLocal.class)
-@Remote(MessageInterop.class)
 public class JmsSendAndForgetRuntimeJndiLookupsBean extends JmsPublisherBase {
     private static Logger log = LoggerFactory.getLogger(JmsSendAndForgetRuntimeJndiLookupsBean.class);
 
