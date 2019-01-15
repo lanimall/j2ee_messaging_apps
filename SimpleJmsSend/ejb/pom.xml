@@ -83,6 +83,7 @@
                         </goals>
                         <configuration>
                             <files>
+                                <file>${build.default.properties}</file>
                                 <file>${build.properties}</file>
                             </files>
                         </configuration>
