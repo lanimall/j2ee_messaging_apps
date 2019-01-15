@@ -32,6 +32,12 @@
             <ejb-class>com.softwareaggov.messaging.libs.utils.impl.CounterImpl</ejb-class>
             <session-type>Singleton</session-type>
             <concurrency-management-type>Bean</concurrency-management-type>
+            <post-construct>
+                <lifecycle-callback-method>startRateCalculator</lifecycle-callback-method>
+            </post-construct>
+            <pre-destroy>
+                <lifecycle-callback-method>stopRateCalculator</lifecycle-callback-method>
+            </pre-destroy>
         </session>
         <session>
             <ejb-name>TestProcessorService</ejb-name>
