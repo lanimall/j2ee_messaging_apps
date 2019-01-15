@@ -116,20 +116,27 @@ While all the resource names can be easily modified, for the purpose of this qui
 
 ##### RA Objects to be created on the Application servers
 
-* Managed Connection Factory:
-  * SimpleJmsSendConnectionFactory
-    * ConnectionFactoryJndiName=SimpleJmsSendConnectionFactory
-* Managed Admin Object:
-  * SimpleJmsSendDestination
-    * DestinationJndiName=JMSSamples/SimpleQueue
-* Managed Activation Specification:
-  * SimpleJmsConsumer
-    * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
-    * destinationJndiName=JMSSamples/SimpleQueue
+* Resource Adapter
+  * Managed Connection Factory:
+    * SimpleJmsSendConnectionFactory (name="SimpleJmsSendConnectionFactory", jndi-name="java:/jms/SimpleJmsSendConnectionFactory", class-name="com.sun.genericra.outbound.ManagedJMSConnectionFactory")
+      * Properties:
+        * Key=ConnectionFactoryJndiName // Value=SimpleJmsSendConnectionFactory
+  * Managed Admin Object:
+    * SimpleJmsSendDestination (name="SimpleJmsSendDestination", jndi-name="java:/jms/SimpleJmsSendDestination", class-name="com.sun.genericra.outbound.QueueProxy")
+      * Properties:
+        * Key=DestinationJndiName // Value=JMSSamples/SimpleQueue
+  * Managed Activation Specification (not available in Jboss -- see note below)
+    * SimpleJmsConsumer (name="SimpleJmsConsumer", jndi-name="java:/jms/SimpleJmsConsumer", class-name="com.sun.genericra.outbound.QueueProxy")
+      * Properties:
+        * Key=connectionFactoryJndiName // Value=SimpleJmsConsumerConnectionFactory
+        * Key=destinationJndiName // Value=JMSSamples/SimpleQueue
 
 **NOTE**: Not all application servers provide abstraction for activation specs. Please refer to your application server documentation.
-For example, Websphere provides such abstraction, whereas for Jboss, the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
-The applications support and will work with both mechanisms.
+For example, Websphere provides such abstraction
+Whereas for Jboss, the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml), 
+and abstracted as settings in the application build.properties
+
+The application supports and will work with both mechanisms.
 
 #### Deploy the app and run
 
@@ -143,10 +150,10 @@ To access the various implemented counters that track the sends and consumes, he
 * http://APP_SERVER_HOST:PORT/SimpleJmsSend/messagecounters
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsume/messagecounters
 
-**NOTE**: In the event that the application does not start, it's very likely that something was not setup right with the resource adapter
-and/or related configurations. Review the application server logs to see what may have gone wrong.
-
-
+**NOTE**: In the event that the application does not start, it's very likely that 
+something was not setup right with the application server configuration related to the resource adapter configurations 
+(eg. a managed connection factory or managed admin object not present or configured right etc...)
+In most case, reviewing the application server logs is a good start to see what may have gone wrong.
 
 ### Sample Profile 2a: Simple JMS "Send with Reply" + consume the reply (either synchronously or asynchronously)
 
