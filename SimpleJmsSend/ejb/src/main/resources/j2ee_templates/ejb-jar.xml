@@ -32,6 +32,12 @@
             <ejb-class>com.softwareaggov.messaging.libs.utils.impl.CounterImpl</ejb-class>
             <session-type>Singleton</session-type>
             <concurrency-management-type>Bean</concurrency-management-type>
+            <post-construct>
+                <lifecycle-callback-method>startRateCalculator</lifecycle-callback-method>
+            </post-construct>
+            <pre-destroy>
+                <lifecycle-callback-method>stopRateCalculator</lifecycle-callback-method>
+            </pre-destroy>
         </session>
         <session>
             <ejb-name>JmsSendAndForgetService</ejb-name>
@@ -107,6 +113,11 @@
                 <env-entry-name>jmsResponseWaitMillis</env-entry-name>
                 <env-entry-type>java.lang.Long</env-entry-type>
                 <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.jmsResponseWaitMillis}</env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>forceCreateTempReplyTo</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${JmsSend.JmsSendAndWaitService.Env.forceCreateTempReplyTo}</env-entry-value>
             </env-entry>
             <resource-ref>
                 <description>The JCA Managed Connection Factory for Message Publish</description>
@@ -216,59 +227,59 @@
             <env-entry>
                 <env-entry-name>jmsSendEnabled</env-entry-name>
                 <env-entry-type>java.lang.Boolean</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsSendEnabled}</env-entry-value>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSendEnabled}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jmsSessionTransacted</env-entry-name>
                 <env-entry-type>java.lang.Boolean</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsSessionTransacted}</env-entry-value>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSessionTransacted}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jmsSessionAcknowledgeMode</env-entry-name>
                 <env-entry-type>java.lang.Integer</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsSessionAcknowledgeMode}</env-entry-value>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsSessionAcknowledgeMode}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jmsDeliveryMode</env-entry-name>
                 <env-entry-type>java.lang.Integer</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsDeliveryMode}</env-entry-value>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsDeliveryMode}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jmsPriority</env-entry-name>
                 <env-entry-type>java.lang.Integer</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.Env.jmsPriority}</env-entry-value>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.Env.jmsPriority}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jms.jndi.contextfactory</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.jndi.initialContext}</env-entry-value>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.jndi.initialContext}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jms.jndi.connection.url</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.jndi.connection.url}</env-entry-value>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.jndi.connection.url}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jms.connectionfactory.name</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.connectionfactory.name}
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.connectionfactory.name}
                 </env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jms.default.destination.name</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.default.destination.name}
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.default.destination.name}
                 </env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jmsReplyDestinationName</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.replyDestinationName}</env-entry-value>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.replyDestinationName}</env-entry-value>
             </env-entry>
             <env-entry>
                 <env-entry-name>jmsReplyDestinationType</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestBean.replyDestinationType}</env-entry-value>
+                <env-entry-value>${JmsSend.JmsSendAndForgetNonJCATestService.replyDestinationType}</env-entry-value>
             </env-entry>
         </session>
     </enterprise-beans>
