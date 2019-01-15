@@ -31,4 +31,8 @@ public interface Counter {
     long reset(String counterName);
 
     long getCountRate(String key);
+
+    void startRateCalculator();
+
+    void stopRateCalculator();
 }

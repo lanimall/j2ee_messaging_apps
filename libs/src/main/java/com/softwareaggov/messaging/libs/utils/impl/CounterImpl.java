@@ -37,13 +37,15 @@ public class CounterImpl implements Counter {
     private volatile HashMap<String, Long> counterPreviousCheckpoint;
     private volatile HashMap<String, Long> countersRates;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private final ScheduledFuture<?> rateCalculationHander;
+    private ScheduledFuture<?> rateCalculationHander = null;
 
     public CounterImpl() {
         this.counters = new ConcurrentHashMap<String, Long>();
         this.counterPreviousCheckpoint = new HashMap<String, Long>();
         this.countersRates = new HashMap<String, Long>();
+    }
 
+    public void startRateCalculator() {
         final Runnable calculateRates = new Runnable() {
             public void run() {
                 calculateRates();
@@ -52,9 +54,7 @@ public class CounterImpl implements Counter {
         rateCalculationHander = scheduler.scheduleAtFixedRate(calculateRates, 10, 5, TimeUnit.SECONDS);
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
+    public void stopRateCalculator() {
         if (null != rateCalculationHander)
             rateCalculationHander.cancel(true);
     }
