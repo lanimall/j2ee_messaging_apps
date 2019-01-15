@@ -44,7 +44,7 @@
     <target name="applytemplates" depends="init">
         <copy todir="${project.build.outputDirectory}/META-INF" overwrite="true">
             <fileset dir="${ejbresources_templates_dirpath}">
-                <include name="**/ejb-jar.xml"/>
+                <include name="**/*.xml"/>
             </fileset>
             <filterset begintoken="@" endtoken="@">
                 <propertyset>
@@ -85,6 +85,8 @@
                              value="${ejbjar.reply.block}"
                              value-if-empty="" />
 
+            <echo message="EjbJar.@{value}.ReplyTo.BindingBlock = ${EjbJar.@{value}.ReplyTo.BindingBlock}"/>
+
             <replace property="wasejbjar.reply.block.processed.@{value}"
                      value="${wasejbjar.reply.block}"
                      token="@VALUE@"
@@ -95,6 +97,8 @@
                              value="${wasejbjar.reply.block.processed.@{value}}"
                              value-if-empty="" />
 
+            <echo message="WasEjbJar.@{value}.ReplyTo.BindingBlock = ${WasEjbJar.@{value}.ReplyTo.BindingBlock}"/>
+
             <replace property="jbossejbjar.reply.block.processed.@{value}"
                      value="${jbossejbjar.reply.block}"
                      token="@VALUE@"
@@ -104,6 +108,8 @@
                              property="@{value}.ReplyTo.exists"
                              value="${jbossejbjar.reply.block.processed.@{value}}"
                              value-if-empty="" />
+
+            <echo message="JbossEjbJar.@{value}.ReplyTo.BindingBlock = ${JbossEjbJar.@{value}.ReplyTo.BindingBlock}"/>
         </sequential>
     </macrodef>
 
