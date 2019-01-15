@@ -1,5 +1,5 @@
 
-The J2EE resources are actually in <project.dir>/resource_templates/
+The J2EE resources are actually in ${project.build.outputDirectory}/META-INF/j2ee_templates/
 
 Explanation:
 
