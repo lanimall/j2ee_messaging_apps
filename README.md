@@ -126,15 +126,15 @@ While all the resource names can be easily modified, for the purpose of this qui
       * Properties:
         * Key=DestinationJndiName // Value=JMSSamples/SimpleQueue
   * Managed Activation Specification (not available in Jboss -- see note below)
-    * SimpleJmsConsumer (name="SimpleJmsConsumer", jndi-name="java:/jms/SimpleJmsConsumer", class-name="com.sun.genericra.outbound.QueueProxy")
+    * SimpleJmsConsumer (name="SimpleJmsConsumer", jndi-name="java:/jms/SimpleJmsConsumer", class-name="com.sun.genericra.inbound.ActivationSpec")
       * Properties:
         * Key=connectionFactoryJndiName // Value=SimpleJmsConsumerConnectionFactory
         * Key=destinationJndiName // Value=JMSSamples/SimpleQueue
 
 **NOTE**: Not all application servers provide abstraction for activation specs. Please refer to your application server documentation.
-For example, Websphere provides such abstraction
-Whereas for Jboss, the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml), 
-and abstracted as settings in the application build.properties
+For example, Websphere provides such abstraction in the Admin Console.
+Whereas for Jboss, the activation specs are directly provided by the application in the jboss descriptor (jboss-ejb3.xml),
+and I abstracted these settings in the application build.properties for easy modification.
 
 The application supports and will work with both mechanisms.
 
@@ -157,13 +157,19 @@ In most case, reviewing the application server logs is a good start to see what 
 
 ### Sample Profile 2a: Simple JMS "Send with Reply" + consume the reply (either synchronously or asynchronously)
 
-This sample sends JMS messages to a queue with a ReplyTo header. 
-2 options for sends: 
-* "Send and Forget" (Asynchronous send and reply - Reply consumed by another app)
-* "Send and Wait" for reply (Synchronous send and wait - reply consumed in the same waiting thread)
+This sample demonstrates a "request / reply" use case with JMS messaging constructs 
+(which is a common data exchange pattern that adds various benefits like data delivery reliability, failure recovery, built-in load balancing, etc...)
 
-Then, a consume app receives the message, processes it and reply to the appropriate destination basded on the ReplyTo header embedded in the message.
-Finally, a 3rd app consumes the Asynchronous reply message (used only by the "Asynchronous send and reply" case)
+3 applications are created in this use case:
+* SimpleJmsSendWithReply.ear:
+  * Sends JMS messages to a queue with a ReplyTo header.
+  * 2 options for sends: 
+    * "Send and Forget" (Asynchronous send and reply - Reply consumed by another app)
+    * "Send and Wait" for reply (Synchronous send and wait - reply consumed in the same waiting thread)
+* SimpleJmsConsumeAndReply.ear:
+  * receives the message, processes it and reply to the appropriate destination based on the ReplyTo header embedded in the received message.
+* SimpleJmsConsumeTheReply.ear
+  * consumes the Asynchronous reply message sent by the "Send and Forget" option
 
 #### Build
 
@@ -188,30 +194,41 @@ While all the resource names can be easily modified, for the purpose of this qui
   * JMSSamples/ReplyQueueSync
   * JMSSamples/ReplyQueueAsync
 * Connection Factories:
-  * SimpleJmsSendConnectionFactory
+  * SimpleJmsSendWithReplyConnectionFactory
   * SimpleJmsConsumerConnectionFactory
 
 ##### RA Objects to be created on the Application servers
 
-* Managed Connection Factory:
-  * SimpleJmsSendConnectionFactory
-    * ConnectionFactoryJndiName=SimpleJmsSendConnectionFactory
-* Managed Admin Object:
-  * SimpleJmsSendWithReplyDestination
-    * DestinationJndiName=JMSSamples/RequestQueue
-  * SimpleJmsSendReplyToDestination
-    * DestinationJndiName=JMSSamples/ReplyQueueAsync
-* Managed Activation Specification:
-  * SimpleJmsConsumeRequest
-    * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
-    * destinationJndiName=JMSSamples/RequestQueue
-  * SimpleJmsConsumeAsyncReply
-    * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
-    * destinationJndiName=JMSSamples/ReplyQueueAsync
+* Resource Adapter
+  * Managed Connection Factory:
+    * SimpleJmsSendWithReplyConnectionFactory (name="SimpleJmsSendWithReplyConnectionFactory", jndi-name="java:/jms/SimpleJmsSendWithReplyConnectionFactory", class-name="com.sun.genericra.outbound.ManagedJMSConnectionFactory")
+      * Properties:
+        * Key=ConnectionFactoryJndiName // Value=SimpleJmsSendWithReplyConnectionFactory
+        * Key=useProxyMessages // Value=true
+  * Managed Admin Object:
+    * SimpleJmsSendWithReplyDestination (name="SimpleJmsSendWithReplyDestination", jndi-name="java:/jms/SimpleJmsSendWithReplyDestination", class-name="com.sun.genericra.outbound.QueueProxy")
+      * Properties:
+        * Key=DestinationJndiName // Value=JMSSamples/RequestQueue
+    * SimpleJmsAsyncReplyDestination (name="SimpleJmsAsyncReplyDestination", jndi-name="java:/jms/SimpleJmsAsyncReplyDestination", class-name="com.sun.genericra.outbound.QueueProxy")
+      * Properties:
+        * Key=DestinationJndiName // Value=JMSSamples/ReplyQueueAsync
+    * SimpleJmsSyncReplyDestination (name="SimpleJmsSyncReplyDestination", jndi-name="java:/jms/SimpleJmsSyncReplyDestination", class-name="com.sun.genericra.outbound.QueueProxy")
+      * Properties:
+        * Key=DestinationJndiName // Value=JMSSamples/ReplyQueueSync
+  * Managed Activation Specification:
+    * SimpleJmsConsumeRequest (name="SimpleJmsConsumeRequest", jndi-name="java:/jms/SimpleJmsConsumeRequest", class-name="com.sun.genericra.inbound.ActivationSpec")
+      * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
+      * destinationJndiName=JMSSamples/RequestQueue
+    * SimpleJmsConsumeAsyncReply (name="SimpleJmsConsumeAsyncReply", jndi-name="java:/jms/SimpleJmsConsumeAsyncReply", class-name="com.sun.genericra.inbound.ActivationSpec")
+      * connectionFactoryJndiName=SimpleJmsConsumerConnectionFactory
+      * destinationJndiName=JMSSamples/ReplyQueueAsync
  
-**NOTE**: Only Websphere provides abstraction for activation specs.
-For other app servers (eg. Jboss), the activation specs are directly provided in the MDB descriptor (eg. jboss-ejb3.xml)
-And the application already has that sertup to consumes from JMSSamples/SimpleQueue (see SimpleJmsConsume/build.properties for details)
+**NOTE**: Not all application servers provide abstraction for activation specs. Please refer to your application server documentation.
+For example, Websphere provides such abstraction in the Admin Console.
+Whereas for Jboss, the activation specs are directly provided by the application in the jboss descriptor (jboss-ejb3.xml),
+and I abstracted these settings in the application build.properties for easy modification.
+
+The application supports and will work with both mechanisms.
 
 #### Deploy the app and run
 
