@@ -88,10 +88,12 @@ Please refer to the section "Resource Adapter Guides" for detailed guides.
 
 ### Sample Profile 1a: Simple JMS "Send and Forget" + Consume
 
+#### Description
+
 This sample sends JMS messages to a queue, and consume from that same queue (2 apps will be built and deployed)
 The apps come with pre-configured resource names that must be created on the application server(s). 
 
-#### Build
+#### Building the apps
 
 ```
    ant -Dj2ee-jms-examples.deployment_profilename=profile1a assemble
@@ -101,10 +103,11 @@ The apps come with pre-configured resource names that must be created on the app
 * dist/SimpleJmsSend.ear
 * dist/SimpleJmsConsume.ear
 
-#### Configuration Pre-requisites before deploying the apps on the Application Server
+#### Configuration pre-requisites before deploying the apps on the Application Server
 
-The application built in the previous stage requires some JCA Resource Adapter resources to be created on the application server.
-While all the resource names can be easily modified, for the purpose of this quick start, the default apps require the following resources:
+The applications requires some JCA Resource Adapter resources that must be created on the application server.
+While all the resource names can be easily modified, the current apps require the following resources to be created as-is.
+Failure to create a resource or missing a resource attrribute will result in the apps not starting due to errors. 
 
 ##### Objects to be created on the Messaging provider
 
@@ -138,7 +141,7 @@ and I abstracted these settings in the application build.properties for easy mod
 
 The application supports and will work with both mechanisms.
 
-#### Deploy the app and run
+#### Deploy the apps and run
 
 Deploy the EARs using the standard mechanism for the application server of choice.
 The deployment can use all the defaults...and should not require any configuration set at runtimte.
@@ -157,6 +160,8 @@ In most case, reviewing the application server logs is a good start to see what 
 
 ### Sample Profile 2a: Simple JMS "Send with Reply" + consume the reply (either synchronously or asynchronously)
 
+#### Description
+
 This sample demonstrates a "request / reply" use case with JMS messaging constructs 
 (which is a common data exchange pattern that adds various benefits like data delivery reliability, failure recovery, built-in load balancing, etc...)
 
@@ -171,7 +176,7 @@ This sample demonstrates a "request / reply" use case with JMS messaging constru
 * SimpleJmsConsumeTheReply.ear
   * consumes the Asynchronous reply message sent by the "Send and Forget" option
 
-#### Build
+#### Building the apps
 
 ```
    ant -Dj2ee-jms-examples.deployment_profilename=profile2a assemble
@@ -182,10 +187,11 @@ This sample demonstrates a "request / reply" use case with JMS messaging constru
 * dist/SimpleJmsConsumeAndReply.ear
 * dist/SimpleJmsConsumeTheReply.ear
 
-#### Configuration Pre-requisites before deploying the apps on the Application Server
+#### Configuration pre-requisites before deploying the apps on the Application Server
 
-The application built in the previous stage requires some JCA Resource Adapter resources to be created on the application server.
-While all the resource names can be easily modified, for the purpose of this quick start, the default apps require the following resources:
+The built applications require some JCA Resource Adapter resources that must be created on the application server.
+While all the resource names can be easily modified, the current apps require the following resources to be created as-is.
+Failure to create a resource or missing a resource attrribute will result in the apps not starting due to errors.
 
 ##### Objects to be created on the Messaging provider
 
@@ -230,7 +236,7 @@ and I abstracted these settings in the application build.properties for easy mod
 
 The application supports and will work with both mechanisms.
 
-#### Deploy the app and run
+#### Deploy the apps and run
 
 Deploy the EARs using the standard mechanism for the application server of choice.
 The deployment can use all the defaults...and should not require any configuration set at runtimte.
@@ -245,9 +251,9 @@ To access the various implemented counters that track the sends and consumes, he
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
 
 
-
-
 ### Sample Profile 1b: JMS "Send to a Driver queue" which drives profile 1a ("Send And Forget" operations)
+
+#### Description
 
 This sample sends JMS messages to a "driver" queue
 Then, a consumer app consumes the driver queue messages, and calls the "Send And Forget" EJB from the "SimpleJmsSendWithReply.ear" app of Profile 1a.
@@ -257,7 +263,7 @@ Finally, as in profile 1a, a 3rd app consumes the message.
 to send the desired JMS message with the right payload and headers to that driver queue (instead of the sample "SimpleJmsSendAndForgetToDriver.ear" app)
 That way, the right message profile can flow through the various apps (as opposed to built-in sample messages)
 
-#### Build
+#### Building the apps
 
 ```
    ant -Dj2ee-jms-examples.deployment_profilename=profile1b assemble
@@ -269,7 +275,7 @@ That way, the right message profile can flow through the various apps (as oppose
 * dist/SimpleJmsSend.ear
 * dist/SimpleJmsConsume.ear
 
-#### Configuration Pre-requisites before deploying the apps on the Application Server
+#### Configuration pre-requisites before deploying the apps on the Application Server
 
 The application built in the previous stage requires some JCA Resource Adapter resources to be created on the application server.
 While all the resource names can be easily modified, for the purpose of this quick start, the default apps require the following resources:
@@ -309,9 +315,9 @@ To access the various implemented counters that track the sends and consumes, he
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsume/messagecounters
 
 
-
-
 ### Sample Profile 2b: JMS "Send to a Driver queue" which drives profile 2a with Asynchronous Reply ("Send And Forget" with reply operations)
+
+#### Description
 
 This sample sends JMS messages to a "driver" queue 
 Then, a consumer app consumes the driver queue messages, and calls the "Send And Forget" EJB from the "SimpleJmsSendWithReply.ear" app of Profile 2a.
@@ -322,7 +328,7 @@ Finally, a 3rd app consumes the Asynchronous reply message (used only by the "As
 to send the desired JMS message with the right payload and headers to that driver queue (instead of the sample "SimpleJmsSendAndForgetToDriver.ear" app)
 That way, the right message profile can flow through the various apps (as opposed to built-in sample messages)
 
-#### Build
+#### Build the apps
 
 ```
    ant -Dj2ee-jms-examples.deployment_profilename=profile2b assemble
@@ -335,7 +341,7 @@ That way, the right message profile can flow through the various apps (as oppose
 * dist/SimpleJmsConsumeAndReply.ear
 * dist/SimpleJmsConsumeTheReply.ear
 
-#### Configuration Pre-requisites before deploying the apps on the Application Server
+#### Configuration pre-requisites before deploying the apps on the Application Server
 
 The application built in the previous stage requires some JCA Resource Adapter resources to be created on the application server.
 While all the resource names can be easily modified, for the purpose of this quick start, the default apps require the following resources:
@@ -396,9 +402,9 @@ To access the various implemented counters that track the sends and consumes, he
 * http://APP_SERVER_HOST:PORT/SimpleJmsConsumeTheReply/messagecounters
 
 
-
-
 ### Sample Profile 2c: JMS "Send to a Driver queue" which drives profile 2a with Synchronous Reply ("Send And Wait" for reply operations)
+
+#### Description
 
 Same as profile 2b, but in this case, the consumer app which consumes the driver queue messages will calls
 the "Send And Wait" EJB from the "SimpleJmsSendWithReply.ear" app.
