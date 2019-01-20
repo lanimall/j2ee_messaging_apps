@@ -63,6 +63,15 @@
                 <logger.root>warn</logger.root>
             </properties>
         </profile>
+        <profile>
+            <id>logging_trace</id>
+            <properties>
+                <logger.com.softwareaggov.messaging.libs>trace</logger.com.softwareaggov.messaging.libs>
+                <logger.com.softwareaggov.messaging.simplejmssendoneway.ejb>trace</logger.com.softwareaggov.messaging.simplejmssendoneway.ejb>
+                <logger.com.softwareaggov.messaging.simplejmssendoneway.web>trace</logger.com.softwareaggov.messaging.simplejmssendoneway.web>
+                <logger.root>warn</logger.root>
+            </properties>
+        </profile>
     </profiles>
 
     <dependencyManagement>

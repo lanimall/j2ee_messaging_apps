@@ -69,6 +69,15 @@
             </properties>
         </profile>
         <profile>
+            <id>logging_trace</id>
+            <properties>
+                <logger.com.softwareaggov.messaging.libs>trace</logger.com.softwareaggov.messaging.libs>
+                <logger.com.softwareaggov.messaging.simplejmsconsume.ejb>trace</logger.com.softwareaggov.messaging.simplejmsconsume.ejb>
+                <logger.com.softwareaggov.messaging.simplejmsconsume.web>trace</logger.com.softwareaggov.messaging.simplejmsconsume.web>
+                <logger.root>warn</logger.root>
+            </properties>
+        </profile>
+        <profile>
             <id>deployment_jboss</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
