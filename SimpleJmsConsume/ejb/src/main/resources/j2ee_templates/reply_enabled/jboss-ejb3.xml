@@ -110,11 +110,11 @@
     <assembly-descriptor>
         <r:resource-adapter-binding>
             <ejb-name>*</ejb-name>
-            <r:resource-adapter-name>umra.rar</r:resource-adapter-name>
+            <r:resource-adapter-name>${Consumer.jboss.resource-adapter-name}</r:resource-adapter-name>
         </r:resource-adapter-binding>
         <p:pool>
             <ejb-name>*</ejb-name>
-            <p:bean-instance-pool-ref>umra-strict-max-pool</p:bean-instance-pool-ref>
+            <p:bean-instance-pool-ref>${Consumer.jboss.bean-instance-pool}</p:bean-instance-pool-ref>
         </p:pool>
     </assembly-descriptor>
 </jboss:ejb-jar>
