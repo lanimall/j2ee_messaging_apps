@@ -29,10 +29,20 @@
     -->
     <description>Partial deployment descriptors</description>
     <display-name>Partial deployment descriptors</display-name>
+
     <enterprise-beans>
         <message-driven>
             <ejb-name>MessageConsumerService</ejb-name>
             <ejb-class>com.softwareaggov.messaging.simplejmsconsume.ejb.subscribe.MessageConsumerServiceBean</ejb-class>
+            <!-- unsupported by the resource adapter
+            <transaction-type>Container</transaction-type>
+            -->
+            <transaction-type>Bean</transaction-type>
+            <env-entry>
+                <env-entry-name>jmsProcessingWrapInUserTransaction</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>${Consumer.Env.jmsProcessingWrapInUserTransaction}</env-entry-value>
+            </env-entry>
             <env-entry>
                 <env-entry-name>jmsMessageEnableReply</env-entry-name>
                 <env-entry-type>java.lang.Boolean</env-entry-type>
@@ -185,4 +195,13 @@
             </env-entry>
         </session>
     </enterprise-beans>
+    <assembly-descriptor>
+        <container-transaction>
+            <method>
+                <ejb-name>MessageConsumerService</ejb-name>
+                <method-name>*</method-name>
+            </method>
+            <trans-attribute>Required</trans-attribute>
+        </container-transaction>
+    </assembly-descriptor>
 </ejb-jar>

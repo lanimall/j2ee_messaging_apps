@@ -36,6 +36,7 @@ import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.UserTransaction;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +49,6 @@ import java.util.Map;
  */
 
 @MessageDriven(name = "MessageConsumerService")
-@TransactionManagement(value = TransactionManagementType.BEAN)
 public class MessageConsumerServiceBean implements MessageListener, MessageDrivenBean {
     private static final long serialVersionUID = -4602751473208935601L;
     private static Logger log = LoggerFactory.getLogger(MessageConsumerServiceBean.class);
@@ -60,10 +60,14 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
     @EJB(name = "ejb/messageProcessor")
     private MessageProcessorLocal messageProcessor;
 
+    @Resource
     private MessageDrivenContext mdbContext;
 
     private static final String RESOURCE_NAME_REPLYCF = "jms/someManagedReplyCF";
     private static final String RESOURCE_NAME_REPLYDEST = "jms/someManagedDefaultReplyTo";
+
+    @Resource(name = "jmsProcessingWrapInUserTransaction")
+    private Boolean jmsProcessingWrapInUserTransaction = false;
 
     @Resource(name = "jmsMessageEnableReply")
     private Boolean jmsMessageEnableReply = false;
@@ -135,6 +139,30 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
         if (log.isDebugEnabled())
             log.debug("onMessage() start");
 
+        try {
+            if (jmsProcessingWrapInUserTransaction) {
+                UserTransaction tx = mdbContext.getUserTransaction();
+                try {
+                    tx.begin();
+                    onMessageInternal(msg);
+                    tx.commit();
+                } catch (Exception e) {
+                    tx.rollback();
+                    throw e;
+                }
+            } else {
+                onMessageInternal(msg);
+            }
+        } catch (Exception e) {
+            //EJB 3.1 FR 13.6.1 Only beans with container-managed transaction demarcation can use setRollbackOnly.
+            //if(null != mdbContext)
+            //    mdbContext.setRollbackOnly();
+            if(e instanceof EJBException) throw (EJBException)e;
+            else throw new EJBException(e);
+        }
+    }
+
+    private void onMessageInternal(Message msg) {
         messageProcessingCounter.incrementAndGet(getBeanName() + "-messageConsumed");
 
         if (null != msg) {
@@ -239,12 +267,12 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
 
                         messageProcessingCounter.incrementAndGet(getBeanName() + "-replySuccess");
                     } else {
-                        if(null == jmsReplyConnectionFactory){
+                        if (null == jmsReplyConnectionFactory) {
                             messageProcessingCounter.incrementAndGet(getBeanName() + "-replyNullConnectionFactory");
                             log.warn("Reply can't be sent because jmsReplyConnectionFactory is null");
                         }
 
-                        if(null == replyTo) {
+                        if (null == replyTo) {
                             messageProcessingCounter.incrementAndGet(getBeanName() + "-replyNullDestination");
                             log.warn("Reply can't be sent because replyTo is null");
                         }
@@ -260,6 +288,5 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
             if (log.isWarnEnabled())
                 log.warn("Received Message from queue: null");
         }
-
     }
 }
