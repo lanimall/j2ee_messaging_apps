@@ -81,10 +81,34 @@ Detail guides to setup Software AG Universal Messaging Resource Adapter on both 
 Quick Start Guide with Different Samples
 --------------------------------------------
 
-All samples below require a JCA Resouyrce Adapter installed on the Application Server. 
+All samples below require a JCA Resource Adapter installed on the Application Server. 
 Please refer to the section "Resource Adapter Guides" for detailed guides.
 
+*NOTE1*: All the samples to be deployed on JBOSS rely on the following server resources:
+1. UM Resource Adapter deployed with name "umra.rar" (this name is explicitely used in the jboss config to map the MDBs to the right resource adapter)
+2. A resource bean pool should be created with name "umra-strict-max-pool" (this name is explicitely used in the jboss config to make the MDBs used this pool)
 
+If you wanted to change these names, simply update the [SimpleJmsConsume/build.default.properties](./SimpleJmsConsume/build.default.properties) file.
+* Consumer.jboss.resource-adapter-name=umra.rar
+* Consumer.jboss.bean-instance-pool=
+
+*NOTE2*: For each profile, you have several build flag available for customization:
+
+1. Build for JBOSS or Websphere (to apply the right EJB lookup properties)
+
+Defined by build variable "j2ee-jms-examples.deployment_target" with following possible values
+```
+-Dj2ee-jms-examples.deployment_target={jboss|websphere}
+```
+Default if not specified: jboss
+
+2. Set logging level for the built application
+
+Defined by build variable "j2ee-jms-examples.logging.level" with following possible values:
+```
+j2ee-jms-examples.logging.level={info|debug|trace|warn|error}
+```
+Default if not specified: info
 
 ### Sample Profile 1a: Simple JMS "Send and Forget" + Consume
 
@@ -95,8 +119,14 @@ The apps come with pre-configured resource names that must be created on the app
 
 #### Building the apps
 
+Jboss:
 ```
-   ant -Dj2ee-jms-examples.deployment_profilename=profile1a assemble
+   ant -Dj2ee-jms-examples.deployment_target=jboss -Dj2ee-jms-examples.deployment_profilename=profile1a assemble
+```
+
+Websphere:
+```
+   ant -Dj2ee-jms-examples.deployment_target=websphere -Dj2ee-jms-examples.deployment_profilename=profile1a assemble
 ```
 
 2 applications should be created:
@@ -178,8 +208,14 @@ This sample demonstrates a "request / reply" use case with JMS messaging constru
 
 #### Building the apps
 
+Jboss:
 ```
-   ant -Dj2ee-jms-examples.deployment_profilename=profile2a assemble
+   ant -Dj2ee-jms-examples.deployment_target=jboss -Dj2ee-jms-examples.deployment_profilename=profile2a assemble
+```
+
+Websphere:
+```
+   ant -Dj2ee-jms-examples.deployment_target=websphere -Dj2ee-jms-examples.deployment_profilename=profile2a assemble
 ```
 
 3 applications should be created:
@@ -265,8 +301,14 @@ That way, the right message profile can flow through the various apps (as oppose
 
 #### Building the apps
 
+Jboss:
 ```
-   ant -Dj2ee-jms-examples.deployment_profilename=profile1b assemble
+   ant -Dj2ee-jms-examples.deployment_target=jboss -Dj2ee-jms-examples.deployment_profilename=profile1b assemble
+```
+
+Websphere:
+```
+   ant -Dj2ee-jms-examples.deployment_target=websphere -Dj2ee-jms-examples.deployment_profilename=profile1b assemble
 ```
 
 4 applications should be created:
@@ -330,8 +372,14 @@ That way, the right message profile can flow through the various apps (as oppose
 
 #### Build the apps
 
+Jboss:
 ```
-   ant -Dj2ee-jms-examples.deployment_profilename=profile2b assemble
+   ant -Dj2ee-jms-examples.deployment_target=jboss -Dj2ee-jms-examples.deployment_profilename=profile2b assemble
+```
+
+Websphere:
+```
+   ant -Dj2ee-jms-examples.deployment_target=websphere -Dj2ee-jms-examples.deployment_profilename=profile2b assemble
 ```
 
 5 applications should be created:
@@ -411,8 +459,14 @@ the "Send And Wait" EJB from the "SimpleJmsSendWithReply.ear" app.
 
 #### Build
 
+Jboss:
 ```
-   ant -Dj2ee-jms-examples.deployment_profilename=profile2c assemble
+   ant -Dj2ee-jms-examples.deployment_target=jboss -Dj2ee-jms-examples.deployment_profilename=profile2c assemble
+```
+
+Websphere:
+```
+   ant -Dj2ee-jms-examples.deployment_target=websphere -Dj2ee-jms-examples.deployment_profilename=profile2c assemble
 ```
 
 5 applications should be created:
