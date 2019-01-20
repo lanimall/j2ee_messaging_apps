@@ -132,7 +132,7 @@
             <arg value="package"/>
             <arg value="-DskipTests"/>
             <arg value="-Dbuild.properties=${basedir}/${app.name}/${property.file.name}"/>
-            <arg value="-P ${j2ee-jms-examples.deployment_target}"/>
+            <arg value="-P deployment_${j2ee-jms-examples.deployment_target}"/>
             <arg value="-P ${j2ee-jms-examples.compiler.target}"/>
             <arg value="-P logging_${j2ee-jms-examples.logging.level}"/>
         </artifact:mvn>
