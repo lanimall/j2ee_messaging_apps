@@ -51,7 +51,6 @@ import java.util.Map;
 @TransactionManagement(value = TransactionManagementType.BEAN)
 public class MessageConsumerServiceBean implements MessageListener, MessageDrivenBean {
     private static final long serialVersionUID = -4602751473208935601L;
-
     private static Logger log = LoggerFactory.getLogger(MessageConsumerServiceBean.class);
 
     @EJB(beanName = "CounterService")
@@ -72,6 +71,12 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
     @Resource(name = "jmsMessageReplyOverridesDefault")
     private Boolean jmsMessageReplyOverridesDefault = true;
 
+    @Resource(name = "jmsMessageReplySessionTransacted")
+    private Boolean jmsMessageReplySessionTransacted = Boolean.FALSE;
+
+    @Resource(name = "jmsMessageReplySessionAcknowledgeMode")
+    private Integer jmsMessageReplySessionAcknowledgeMode = Session.AUTO_ACKNOWLEDGE;
+
     //resource looked up from JNDI
     private ConnectionFactory jmsReplyConnectionFactory = null;
 
@@ -82,9 +87,22 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
     public void ejbCreate() {
         log.info("ejbCreate()");
 
-        //lookup the resources, and set null if resource cannot be found
-        jmsReplyConnectionFactory = (ConnectionFactory) lookupEnvResource(RESOURCE_NAME_REPLYCF);
-        jmsDefaultReplyTo = (Destination) lookupEnvResource(RESOURCE_NAME_REPLYDEST);
+        //lookup the reply resources, and set null if resource cannot be found
+        if (jmsMessageEnableReply) {
+            log.info("jmsMessageEnableReply=true -- trying to lookup the reply resources");
+
+            try {
+                jmsReplyConnectionFactory = (ConnectionFactory) lookupEnvResource(RESOURCE_NAME_REPLYCF);
+            } catch (NamingException e) {
+                log.error("Could not lookup the resource " + RESOURCE_NAME_REPLYCF + ". Reply functionality will not be enabled. This could be expected if indeed reply functionality is turned off...check configs if in doubt.", e);
+            }
+
+            try {
+                jmsDefaultReplyTo = (Destination) lookupEnvResource(RESOURCE_NAME_REPLYDEST);
+            } catch (NamingException e) {
+                log.error("Could not lookup the resource " + RESOURCE_NAME_REPLYDEST + ". Reply functionality will not be enabled. This could be expected if indeed reply functionality is turned off...check configs if in doubt.", e);
+            }
+        }
 
         messageProcessingCounter.incrementAndGet(getBeanName() + "-create");
     }
@@ -103,17 +121,11 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
         return this.getClass().getSimpleName();
     }
 
-    public Object lookupEnvResource(String jndiLookupName) {
-        Object resource = null;
-        try {
-            // create the context
-            final Context initCtx = new InitialContext();
-            Context envCtx = (Context) initCtx.lookup("java:comp/env");
-            resource = envCtx.lookup(jndiLookupName);
-        } catch (NamingException e) {
-            log.warn("Could not lookup the resource " + jndiLookupName);
-        }
-        return resource;
+    public Object lookupEnvResource(String jndiLookupName) throws NamingException {
+        // create the context
+        final Context initCtx = new InitialContext();
+        Context envCtx = (Context) initCtx.lookup("java:comp/env");
+        return envCtx.lookup(jndiLookupName);
     }
 
     /**
@@ -218,7 +230,13 @@ public class MessageConsumerServiceBean implements MessageListener, MessageDrive
                             postProcessingJMSHeaderProperties.put(JMSHelper.JMSHeadersType.JMS_CORRELATIONID, postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_MESSAGEID));
 
                         //send reply
-                        JMSHelper.createSender(jmsReplyConnectionFactory).sendTextMessage(postProcessingPayload, postProcessingJMSHeaderProperties, postProcessingCustomProperties);
+                        JMSHelper.createSender(jmsReplyConnectionFactory).sendAndForgetTextMessage(
+                                postProcessingPayload,
+                                jmsMessageReplySessionTransacted,
+                                jmsMessageReplySessionAcknowledgeMode,
+                                postProcessingJMSHeaderProperties,
+                                postProcessingCustomProperties);
+
                         messageProcessingCounter.incrementAndGet(getBeanName() + "-replySuccess");
                     } else {
                         if(null == jmsReplyConnectionFactory){
