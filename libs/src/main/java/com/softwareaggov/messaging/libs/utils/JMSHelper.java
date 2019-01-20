@@ -32,6 +32,8 @@ import java.util.Map.Entry;
 public class JMSHelper {
     private static Logger log = LoggerFactory.getLogger(JMSHelper.class);
     private ConnectionFactory connectionFactory;
+    private static final boolean isDebug = log.isDebugEnabled();
+    private static final boolean isTrace = log.isTraceEnabled();
 
     public static String DESTINATION_TYPE_QUEUE = "queue";
     public static String DESTINATION_TYPE_TOPIC = "topic";
@@ -93,14 +95,35 @@ public class JMSHelper {
         return connectionFactory;
     }
 
-    public String sendTextMessage(final Object payload, Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties) throws JMSException {
-        return sendTextMessage(payload, jmsProperties, customProperties, false, Session.AUTO_ACKNOWLEDGE);
+    public String sendAndForgetTextMessage(final Object payload, Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties) throws JMSException {
+        return sendAndForgetTextMessage(payload, false, Session.AUTO_ACKNOWLEDGE, jmsProperties, customProperties);
     }
 
-    public String sendTextMessage(final Object payload, final Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties, boolean sessionTransacted, int sessionAcknowledgeMode) throws JMSException {
+    public String sendAndForgetTextMessage(final Object payload, final boolean sessionTransacted, final int sessionAcknowledgeMode, final Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties) throws JMSException {
+        return sendTextMessage(payload, sessionTransacted, sessionAcknowledgeMode, jmsProperties, customProperties, false, 0L);
+    }
+
+    public String sendAndWaitTextMessage(final Object payload, Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties, final long replyWaitTimeoutMs) throws JMSException {
+        return sendAndWaitTextMessage(payload, false, Session.AUTO_ACKNOWLEDGE, jmsProperties, customProperties, replyWaitTimeoutMs);
+    }
+
+    public String sendAndWaitTextMessage(final Object payload, final boolean sessionTransacted, final int sessionAcknowledgeMode, final Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties, final long replyWaitTimeoutMs) throws JMSException {
+        return sendTextMessage(payload, sessionTransacted, sessionAcknowledgeMode, jmsProperties, customProperties, true, replyWaitTimeoutMs);
+    }
+
+    /*
+     *
+     * @return  sent msg id if waitForReply = false, response text if waitForReply = true
+     */
+    private String sendTextMessage(final Object payload, final boolean sessionTransacted, final int sessionAcknowledgeMode, final Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties, final boolean waitForReply, final long replyWaitTimeoutMs) throws JMSException {
+        String returnText = null;
         Connection connection = null;
         Session session = null;
         MessageProducer producer = null;
+        MessageConsumer responseConsumer = null;
+        Object replyToDestination = null;
+        String msgCorrelationID = null;
+
         try {
             if (null == connectionFactory) {
                 throw new JMSException("connection factory is null...can't do anything...");
@@ -110,120 +133,7 @@ public class JMSHelper {
                 throw new JMSException("invalid ack mode...can't do anything...");
             }
 
-            if (log.isTraceEnabled()) {
-                String msgJMSHeaderPropertiesStr = JMSHelper.getMessageJMSHeaderPropsAsString(jmsProperties, ",");
-                String msgCustomPropertiesStr = JMSHelper.getMessagePropertiesAsString(customProperties, ",");
-
-                log.trace("Message data to send: {}, \nJMS Headers: {}, \nCustom Properties: {}",
-                        ((null != payload) ? payload : "null"),
-                        ((null != msgJMSHeaderPropertiesStr) ? msgJMSHeaderPropertiesStr : "null"),
-                        ((null != msgCustomPropertiesStr) ? msgCustomPropertiesStr : "null"));
-            }
-
-            //create connection and session
-            connection = connectionFactory.createConnection(); // Create connection
-            session = connection.createSession(sessionTransacted, sessionAcknowledgeMode); // Create Session
-
-            if (null == jmsProperties.get(JMSHeadersType.JMS_DESTINATION))
-                throw new JMSException("Destination is null...can't do anything...");
-
-            // Create Message Producer
-            producer = session.createProducer((Destination) jmsProperties.get(JMSHeadersType.JMS_DESTINATION));
-
-            if (null != jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE)) {
-                int jmsDeliveryMode = (Integer) jmsProperties.get(JMSHeadersType.JMS_DELIVERYMODE);
-                if (jmsDeliveryMode == DeliveryMode.NON_PERSISTENT || jmsDeliveryMode == DeliveryMode.PERSISTENT)
-                    producer.setDeliveryMode(jmsDeliveryMode);
-            }
-
-            if (null != jmsProperties.get(JMSHeadersType.JMS_PRIORITY)) {
-                int jmsPriority = (Integer) jmsProperties.get(JMSHeadersType.JMS_PRIORITY);
-                if (jmsPriority >= 0)
-                    producer.setPriority(jmsPriority);
-            }
-
-            // Create Message
-            TextMessage msg = session.createTextMessage();
-            if (null != payload)
-                msg.setText((String) payload); // TODO: temporary...here we need to support more types!!!!
-
-            if (null != jmsProperties.get(JMSHeadersType.JMS_REPLYTO))
-                msg.setJMSReplyTo((Destination) jmsProperties.get(JMSHeadersType.JMS_REPLYTO));
-
-            if (null != jmsProperties.get(JMSHeadersType.JMS_CORRELATIONID))
-                msg.setJMSCorrelationID((String) jmsProperties.get(JMSHeadersType.JMS_CORRELATIONID));
-
-            //add the custom properties
-            if (null != customProperties) {
-                for (Entry<String, Object> entry : customProperties.entrySet()) {
-                    msg.setObjectProperty(entry.getKey(), entry.getValue());
-                }
-            }
-
-            producer.send(msg); // Send Message
-
-            if (sessionTransacted) {
-                if (log.isDebugEnabled())
-                    log.debug("About to commit Session (send)");
-                session.commit();
-            }
-
-            if (log.isDebugEnabled())
-                log.debug("message sent successfully");
-
-            return msg.getJMSMessageID();
-        } catch (JMSException je) {
-            if (log.isDebugEnabled())
-                log.error("JMSException on send.", je);
-
-            if (sessionTransacted) {
-                try {
-                    if (log.isDebugEnabled())
-                        log.error("Since transaction is enabled, doing rollback of session due to JMSException.", je);
-
-                    if (null != session) {
-                        session.rollback();
-                        if (log.isDebugEnabled())
-                            log.debug("Rolled back session.");
-                    }
-                } catch (Throwable t) {
-                    if (log.isDebugEnabled())
-                        log.error("Session rollback failed with exception", t);
-                }
-            }
-
-            throw je;
-        } finally {
-            if (null != producer)
-                producer.close();
-
-            if (null != session)
-                session.close();
-
-            if (null != connection)
-                connection.close();
-        }
-    }
-
-    public String sendTextMessageAndWait(final Object payload, final Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties, Long replyWaitTimeoutMs) throws JMSException {
-        return sendTextMessageAndWait(payload, jmsProperties, customProperties, replyWaitTimeoutMs, false, Session.AUTO_ACKNOWLEDGE);
-    }
-
-    public String sendTextMessageAndWait(final Object payload, final Map<JMSHeadersType, Object> jmsProperties, final Map<String, Object> customProperties, Long replyWaitTimeoutMs, final boolean sessionTransacted, final int sessionAcknowledgeMode) throws JMSException {
-        Connection connection = null;
-        Session session = null;
-        MessageProducer producer = null;
-        MessageConsumer responseConsumer = null;
-
-        try {
-            if (null == connectionFactory)
-                throw new JMSException("connection factory is null...can't do anything...");
-
-            if (sessionAcknowledgeMode != Session.AUTO_ACKNOWLEDGE && sessionAcknowledgeMode != Session.CLIENT_ACKNOWLEDGE && sessionAcknowledgeMode != Session.DUPS_OK_ACKNOWLEDGE) {
-                throw new JMSException("invalid ack mode...can't do anything...");
-            }
-
-            if (log.isTraceEnabled()) {
+            if (isTrace) {
                 String msgJMSHeaderPropertiesStr = JMSHelper.getMessageJMSHeaderPropsAsString(jmsProperties, ",");
                 String msgCustomPropertiesStr = JMSHelper.getMessagePropertiesAsString(customProperties, ",");
 
@@ -261,104 +171,125 @@ public class JMSHelper {
             if (null != payload)
                 msg.setText((String) payload); // TODO: temporary...here we need to support more types!!!!
 
-            //get a permanent replyTo queue...or create a temp queue for the reply
-            Object replyToDestination = jmsProperties.get(JMSHeadersType.JMS_REPLYTO);
-            if (null == replyToDestination){
+            //Get a permanent replyTo queue...
+            //IF permanent queue not set, and waitForReply is set, then create a temp queue for the reply
+            replyToDestination = jmsProperties.get(JMSHeadersType.JMS_REPLYTO);
+            if (null == replyToDestination && waitForReply){
                 replyToDestination = session.createTemporaryQueue();
             }
 
-            //if at this point, the replyToDestination is null, we can't do much in a SendAndWait scenario
-            if(null == replyToDestination)
-                throw new JMSException("ReplyTo Destination is null...can't do anything...");
+            if (null != replyToDestination)
+                msg.setJMSReplyTo((Destination) replyToDestination);
 
-            msg.setJMSReplyTo((Destination) replyToDestination);
+            msgCorrelationID = (String) jmsProperties.get(JMSHeadersType.JMS_CORRELATIONID);
+            if (null != msgCorrelationID)
+                msg.setJMSCorrelationID(msgCorrelationID);
 
+            //add the custom properties
             if (null != customProperties) {
                 for (Entry<String, Object> entry : customProperties.entrySet()) {
                     msg.setObjectProperty(entry.getKey(), entry.getValue());
                 }
             }
 
-            //send the message
             producer.send(msg); // Send Message
 
             if (sessionTransacted) {
-                if (log.isDebugEnabled())
+                if (isDebug)
                     log.debug("About to commit Session (send)");
                 session.commit();
             }
 
-            if (log.isDebugEnabled())
+            if (isDebug)
                 log.debug("message sent successfully");
 
-            /// wait for REPLY section..
+            if (isDebug)
+                log.debug("Wait for reply: {}", waitForReply);
 
-            // Create a selector to only get the reply message that matches my request message id.
-            String requestMessageId = msg.getJMSMessageID();
-            if (log.isDebugEnabled())
-                log.debug("Outbound Request MessageId: {}", requestMessageId);
-
-            //create the seclector on the CorrelationID field
-            StringBuilder selector = new StringBuilder().append(JMSHeadersType.JMS_CORRELATIONID.getFieldName()).append("=").append("'").append(requestMessageId).append("'");
-            if (log.isDebugEnabled())
-                log.debug("Creating consumer to destination {} with Message Selector {}", ((null != replyToDestination)?replyToDestination.toString():"null"), selector.toString());
-
-            //create a consumer with the selector
-            responseConsumer = session.createConsumer((Destination) replyToDestination, selector.toString());
-
-            // Start the connection
-            connection.start();
-
-            //now wait for the response with a timeout (if null or <0, wait infinite -- 0 means infinite wait)
-            if (null == replyWaitTimeoutMs || replyWaitTimeoutMs <= 0) replyWaitTimeoutMs = 0L;
-            Message receivedMessage = responseConsumer.receive(replyWaitTimeoutMs);
-
-            if (null == receivedMessage) {
-                throw new JMSException(String.format("Didn't receive message response within timeout [%d] for Message ID [%s]", replyWaitTimeoutMs, requestMessageId));
-            }
-
-            if (sessionTransacted) {
-                if (log.isDebugEnabled())
-                    log.debug("About to commit Session (receive)");
-                session.commit();
-            }
-
-            String replyCorrelationId = receivedMessage.getJMSCorrelationID();
-
-            if (log.isDebugEnabled())
-                log.debug(String.format("Reply message contains correlation id: %s", ((replyCorrelationId == null)? replyCorrelationId.toString(): "null")));
-
-            if(replyCorrelationId == null || !replyCorrelationId.equals(requestMessageId))
-            {
-                throw new JMSException(
-                        String.format("Unexpected: Reply message Correlation ID [%s] does not match with request messageID [%s]",
-                        (replyCorrelationId == null)? replyCorrelationId.toString(): "null",
-                        (requestMessageId == null)? requestMessageId.toString(): "null"));
-            }
-
-            //if null, it means no message came within the timeout (or consumer got closed concurrently)
-            //TODO: Message instance of TextMessage is not needed... could be some other message type and be valid
-            if (null != receivedMessage && receivedMessage instanceof TextMessage) {
-                return ((TextMessage) receivedMessage).getText();
+            if(!waitForReply) {
+                returnText = msg.getJMSMessageID();
             } else {
-                throw new IllegalStateException(String.format("Message response type not expected - received: [%s] / expected: [%s]", (null != receivedMessage)?receivedMessage.getClass().getName():"null", TextMessage.class.getName()));
+                /// wait for REPLY section..
+                if (isDebug)
+                    log.debug("Wait for reply: {}", waitForReply);
+
+                // Create a selector to only get the reply message that matches my request message id.
+                String requestMessageId = msg.getJMSMessageID();
+                if (isDebug)
+                    log.debug("Outbound Request MessageId: {}", requestMessageId);
+
+                //if correlationID is null, it defaults to the outgoing message ID
+                if (null == msgCorrelationID)
+                    msgCorrelationID = requestMessageId;
+
+                //create the seclector on the CorrelationID field
+                StringBuilder selector = new StringBuilder().append(JMSHeadersType.JMS_CORRELATIONID.getFieldName()).append("=").append("'").append(msgCorrelationID).append("'");
+                if (isDebug)
+                    log.debug("Creating consumer to destination {} with Message Selector {}", ((null != replyToDestination) ? replyToDestination.toString() : "null"), selector.toString());
+
+                //create a consumer with the selector
+                responseConsumer = session.createConsumer((Destination) replyToDestination, selector.toString());
+
+                // Start the connection
+                connection.start();
+
+                //now wait for the response with a timeout (if null or <0, wait infinite -- 0 means infinite wait)
+                Message receivedMessage;
+                if (replyWaitTimeoutMs <= 0) receivedMessage = responseConsumer.receive(0L);
+                else receivedMessage = responseConsumer.receive(replyWaitTimeoutMs);
+
+                if (null == receivedMessage) {
+                    throw new JMSException(String.format("Didn't receive a message response with CorrelationID [%s] within timeout [%d] for Outgoing Message with ID [%s]", msgCorrelationID, replyWaitTimeoutMs, requestMessageId));
+                }
+
+                //not sure this correlationID check is really needed since what we received is already filtered by selector using the msgCorrelationID...
+                String replyCorrelationId = receivedMessage.getJMSCorrelationID();
+                if (isDebug)
+                    log.debug(String.format("Reply message contains correlation id: %s", ((replyCorrelationId == null) ? replyCorrelationId.toString() : "null")));
+
+                if (replyCorrelationId == null || !replyCorrelationId.equals(msgCorrelationID)) {
+                    throw new JMSException(
+                            String.format("Unexpected: Reply message Correlation ID [%s] does not match with expected correlationID [%s]",
+                                    (replyCorrelationId == null) ? replyCorrelationId.toString() : "null",
+                                    (msgCorrelationID == null) ? msgCorrelationID.toString() : "null"));
+                }
+
+                if (sessionTransacted) {
+                    if (isDebug)
+                        log.debug("About to commit Session (receive)");
+                    session.commit();
+                }
+
+                //if null, it means no message came within the timeout (or consumer got closed concurrently)
+                //TODO: Message instance of TextMessage is not needed... could be some other message type and be valid
+                if (receivedMessage instanceof TextMessage) {
+                    returnText = ((TextMessage) receivedMessage).getText();
+                } else {
+                    throw new IllegalStateException(String.format("Message response type not expected - received: [%s] / expected: [%s]", (null != receivedMessage) ? receivedMessage.getClass().getName() : "null", TextMessage.class.getName()));
+                }
             }
+
+            if (isDebug)
+                log.debug("Return Value: {}", returnText);
+
+            return returnText;
         } catch (JMSException je) {
-            if (log.isDebugEnabled())
+            if (isDebug)
                 log.error("JMSException on send.", je);
 
             if (sessionTransacted) {
+                //silent rollback exception to make sure the original je exception is surfaced
                 try {
-                    if (log.isDebugEnabled())
+                    if (isDebug)
                         log.error("Since transaction is enabled, doing rollback of session due to JMSException.", je);
 
                     if (null != session) {
                         session.rollback();
-                        if (log.isDebugEnabled())
+                        if (isDebug)
                             log.debug("Rolled back session.");
                     }
                 } catch (Throwable t) {
-                    if (log.isDebugEnabled())
+                    if (isDebug)
                         log.error("Session rollback failed with exception", t);
                 }
             }
@@ -432,7 +363,7 @@ public class JMSHelper {
             throw new IllegalArgumentException("jndi params not defined.");
         }
 
-        if (log.isDebugEnabled()) {
+        if (isDebug) {
             for (String key : jndiEnv.keySet()) {
                 log.debug(String.format("Context: %s - %s", key.toString(), jndiEnv.get(key)));
             }
@@ -444,13 +375,13 @@ public class JMSHelper {
         // Lookup Connection Factory
         Context namingContext = new InitialContext(jndiEnv);
 
-        if (log.isDebugEnabled())
+        if (isDebug)
             log.debug("Context Created : " + namingContext.toString());
 
         jndiLookup = namingContext.lookup(lookupName);
 
         if (null != jndiLookup) {
-            if (log.isDebugEnabled())
+            if (isDebug)
                 log.debug("Lookup JNDI Success - Impl Class: {}" + jndiLookup.getClass().getName());
         } else {
             throw new NamingException("Lookup JNDI failed - object name could not be found");

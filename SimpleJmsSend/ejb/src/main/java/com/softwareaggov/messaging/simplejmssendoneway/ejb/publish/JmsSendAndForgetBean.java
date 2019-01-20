@@ -70,6 +70,6 @@ public class JmsSendAndForgetBean extends JmsPublisherBase {
     @Override
     protected String sendMessage(ConnectionFactory jmsConnectionFactory, Destination destination, boolean sessionTransacted, int sessionAcknowledgeMode, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
         Map<JMSHelper.JMSHeadersType, Object> jmsProperties = JMSHelper.getMessageJMSHeaderPropsAsMap(destination, deliveryMode, priority, correlationID, replyTo);
-        return JMSHelper.createSender(jmsConnectionFactory).sendTextMessage(payload, jmsProperties, headerProperties, sessionTransacted, sessionAcknowledgeMode);
+        return JMSHelper.createSender(jmsConnectionFactory).sendAndForgetTextMessage(payload, sessionTransacted, sessionAcknowledgeMode, jmsProperties, headerProperties);
     }
 }

@@ -153,7 +153,7 @@ public class JmsSendAndForgetNonJCATestBean implements MessageInterop {
 
     protected String sendMessage(Destination destination, final Object payload, final Map<String, Object> headerProperties, Integer deliveryMode, Integer priority, String correlationID, Destination replyTo) throws JMSException {
         Map<JMSHelper.JMSHeadersType, Object> jmsProperties = JMSHelper.getMessageJMSHeaderPropsAsMap(destination, deliveryMode, priority, correlationID, replyTo);
-        return jmsHelper.sendTextMessage(payload, jmsProperties, headerProperties);
+        return jmsHelper.sendAndForgetTextMessage(payload, jmsProperties, headerProperties);
     }
 
     //MessageInterop implementation

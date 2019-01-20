@@ -37,6 +37,7 @@ import java.util.Map;
  * @author Fabien Sanglier
  */
 
+// FAS: @TODO Not used?? remove if useless...
 public class BaseJmsProcessor implements MessageProcessor {
     private static final long serialVersionUID = -4602751473208935601L;
 
@@ -120,7 +121,7 @@ public class BaseJmsProcessor implements MessageProcessor {
                         postProcessingJMSHeaderProperties.put(JMSHelper.JMSHeadersType.JMS_CORRELATIONID, postProcessingJMSHeaderProperties.get(JMSHelper.JMSHeadersType.JMS_MESSAGEID));
 
                     //send reply
-                    jmsHelper.sendTextMessage(postProcessingPayload, postProcessingJMSHeaderProperties, postProcessingCustomProperties);
+                    jmsHelper.sendAndForgetTextMessage(postProcessingPayload, postProcessingJMSHeaderProperties, postProcessingCustomProperties);
                     incrementCounter("replied");
                 }
             } else {
